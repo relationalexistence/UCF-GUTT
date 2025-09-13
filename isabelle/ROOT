@@ -1,0 +1,4 @@
+session UCF_GUTT = HOL +
+  options [document = false]
+  theories
+    Scratch_UCF
