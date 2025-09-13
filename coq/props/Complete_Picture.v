@@ -1,4 +1,8 @@
-The complete picture:  (Closure Guarantee)
+(*
+  UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+
+The complete picture:  (Closure Guarantee)*)
 
 
 
