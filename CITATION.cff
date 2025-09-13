@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "UCF/GUTT™: a relation-first, machine-checked framework"
+message: "If you use this repository, please cite it."
+authors:
+  - family-names: Fillippini
+    given-names: Michael
+identifiers: []
+repository-code: "https://github.com/relationalexistence/UCF-GUTT"
+license: "LicenseRef-UCFGUTT-Research-1.1"
+version: "v2025.09-initial"
