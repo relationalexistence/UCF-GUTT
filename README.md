@@ -5,6 +5,8 @@ A relation-first framework with machine-checked proofs (Coq/Isabelle). Core resu
 ## Contents
 - `proofs/` — Coq/Isabelle artifacts for Props 1, 2, 4; Nested Graphs; Arithmetic; Boundaries; Complete Picture; Alena; EW.
 - `notes/` — commentary and derivations.
+- Proposition 4 (Relational System) — meaning & implications: [notes/prop4_relational_system.md](notes/prop4_relational_system.md)
+
 
 ## License & Notices
 - **License:** Non-Commercial, No-Derivatives — see **[LICENSE](./LICENSE)**
