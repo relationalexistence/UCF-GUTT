@@ -149,18 +149,23 @@ Qed.
   is provable by construction.
 *)
 
-(* Example: If we assume original connectivity, we can embed it *)
-Hypothesis original_connectivity : forall x : U, exists y : U, R x y.
+(* Create a Coq Section to scope the hypothetical assumption *)
+Section OriginalComparison.
 
-Theorem original_embedded_in_refined :
-  forall x : U, exists y : Ux, R_prime (Some x) y.
-Proof.
-  intro x.
-  destruct (original_connectivity x) as [y Hxy].
-  exists (Some y).
-  unfold R_prime.
-  exact Hxy.
-Qed.
+  (* Hypothetical: If we assume original connectivity, we can embed it *)
+  Hypothesis original_connectivity : forall x : U, exists y : U, R x y.
+
+  Theorem original_embedded_in_refined :
+    forall x : U, exists y : Ux, R_prime (Some x) y.
+  Proof.
+    intro x.
+    destruct (original_connectivity x) as [y Hxy].
+    exists (Some y).
+    unfold R_prime.
+    exact Hxy.
+  Qed.
+
+End OriginalComparison.
 
 (* But crucially, the refined version needs no such assumption! *)
 
@@ -202,24 +207,29 @@ Qed.
 (* SECTION 10: Decidability Properties                             *)
 (* ================================================================ *)
 
-(* If R is decidable, so is R' *)
-Hypothesis R_decidable : forall (a b : U), {R a b} + {~ R a b}.
+(* Create a Section to scope the decidability assumption *)
+Section Decidability.
 
-Theorem R_prime_decidable :
-  forall (x y : Ux), {R_prime x y} + {~ R_prime x y}.
-Proof.
-  intros x y.
-  destruct x as [a | ]; destruct y as [b | ].
-  - (* Both in U: use R decidability *)
-    unfold R_prime.
-    apply R_decidable.
-  - (* x in U, y = Whole: always True *)
-    left. unfold R_prime. reflexivity.
-  - (* x = Whole, y in U: always False *)
-    right. unfold R_prime. intro H. exact H.
-  - (* Both Whole: always True *)
-    left. unfold R_prime. reflexivity.
-Qed.
+  (* If R is decidable, so is R' *)
+  Hypothesis R_decidable : forall (a b : U), {R a b} + {~ R a b}.
+
+  Theorem R_prime_decidable :
+    forall (x y : Ux), {R_prime x y} + {~ R_prime x y}.
+  Proof.
+    intros x y.
+    destruct x as [a | ]; destruct y as [b | ].
+    - (* Both in U: use R decidability *)
+      unfold R_prime.
+      apply R_decidable.
+    - (* x in U, y = Whole: always True *)
+      left. unfold R_prime. reflexivity.
+    - (* x = Whole, y in U: always False *)
+      right. unfold R_prime. intro H. exact H.
+    - (* Both Whole: always True *)
+      left. unfold R_prime. reflexivity.
+  Qed.
+
+End Decidability.
 
 (* ================================================================ *)
 (* SECTION 11: Relation to Graph Theory                            *)
@@ -233,12 +243,23 @@ Qed.
   - The graph is strongly connected through Whole
 *)
 
+(* Simplified reachability: direct connection *)
 Definition is_reachable (x y : Ux) : Prop := R_prime x y.
 
 Lemma all_reach_Whole :
   forall x : Ux, is_reachable x Whole.
 Proof.
   intro x.
+  unfold is_reachable.
+  apply everything_relates_to_Whole.
+Qed.
+
+(* Alternative formulation: 1-step reachability is guaranteed *)
+Lemma one_step_reachable :
+  forall x : Ux, exists y : Ux, is_reachable x y.
+Proof.
+  intro x.
+  exists Whole.
   unfold is_reachable.
   apply everything_relates_to_Whole.
 Qed.
