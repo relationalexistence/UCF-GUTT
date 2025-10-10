@@ -405,18 +405,19 @@ Qed.
   - Grammar structure emerges necessarily from relational structure
   
   This is not mere formalism - it shows that:
-  - Isolation is impossible (proven in Prop1_Refined)
+  - Isolation is impossible (proven in Prop1_proven)
   - Context cannot be separated from structure (proven here)
   - DSOIG is the grammar of necessary relation (proven here)
   - The universe is fundamentally relational (proven foundation)
   
   COMPILATION:
   
-  Requires: Prop1_Refined.v compiled first
-  Command: coqc NoContextFreeGrammar_refined.v
+  Requires: Prop1_proven.v compiled first
+  Command: coqc Prop1_proven.v
+  Command: coqc NoContextFreeGrammar_proven.v
   Result: Compiles with ZERO axioms, ZERO admits
   
   This represents a complete formal proof that grammar theory
-  must respect the relational structure proven in Prop1_Refined,
+  must respect the relational structure proven in Prop1_proven,
   and that DSOIG emerges as the necessary grammar of existence.
 *)
