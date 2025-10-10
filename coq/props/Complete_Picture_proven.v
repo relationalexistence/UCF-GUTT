@@ -21,7 +21,7 @@
 (* Part A: Import Proven Foundations                            *)
 (* ============================================================ *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 From Coq Require Import List Arith PeanoNat.
 Import ListNotations.
 
