@@ -1,5 +1,5 @@
 (*
-  UCF/GUTT™ - Refined Proposition 1: Complete Formal Proof
+  UCF/GUTT™ - Proven Proposition 1: Complete Formal Proof
   © 2023–2025 Michael Fillippini. All Rights Reserved.
   
   THEOREM: ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y)
@@ -304,7 +304,7 @@ Definition UCF_GUTT_No_Isolation := no_isolated_entities.
 (*
   QED: ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y)
   
-  This completes the formal verification of Refined Proposition 1.
+  This completes the formal verification of Proven Proposition 1.
   The proof is constructive, machine-verified, and makes no assumptions
   about the original relation R.
   
