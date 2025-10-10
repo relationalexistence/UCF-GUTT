@@ -421,7 +421,7 @@ End VectorArity.
   
   WHAT WE'VE ACHIEVED:
   
-  1. UNIVERSAL CONNECTIVITY (Prop1_Refined)
+  1. UNIVERSAL CONNECTIVITY (Prop1_proven)
      - No entity exists in isolation
      - Everything relates to Whole
      - Proven constructively without axioms
@@ -475,10 +475,10 @@ End VectorArity.
   COMPILATION:
   
   Dependencies:
-    Prop1_Refined.v (must be compiled first)
+    Prop1_proven.v (must be compiled first)
   
   Command:
-    coqc Prop1_Refined.v
+    coqc Prop1_proven.v
     coqc Complete_Picture_proven.v
   
   Expected: Compiles cleanly with ZERO axioms
