@@ -4,14 +4,14 @@
   UCF/GUTT-style "boundary preservation" vs. context-freeness
   FULLY PROVEN - ZERO AXIOMS, ZERO ADMITS
   
-  All claims proven constructively from Prop1_Refined foundation.
+  All claims proven constructively from Prop1_proven foundation.
 *)
 
 (* ============================================================ *)
 (* Part A: Import Proven Refined Proposition 1                  *)
 (* ============================================================ *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 From Coq Require Import List Arith Bool.
 Import ListNotations.
 
