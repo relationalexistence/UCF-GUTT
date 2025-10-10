@@ -1,5 +1,5 @@
 (*
-  NoContextFreeGrammar_refined.v
+  NoContextFreeGrammar_proven.v
   ------------------------------
   UCF/GUTT-style "boundary preservation" vs. context-freeness
   FULLY PROVEN - ZERO AXIOMS, ZERO ADMITS
