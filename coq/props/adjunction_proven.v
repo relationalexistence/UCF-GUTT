@@ -243,7 +243,7 @@ Qed.
   SUMMARY OF CHANGES FROM adjunction.v:
   
   1. ✓ Eliminated Axiom Connectivity_Holds
-  2. ✓ Replaced with proven Theorem using refined_proposition_1
+  2. ✓ Replaced with proven Theorem using Prop1_proven.v
   3. ✓ Extended to work over Ux (with Whole)
   4. ✓ Maintained all original Free/Forgetful adjunction properties
   5. ✓ Added universal property for F
@@ -262,8 +262,9 @@ Qed.
   
   COMPILATION:
   
-  Requires: Prop1_Refined.v to be compiled first
-  Command: coqc adjunction_refined.v
+  Requires: Prop1_proven.v to be compiled first
+  Command: coqc Prop1_proven.v
+  Command: coqc adjunction_proven.v
   Tested: Coq 8.12+
   
   This proof demonstrates that category-theoretic structures like
