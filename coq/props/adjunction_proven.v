@@ -1,11 +1,11 @@
 (*
-  adjunction_refined.v
+  adjunction_proven.v
   --------------------
   Free/Forgetful adjunction between 0/1 graphs and weighted relations
   NOW USING PROVEN REFINED PROPOSITION 1 (no axioms!)
   
   Changes from original adjunction.v:
-  - Imports Prop1_Refined
+  - Imports Prop1_proven
   - Uses Ux (extended universe) instead of Parameter E
   - Replaces Axiom Connectivity_Holds with proven theorem
   - Maintains all original adjunction functionality
@@ -15,7 +15,7 @@
 (* Part A: Import Proven Refined Proposition 1                  *)
 (* ============================================================ *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 
 (* Extract the types and definitions we need *)
 Definition E_base : Type := U.      (* Base universe *)
