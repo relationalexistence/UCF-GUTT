@@ -1,8 +1,8 @@
 (*
-  reduction_refined.v
+  reduction_proven.v
   -------------------
   Free/Forgetful pattern between 0/1 graphs and weighted relations
-  NOW USING PROVEN REFINED PROPOSITION 1 (no axioms!)
+  NOW USING PROVEN PROPOSITION 1 (no axioms!)
   
   Changes from original reduction.v:
   - Imports Prop1_Refined
