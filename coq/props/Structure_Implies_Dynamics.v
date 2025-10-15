@@ -18,7 +18,7 @@ Import ListNotations.
 (* Copy the necessary definitions *)
 Section ProofOfStructureImpliesDynamics.
 
-  Definition U := Prop1_Refined.U.
+  Definition U := Prop1_proven.U.
   Definition Hyperedge := list U.
 
   Record Graph := { hedges : list Hyperedge }.
