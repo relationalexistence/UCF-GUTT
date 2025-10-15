@@ -1,4 +1,4 @@
-**DivisionbyZero_proven.md markdown
+**DivisionbyZero_proven.md
 # Division by Zero as Relational Boundary Operator
 **Machine-Verified Proof Documentation**
 
