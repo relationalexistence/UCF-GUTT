@@ -86,11 +86,11 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 
 **Foundational Results (Zero Axioms):**
 
-| File | Axiom Reduction | Description |
+| File | Description |
 |------|----------------|-------------|
-| **prop1_proven.v** | ✓ **0 axioms** | **Proposition 1 (Connectivity):** ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y). Universal connectivity via Whole construct proven constructively. |
-| **Complete_Picture_proven.v** | ✓ **8→0 (100%)** | **Complete Picture Theorem:** Universal connectivity, structural manifestation, and dynamic preservation proven in both list-arity and vector-arity. Transforms UCF/GUTT from philosophy to mathematics. |
-| **Prop4_RelationalSystem_proven.v** | ✓ **2→0 (100%)** | **Proposition 4 (Relational Systems):** Relations manifest as graph structures with adjacency tensors. Identity dynamics proven to preserve edges. |
+| **prop1_proven.v** | **Proposition 1 (Connectivity):** ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y). Universal connectivity via Whole construct proven constructively. |
+| **Complete_Picture_proven.v** | **Complete Picture Theorem:** Universal connectivity, structural manifestation, and dynamic preservation proven in both list-arity and vector-arity. Transforms UCF/GUTT from philosophy to mathematics. |
+| **Prop4_RelationalSystem_proven.v** | **Proposition 4 (Relational Systems):** Relations manifest as graph structures with adjacency tensors. Identity dynamics proven to preserve edges. |
 
 **Core Framework Results:**
 
