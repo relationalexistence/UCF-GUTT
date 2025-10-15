@@ -12,7 +12,7 @@
 (*   - Connection to RelationalArithmetic (embedding into ℤ)                   *)
 (*   - Zero axioms (all constructions proven, not assumed)                     *)
 (*                                                                              *)
-(* File: proofs/RelationalNaturals_proven.v                                           *)
+(* File: proofs/RelationalNaturals.v                                           *)
 (* Dependencies: Prop1_proven.v, Coq standard library                          *)
 (* Lines of Code: ~600                                                         *)
 (* ============================================================================ *)
@@ -603,6 +603,13 @@ Proof. apply embed_preserves_add. Qed.
 End Examples.
 
 End RelationalNaturals.
+
+(** Totality *)
+Theorem le_rel_total : forall n m : ℕ_rel, le_rel n m \/ le_rel m n.
+Proof.
+  intros n m; unfold le_rel.
+  destruct (Nat.leb_spec (to_nat n) (to_nat m)); [left|right]; lia.
+Qed.
 
 (* ============================================================================ *)
 (*                        DOCUMENTATION & SUMMARY                              *)
