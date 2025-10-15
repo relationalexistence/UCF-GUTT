@@ -8,10 +8,14 @@ A relation-first framework with machine-checked proofs (Coq/Isabelle). Core resu
 
 ## Principle of Relational Existence (PRE)
 
-> **Axiom (ontic):** If an entity conclusively exists, then it bears at least one relation.  
-> All formal results here are proved **relative to PRE** (or its specializations).
+> **Axiom (ontic):** If an entity conclusively exists, then it bears at least one relation.
 
-This mirrors Prop 1 (Connectivity / seriality: no isolates).
+**Proposition 1 (Connectivity):** In the refined system Uₓ = U ∪ {Whole}, connectivity is **proven constructively** (see `proofs/prop1_proven.v`): 
+> ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y)
+
+By introducing the Whole as a universal relational target, Prop 1 transforms from a philosophical axiom into a mathematical necessity. The proof makes no assumptions about the original relation R—connectivity is guaranteed by construction.
+
+**Key insight:** No entity can be truly isolated; everything relates to Whole. This establishes seriality (no isolates) as a provable property of the extended relational system.
 
 ---
 
