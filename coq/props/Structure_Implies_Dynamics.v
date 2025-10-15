@@ -11,7 +11,7 @@
   preservation mechanism.
 *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 From Coq Require Import List Arith PeanoNat.
 Import ListNotations.
 
@@ -224,6 +224,6 @@ End ProofOfStructureImpliesDynamics.
   
   COMPILATION:
   
-  Requires: Prop1_Refined.v
+  Requires: Prop1_proven.v
   Expected: Compiles cleanly (no additional assumptions)
 *)
