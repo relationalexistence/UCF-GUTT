@@ -12,7 +12,7 @@
 (*   - Connection to RelationalArithmetic (embedding into ℤ)                   *)
 (*   - Zero axioms (all constructions proven, not assumed)                     *)
 (*                                                                              *)
-(* File: proofs/RelationalNaturals.v                                           *)
+(* File: proofs/RelationalNaturals_proven.v                                           *)
 (* Dependencies: Prop1_proven.v, Coq standard library                          *)
 (* Lines of Code: ~600                                                         *)
 (* ============================================================================ *)
