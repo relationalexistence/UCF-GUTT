@@ -1,5 +1,5 @@
 **DivisionbyZero_proven.md
-# Division by Zero as Relational Boundary Operator
+**Division by Zero as Relational Boundary Operator
 **Machine-Verified Proof Documentation**
 
 ---
