@@ -1,9 +1,0 @@
-# Isabelle
-isabelle build -b UCF -D isabelle
-# open (optional)
-isabelle jedit -l UCF isabelle/src/Scratch_UCF.thy
-
-# Coq
-cd coq
-coq_makefile -f _CoqProject -o Makefile
-make -j
