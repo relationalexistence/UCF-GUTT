@@ -207,7 +207,7 @@ End ProofOfStructureImpliesDynamics.
   This completes the proof that the "Complete Picture" requires
   NO AXIOMS beyond:
   - Type inhabitation (Time, Weight exist)
-  - The proven relational foundation (Prop1_Refined)
+  - The proven relational foundation (Prop1_proven)
   
   Every claimed property of the UCF/GUTT framework is now either:
   1. PROVEN constructively, or
@@ -218,7 +218,7 @@ End ProofOfStructureImpliesDynamics.
   
   NEXT STEPS:
   
-  1. Integrate this into Complete_Picture_refined.v
+  1. Integrate this into Complete_Picture_proven.v
   2. Prove the vector-arity version (same proof, different types)
   3. Achieve 100% axiom elimination (8 → 0)
   
