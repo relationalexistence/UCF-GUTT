@@ -121,19 +121,6 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 
 ---
 
-## Axiom Elimination Summary
-
-**Core Framework Axioms Eliminated:**
-
-| Proof File | Original Axioms | Current Status | Remaining Assumptions |
-|------------|----------------|----------------|----------------------|
-| Prop 1 (Connectivity) | 0 | ✓ **0 axioms** | None |
-| Complete Picture | 8 | ✓ **0 axioms** | Time, Weight as abstract types |
-| Prop 4 (Systems) | 2 | ✓ **0 axioms** | U_eq_dec (decidable equality) |
-| Prop 2 (DSoR) | N/A | ✓ **Proven** | U_eq_dec (decidable equality) |
-| Nested Tensors | 7 | **1 axiom** | U_eq_dec + dynamics placeholder |
-| **Total** | **17+** | **1** | **~94% elimination** |
-
 **Applied Framework Results:**
 
 | File | Status | Dependencies |
