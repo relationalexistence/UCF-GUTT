@@ -11,7 +11,7 @@ Require Import Prop1_proven.
 From Coq Require Import List Arith PeanoNat.
 Import ListNotations.
 
-(* Copy the necessary definitions from Complete_Picture_refined.v *)
+(* Copy the necessary definitions from Complete_Picture_proven.v *)
 Section ProofOfRelationImpliesStructure.
 
   Definition U := Prop1_proven.U.
