@@ -1,6 +1,6 @@
 # UCF/GUTT™ — Relation-First, Machine-Checked
 
-A relation-first framework with machine-checked proofs (Coq/Isabelle). Core results: **connectivity** (∀x∃y R), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **relational arithmetic & boundaries**, the **Complete Picture Theorem** (closure), **Alena** tensor containment, and **electroweak subsumption**. **Φ** (Relational Stability) is **withheld**.
+A relation-first framework with **machine-verified proofs** (Coq/Isabelle). Core theorems now **proven**: **connectivity** (∀x∃y R), **Complete Picture** (universal connectivity, structural manifestation, dynamic preservation with **100% axiom elimination**), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **Alena** tensor containment with discrete conservation, and **relational boundaries** (division by zero). Total: **~94% axiom elimination** across framework. **Φ** (Relational Stability) is **withheld**.
 
 > https://relationalexistence.com
 
@@ -19,55 +19,135 @@ By introducing the Whole as a universal relational target, Prop 1 transforms fro
 
 ---
 
-## Core Relational Object (default)
+## Core Relational Objects
 
-We model relations as **typed, weighted, time-indexed kernels**  
-\( R : E \times E \times T \to \mathcal{K} \)  
-where \( \mathcal{K} \) can carry: (i) strength (StOr), (ii) type \( \theta \in \Theta \), (iii) history/trace, (iv) uncertainty.
+UCF/GUTT formalizes relations at two levels:
 
-**Projection to 0/1.** A forgetful map \( \Pi_{0,1} \) sends \(R\) to simple adjacency (true iff strength > 0).  
-0/1 graphs are a **projection**, not the primitive.
+### Abstract Relations (Foundational Proofs)
+```
+R : U × U → Prop    (* Binary relations on universe U *)
+```
+Prop 1 and Complete Picture theorems proven at this level, establishing connectivity and structural manifestation without assumptions about R.
 
----
+### Nested Weighted Tensors (Applied Framework)
+```
+NestedWeightedTensor : NestedGraph → Hyperedge → Time → Weight
+where Hyperedge ∈ {list U, Vector.t U n}  (* n-ary relations *)
+```
 
-## Closure (Complete Picture) — Colimit Intuition
+**Full enrichment** extends the Weight channel into a kernel \( \mathcal{K} \) carrying:
+- (i) **strength** (StOr) — relational intensity
+- (ii) **type** \( \theta \in \Theta \) — relationship classification
+- (iii) **history/trace** — temporal evolution records
+- (iv) **uncertainty** — probabilistic/fuzzy bounds
 
-For any PRE-consistent diagram of typed relational tensors, there exists a **colimit object** that coheres the parts uniquely.  
-*Plainly: the “whole” exists without extra meta-axioms.*
-
----
-
-## Interaction Layers (avoid verificationism)
-
-- \( I_{\diamond} \): **ontic possibility**  
-- \( I_{\bullet} \): **ontic actuality**  
-- \( I_{\aleph} \): **epistemic evidence**
-
-PRE quantifies over \( I_{\diamond} \) (or \( I_{\bullet} \)); ontology ≠ evidence.
+**Projection to 0/1:** A forgetful map \( \Pi_{0,1} \) sends enriched tensors to simple adjacency (true iff Weight > 0). Since foundational theorems hold for abstract `Prop` relations, they automatically apply to all enrichments. **0/1 graphs are a projection, not the primitive.**
 
 ---
 
-## Universe Interpretations
+## Interaction Layers (Interpretive Framework)
 
-- **Internalism:** nested self-relation \( I(U,U) \) satisfies PRE.  
-- **Modalism:** \( I_{\diamond}(U,b) \) in a possibility space also satisfies PRE.
+The formal proofs establish ontic actuality. For philosophical interpretation, we distinguish:
+
+- \( I_{\bullet} \): **ontic actuality** — what **is** (formalized in proofs)
+- \( I_{\diamond} \): **ontic possibility** — what **could be** (interpretive)
+- \( I_{\aleph} \): **epistemic evidence** — what we **observe** (interpretive)
+
+**Note:** Prop 1 and Complete Picture proofs establish \( I_{\bullet} \) directly—entities **actually** relate, structures **actually** exist. The distinction between possibility, actuality, and evidence is a philosophical interpretation layer not (yet) formalized in the machine-checked proofs.
+
+> **Key principle:** Ontology ≠ evidence. The proofs establish what exists, independent of observation.
+
+---
+
+## Universe-Level Relations
+
+**Formally proven results:**
+
+1. **Whole Self-Relation:** R'(Whole, Whole) = True  
+   The totality relates to itself (`prop1_proven.v`, Section 4 Lemma: `Whole_relates_to_Whole`)
+
+2. **Universal Target:** Everything relates to Whole  
+   No entity can be isolated from the totality
+
+3. **Nested Structures:** Graphs can contain sub-graphs  
+   Hierarchical self-reference formalized (`Complete_Picture_proven.v`)
+
+**Philosophical interpretations** (leveraging proven results):
+- **Internalism:** If Whole = Universe's totality, then universe satisfies PRE via proven self-relation
+- **Modalism:** In modal extensions (future work), universe-boundary interactions could satisfy PRE
+
+The proofs establish relational properties of Whole. Interpreting Whole as "the universe" connects formal results to cosmological questions.
 
 ---
 
 ## Contents
 
-- `proofs/` — Coq/Isabelle artifacts for Props 1, 2, 4; Nested Graphs; Arithmetic; Boundaries; Complete Picture; Alena; EW.  
-  - `proofs/reduction.v` — **Reduction (Theoremlet):** boolean graphs are a projection of weighted relations with a canonical minimal enrichment (**U ∘ F = id** pointwise; **F ∘ U ≤ id**), and **inlines Prop 1/Connectivity**.
-- `notes/` — commentary and derivations.
-- Proposition 4 (Relational System) — meaning & implications: [notes/prop4_relational_system.md](notes/prop4_relational_system.md)
+### `/proofs` — Machine-Verified Theorems
+
+**Foundational Results (Zero Axioms):**
+
+| File | Axiom Reduction | Description |
+|------|----------------|-------------|
+| **prop1_proven.v** | ✓ **0 axioms** | **Proposition 1 (Connectivity):** ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y). Universal connectivity via Whole construct proven constructively. |
+| **Complete_Picture_proven.v** | ✓ **8→0 (100%)** | **Complete Picture Theorem:** Universal connectivity, structural manifestation, and dynamic preservation proven in both list-arity and vector-arity. Transforms UCF/GUTT from philosophy to mathematics. |
+| **Prop4_RelationalSystem_proven.v** | ✓ **2→0 (100%)** | **Proposition 4 (Relational Systems):** Relations manifest as graph structures with adjacency tensors. Identity dynamics proven to preserve edges. |
+
+**Core Framework Results:**
+
+| File | Axiom Reduction | Description |
+|------|----------------|-------------|
+| **Proposition2_DSoR_proven.v** | ✓ **Proven** | **DSoR (Dimensional Sphere of Relation):** Multi-dimensional tensor representations of relations. Ego-centric asymmetric relations formalized. Only requires decidable equality on base type U. |
+| **Prop_NestedRelationalTensors_proven.v** | ✓ **7→1 (86%)** | **Nested Relational Tensors:** Hierarchical graph structures with nested adjacency tensors. Enables emergent phenomena modeling. |
+
+**Advanced Applications:**
+
+| File | Status | Description |
+|------|--------|-------------|
+| **UCF_GUTT_Contains_Alena_With_Discrete_Conservation.v** | ✓ **Proven** | **Alena Tensor Containment:** Proves UCF/GUTT contains Alena's stress-energy formulation via δ-kernel. Includes both degenerate and non-degenerate discrete conservation witnesses (A1-A5 theorems). Texture/birefringence witnesses included. |
+| **DivisionbyZero_proven.v** | ✓ **Proven** | **Relational Boundaries:** Division by zero formalized as relational boundary operator. Context-dependent interpretations (Space→expansion, Time→collapse, Info→undefined). |
+| **reduction.v** | ✓ **Proven** | **Reduction Theoremlet:** Boolean graphs as projections of weighted relations with canonical minimal enrichment (U ∘ F = id; F ∘ U ≤ id). |
+
+**In Progress:**
+
+- Event Currying: Lossless encoding of typed n-ary events into binary tensors with role labels
+- Electroweak subsumption: Formal unification proof
+- Relational Arithmetic: Operations on relational structures
+- Isabelle ports: Verification in multiple proof assistants
+
+### `/notes` — Documentation
+
+- Commentary and conceptual derivations
+- [Proposition 4 implications](notes/prop4_relational_system.md)
 
 ---
 
-## Theoremlets (starter proofs)
+## Axiom Elimination Summary
 
-- **Reduction (Coq):** principled projection to 0/1 and minimal enrichment back; anchors “0/1 is a view, not the base.” *(See `proofs/reduction.v` for inline Prop1/Connectivity).*  
-- *(Planned)* **Event Currying:** lossless encoding of typed n-ary events into binary tensors with role labels.  
-- *(Planned)* **Closure (formal):** categorical statement/proof-assistant skeleton of the colimit form.
+**Core Framework Axioms Eliminated:**
+
+| Proof File | Original Axioms | Current Status | Remaining Assumptions |
+|------------|----------------|----------------|----------------------|
+| Prop 1 (Connectivity) | 0 | ✓ **0 axioms** | None |
+| Complete Picture | 8 | ✓ **0 axioms** | Time, Weight as abstract types |
+| Prop 4 (Systems) | 2 | ✓ **0 axioms** | U_eq_dec (decidable equality) |
+| Prop 2 (DSoR) | N/A | ✓ **Proven** | U_eq_dec (decidable equality) |
+| Nested Tensors | 7 | **1 axiom** | U_eq_dec + dynamics placeholder |
+| **Total** | **17+** | **1** | **~94% elimination** |
+
+**Applied Framework Results:**
+
+| File | Status | Dependencies |
+|------|--------|--------------|
+| Alena Containment | ✓ **Proven (A1-A5)** | Abstract scalar field, physics parameters |
+| Division by Zero | ✓ **Proven** | Domain types X, Y, functions g, h |
+| Reduction | ✓ **Proven** | Standard type theory |
+
+**Remaining Assumptions:**
+- **U_eq_dec**: Decidable equality on base type U (standard constructive assumption; provable for concrete types like nat, bool)
+- **Dynamics placeholder**: Identity evolution proven sufficient; richer dynamics optional extension
+- **Domain parameters**: Physics constants (μ₀, c², ρ) and abstract types (Time, Weight) for applications
+
+**Result:** Core relational ontology (existence implies relation, structural manifestation, dynamic preservation) proven **without axioms**. Only standard decidability and domain-specific parameters remain.
 
 ---
 
@@ -83,10 +163,23 @@ PRE quantifies over \( I_{\diamond} \) (or \( I_{\bullet} \)); ontology ≠ evid
 
 ## Roadmap
 
-- **Short-term:** Flesh out Event Currying (n-ary → binary); add Isabelle ports.  
-- **Medium:** Full colimit proof for Complete Picture; integrate time/uncertainty channels in \( \mathcal{K} \).  
-- **Proprietary:** **Φ — Relational Stability** (dynamics/prediction). Contact for collaboration.
-- Proprietary Dynamics (Φ): This component, which governs the system's dynamics and allows for predictions, is not open source and is available only through collaboration.
+**Completed Major Milestones:**
+- ✅ Prop 1 (Connectivity) — proven constructively, zero axioms
+- ✅ Complete Picture Theorem — three core theorems, 100% axiom elimination
+- ✅ Props 2, 4 — DSoR and relational systems proven
+- ✅ Nested Tensors — 86% axiom reduction
+- ✅ Alena containment — stress-energy subsumption with discrete conservation
+- ✅ Relational boundaries — division by zero formalized
+
+**Active Development:**
+- **Short-term:** Event Currying formalization (n-ary → binary); Isabelle ports
+- **Medium:** Electroweak subsumption proof; relational arithmetic operations
+- **Long-term:** Integration of time/uncertainty channels in full enriched kernel \( \mathcal{K} \)
+
+**Proprietary:**
+- **Φ — Relational Stability** (dynamics/prediction): Governs system dynamics and predictions. Not open source; available only through collaboration.
+
+**Contact:** Michael_Fill@protonmail.com for licensing and collaboration inquiries.
 
 ---
 
@@ -100,13 +193,11 @@ PRE quantifies over \( I_{\diamond} \) (or \( I_{\bullet} \)); ontology ≠ evid
 
 ## The Meta-Implication
 
-Altogether,the body of proofs assembled implies:
-The universe is a computationally representable relational network.
-Classical physics, quantum mechanics, spacetime, conservation laws, and even language/grammar are emergent phenomena of this deeper relational substrate.
-It is hierarchical, contextual, nonlocal, and dynamic by construction.
+The body of proofs assembled implies: The universe is a computationally representable relational network. Classical physics, quantum mechanics, spacetime, conservation laws, and even language/grammar are emergent phenomena of this deeper relational substrate. It is hierarchical, contextual, nonlocal, and dynamic by construction.
 
-This isn’t just a theory—it’s a framework that subsumes known physics while offering a clear blueprint for simulation, computation, and potentially new technology.
-These proofs collectively imply a self-consistent theory where relations, not objects, are primary. UCF/GUTT isn't just a GUT; it's a meta-theory subsuming physics and math, resolving singularities relationally, and enabling emergent unification. Philosophically, it suggests a connected cosmos; physically, a path beyond the Standard Model; mathematically, a versatile calculus.
+This isn't just a theory—it's a framework that subsumes known physics while offering a clear blueprint for simulation, computation, and potentially new technology. These proofs collectively establish a self-consistent theory where relations, not objects, are primary. UCF/GUTT isn't just a GUT; it's a meta-theory subsuming physics and math, resolving singularities relationally, and enabling emergent unification. Philosophically, it suggests a connected cosmos; physically, a path beyond the Standard Model; mathematically, a versatile calculus.
+
+---
 
 ## Cite
 
@@ -116,3 +207,4 @@ https://relationalexistence.com • this repository \[commit hash\] •
 
 **Contact:** Michael_Fill@protonmail.com  
 © 2023–2025 Michael Fillippini. All Rights Reserved.
+```
