@@ -7,7 +7,7 @@
   NestedGraph containing that hyperedge.
 *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 From Coq Require Import List Arith PeanoNat.
 Import ListNotations.
 
@@ -164,12 +164,12 @@ End ProofOfRelationImpliesStructure.
   
   NEXT STEPS:
   
-  1. Replace the axiom in Complete_Picture_refined.v with this theorem
+  1. Replace the axiom in Complete_Picture_proven.v with this theorem
   2. Prove the vector-arity version (relation_implies_structureV)
   3. Move on to structure_implies_dynamics
   
   COMPILATION:
   
-  Requires: Prop1_Refined.v
+  Requires: Prop1_proven.v
   Expected: Compiles cleanly (assuming Time/Weight are inhabited)
 *)
