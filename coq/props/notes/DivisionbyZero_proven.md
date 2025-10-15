@@ -1,15 +1,14 @@
-**DivisionbyZero_proven.md
-**Division by Zero as Relational Boundary Operator
-**Machine-Verified Proof Documentation**
+# DivisionbyZero_proven.md
+## Division by Zero as Relational Boundary Operator
+### Machine-Verified Proof Documentation
 
 ---
-
 
 ## Metadata
 
 **File:** `proofs/DivisionbyZero_proven.v`  
-**Axioms:** Domain parameters (X, Y, g, h)  
-**Dependencies:** Coq Reals library, Psatz (lra tactic)  
+**Parameters:** Domain parameters (`X`, `Y`, `g`, `h`)  
+**Dependencies:** Coq Reals library, Psatz (`lra` tactic)  
 **Proof Assistant:** Coq ≥ 8.12  
 **Lines of Code:** ~200  
 **Compilation:** `coqc DivisionbyZero_proven.v`
@@ -20,8 +19,8 @@
 
 This proof formalizes **division by zero as a relational boundary operator** rather than an undefined operation. The key insight: division by zero marks transitions between relational states, with interpretation depending on context (Space, Time, Information).
 
-**Philosophical Shift:**
-- **Traditional:** Division by zero = undefined = error
+**Philosophical shift**
+- **Traditional:** Division by zero = undefined = error  
 - **Relational:** Division by zero = boundary = state transition
 
 ---
@@ -29,429 +28,386 @@ This proof formalizes **division by zero as a relational boundary operator** rat
 ## Core Concept
 
 ### Relational States
-```coqInductive RelationalState :=
-| Related     (* relation exists, valid function evaluation )
-| Boundary    ( division by zero — relational boundary )
-| Undefined.  ( total uncertainty *)
 
-**Three states:**
-1. **Related:** Normal relational state (denominator ≠ 0)
-2. **Boundary:** Denominator = 0 (boundary condition)
-3. **Undefined:** Complete absence of relation
+```coq
+Inductive RelationalState :=
+| Related     (* relation exists; valid function evaluation *)
+| Boundary    (* division by zero — relational boundary *)
+| Undefined.  (* total uncertainty *)
+Three states
 
----
+Related: Normal relational state (denominator ≠ 0)
 
-## Domain Setup
+Boundary: Denominator = 0 (boundary condition)
 
-### Type Parameters
-```coqParameter X Y : Type.
+Undefined: Complete absence of relation
+
+Domain Setup
+Type Parameters
+coq
+Copy code
+Parameter X Y : Type.
 Parameter g : X -> R.
 Parameter h : Y -> R.
+Generic domains
 
-**Generic domains:**
-- X: Source domain
-- Y: Target domain  
-- g: Function on X
-- h: Function on Y (potential denominator)
+X: Source domain
 
-**Interpretation:** `g(x) / h(y)` where h(y) might be zero.
+Y: Target domain
 
----
+g: Function on X
 
-## Relational Boundary Operator
+h: Function on Y (potential denominator)
 
-### Definition
-```coqDefinition RelationalBoundary (x : X) (y : Y) : RelationalState :=
-let denom := h y in
-match Rlt_dec denom 0 with
-| left _ => Related              (* denom < 0 )
-| right _ =>
-match Rgt_dec denom 0 with
-| left _ => Related          ( denom > 0 )
-| right _ => Boundary        ( denom = 0 *)
-end
-end.
+Interpretation: g(x) / h(y) where h(y) might be zero.
 
-**Logic:**
-- If h(y) < 0: Related state (negative denominator)
-- If h(y) > 0: Related state (positive denominator)
-- If h(y) = 0: **Boundary state** (division by zero)
+Relational Boundary Operator
+Definition
+coq
+Copy code
+Definition RelationalBoundary (x : X) (y : Y) : RelationalState :=
+  let denom := h y in
+  match Rlt_dec denom 0 with
+  | left _ => Related              (* denom < 0 *)
+  | right _ =>
+    match Rgt_dec denom 0 with
+    | left _ => Related            (* denom > 0 *)
+    | right _ => Boundary          (* denom = 0 *)
+    end
+  end.
+Logic
 
-**Uses decidable comparison** on real numbers.
+If h(y) < 0: Related
 
----
+If h(y) > 0: Related
 
-## Main Theorem: Boundary Detection
-```coqTheorem boundary_on_zero :
-forall (x : X) (y : Y),
-h y = 0 -> RelationalBoundary x y = Boundary.
+If h(y) = 0: Boundary
+
+(Uses decidable comparison on real numbers.)
+
+Main Theorem: Boundary Detection
+coq
+Copy code
+Theorem boundary_on_zero :
+  forall (x : X) (y : Y),
+    h y = 0 -> RelationalBoundary x y = Boundary.
 Proof.
-intros x y H_hy0.
-unfold RelationalBoundary.
-rewrite H_hy0.
-simpl.
-(* Goal: match Rlt_dec 0 0 with ... end = Boundary *)
-destruct (Rlt_dec 0 0) as [Hlt | Hnlt].
-
-(* Case: 0 < 0 is assumed true — impossible )
-exfalso. lra.  ( lra proves ¬(0 < 0) *)
-(* Case: ¬(0 < 0) is true )
-destruct (Rgt_dec 0 0) as [Hgt | Hngt].
--- ( Case: 0 > 0 is assumed true — impossible )
-exfalso. lra.  ( lra proves ¬(0 > 0) )
--- ( Case: ¬(0 > 0) is true )
-( Goal: Boundary = Boundary *)
-reflexivity.
+  intros x y H_hy0.
+  unfold RelationalBoundary.
+  rewrite H_hy0.
+  simpl.
+  (* Goal: match Rlt_dec 0 0 with ... end = Boundary *)
+  destruct (Rlt_dec 0 0) as [Hlt | Hnlt].
+  - exfalso. lra.  (* lra proves ¬(0 < 0) *)
+  - destruct (Rgt_dec 0 0) as [Hgt | Hngt].
+    + exfalso. lra. (* lra proves ¬(0 > 0) *)
+    + reflexivity.
 Qed.
+Establishes: h(y) = 0 ⇒ Boundary state
+Technique: Decidable case analysis + linear arithmetic (lra).
 
+Contextual Interpretation
+Context Types
+coq
+Copy code
+Inductive Context :=
+| Space  (* spatial/geometric context *)
+| Time   (* temporal context *)
+| Info.  (* information-theoretic context *)
+Different contexts interpret boundaries differently.
 
-**Establishes:** h(y) = 0 ⟺ Boundary state
+Contextual Boundary Operator
+coq
+Copy code
+Definition ContextualBoundary (ctx : Context) (x : X) (y : Y) : RelationalState :=
+  match RelationalBoundary x y with
+  | Related => Related
+  | Boundary =>
+      match ctx with
+      | Space => Related    (* interpreted as emergent expansion *)
+      | Time  => Related    (* interpreted as collapse/reset *)
+      | Info  => Undefined  (* information loss = non-relational *)
+      end
+  | Undefined => Undefined
+  end.
+Interpretation Rules
 
-**Proof technique:** Decidable case analysis + linear arithmetic (lra).
+Base State	Context	Result	Interpretation
+Boundary	Space	Related	Emergent spatial expansion (e.g., Big Bang)
+Boundary	Time	Related	Temporal collapse/reset (e.g., event horizon)
+Boundary	Info	Undefined	Information loss (true singularity)
+Related	Any	Related	No change
+Undefined	Any	Undefined	Propagates
 
----
-
-## Contextual Interpretation
-
-### Context Types
-```coqInductive Context :=
-| Space  (* Spatial/geometric context )
-| Time   ( Temporal context )
-| Info.  ( Information-theoretic context *)
-
-**Different contexts interpret boundaries differently.**
-
----
-
-### Contextual Boundary Operator
-```coqDefinition ContextualBoundary (ctx : Context) (x : X) (y : Y) : RelationalState :=
-match RelationalBoundary x y with
-| Related => Related
-| Boundary =>
-match ctx with
-| Space => Related    (* interpreted as emergent expansion )
-| Time => Related     ( interpreted as collapse/reset )
-| Info => Undefined   ( information loss = non-relational *)
-end
-| Undefined => Undefined
-end.
-
-**Interpretation Rules:**
-
-| Base State | Context | Result | Interpretation |
-|------------|---------|--------|----------------|
-| Boundary | Space | Related | Emergent spatial expansion (e.g., Big Bang) |
-| Boundary | Time | Related | Temporal collapse/reset (e.g., event horizon) |
-| Boundary | Info | Undefined | Information loss (true singularity) |
-| Related | Any | Related | No change |
-| Undefined | Any | Undefined | Propagates |
-
----
-
-## Context-Specific Theorems
-
-### Space Context: Preservation
-```coqTheorem contextual_space_preserves :
-forall (x : X) (y : Y),
-h y = 0 -> ContextualBoundary Space x y = Related.
+Context-Specific Theorems
+Space Context: Preservation
+coq
+Copy code
+Theorem contextual_space_preserves :
+  forall (x : X) (y : Y),
+    h y = 0 -> ContextualBoundary Space x y = Related.
 Proof.
-intros x y H_hy0.
-unfold ContextualBoundary.
-assert (H_boundary : RelationalBoundary x y = Boundary).
-{ apply boundary_on_zero. assumption. }
-rewrite H_boundary.
-simpl.
-reflexivity.
+  intros x y H_hy0.
+  unfold ContextualBoundary.
+  assert (H_boundary : RelationalBoundary x y = Boundary)
+    by (apply boundary_on_zero; assumption).
+  rewrite H_boundary; reflexivity.
 Qed.
+Spatial boundaries resolve to Related — interpretation: expansion/creation.
 
-**Spatial boundaries resolve to Related state** - interpretation: expansion/creation.
-
----
-
-### Time Context: Preservation
-```coqTheorem contextual_time_preserves :
-forall (x : X) (y : Y),
-h y = 0 -> ContextualBoundary Time x y = Related.
+Time Context: Preservation
+coq
+Copy code
+Theorem contextual_time_preserves :
+  forall (x : X) (y : Y),
+    h y = 0 -> ContextualBoundary Time x y = Related.
 Proof.
-intros x y H_hy0.
-unfold ContextualBoundary.
-assert (H_boundary : RelationalBoundary x y = Boundary).
-{ apply boundary_on_zero. assumption. }
-rewrite H_boundary.
-simpl.
-reflexivity.
+  intros x y H_hy0.
+  unfold ContextualBoundary.
+  assert (H_boundary : RelationalBoundary x y = Boundary)
+    by (apply boundary_on_zero; assumption).
+  rewrite H_boundary; reflexivity.
 Qed.
+Temporal boundaries resolve to Related — interpretation: reset/collapse.
 
-**Temporal boundaries resolve to Related state** - interpretation: reset/collapse.
-
----
-
-### Information Context: Collapse
-```coqTheorem contextual_info_collapses :
-forall (x : X) (y : Y),
-h y = 0 -> ContextualBoundary Info x y = Undefined.
+Information Context: Collapse
+coq
+Copy code
+Theorem contextual_info_collapses :
+  forall (x : X) (y : Y),
+    h y = 0 -> ContextualBoundary Info x y = Undefined.
 Proof.
-intros x y H_hy0.
-unfold ContextualBoundary.
-assert (H_boundary : RelationalBoundary x y = Boundary).
-{ apply boundary_on_zero. assumption. }
-rewrite H_boundary.
-simpl.
-reflexivity.
+  intros x y H_hy0.
+  unfold ContextualBoundary.
+  assert (H_boundary : RelationalBoundary x y = Boundary)
+    by (apply boundary_on_zero; assumption).
+  rewrite H_boundary; reflexivity.
 Qed.
+Information boundaries collapse to Undefined — interpretation: true singularity.
 
-**Information boundaries collapse to Undefined** - interpretation: true singularity.
+Philosophical Implications
+1) Boundaries Are Relational Transitions
+Not errors—boundaries mark transitions between relational regimes.
 
----
-
-## Philosophical Implications
-
-### 1. Boundaries Are Relational Transitions
-
-**Not errors** - boundaries mark transitions between relational regimes.
-
-**Example (Cosmology):**t = 0 (Big Bang): Division by zero in temporal coordinate
+Example (Cosmology): t = 0 (Big Bang): Division by zero in temporal coordinate
 → Space context: Interpreted as expansion (Related)
 → Not an error, but beginning of spatial relations
 
-### 2. Context Determines Meaning
+2) Context Determines Meaning
+Same mathematical condition (h = 0) has different interpretations:
 
-**Same mathematical condition (h=0) has different interpretations:**
-- **Space:** Emergence of new relations (expansion)
-- **Time:** Collapse/reset of existing relations
-- **Info:** Loss of relational structure (singularity)
+Space: Emergence of new relations (expansion)
 
-### 3. Undefined ≠ Boundary
+Time: Collapse/reset of existing relations
 
-**Two distinct states:**
-- **Boundary:** Structured transition (interpretable)
-- **Undefined:** Complete absence (non-relational)
+Info: Loss of relational structure (singularity)
 
-### 4. Resolution of Classical Paradoxes
+3) Undefined ≠ Boundary
+Two distinct states:
 
-**Traditional view:** 1/0 = undefined → paradox  
-**Relational view:** 1/0 = boundary → context-dependent resolution
+Boundary: Structured transition (interpretable)
 
----
+Undefined: Complete absence (non-relational)
 
-## Physical Applications
+4) Resolution of Classical Paradoxes
+Traditional: 1/0 = undefined → paradox
+Relational: 1/0 = boundary → context-dependent resolution
 
-### Cosmology: Big Bang Singularity
-```coqDefinition big_bang_time (t : R) : R := 1 / t.(* At t = 0: Boundary state )
-( Space context: Interprets as expansion (Related) *)
+Physical Applications
+Cosmology: Big Bang Singularity
+c
+Copy code
+Definition big_bang_time (t : R) : R := 1 / t.
+(* At t = 0: Boundary state *)
+(* Space context: Interprets as expansion (Related) *)
+Interpretation: Not a failure of physics, but transition to spatial expansion.
 
-**Interpretation:** Not a failure of physics, but transition to spatial expansion.
+Black Holes: Event Horizon
+coq
+Copy code
+Definition schwarzschild_radius (r : R) (r_s : R) : R := 1 / (r - r_s).
+(* At r = r_s: Boundary state *)
+(* Time context: Interprets as temporal collapse (Related) *)
+Interpretation: Time/space coordinates swap roles — temporal boundary.
 
----
+Information Theory: Channel Capacity
+coq
+Copy code
+Definition channel_capacity (SNR : R) (bandwidth : R) : R :=
+  ln (1 + SNR) / bandwidth.
+(* At bandwidth = 0: Boundary state *)
+(* Info context: Interprets as information loss (Undefined) *)
+Interpretation: Zero bandwidth ⇒ no information transmission ⇒ true singularity.
 
-### Black Holes: Event Horizon
-```coqDefinition schwarzschild_radius (r : R) (r_s : R) : R := 1 / (r - r_s).(* At r = r_s: Boundary state )
-( Time context: Interprets as temporal collapse (Related) *)
+Quantum Mechanics: Zero-Point Energy
+coq
+Copy code
+Definition quantum_energy (h_bar omega : R) : R := h_bar * omega / 2.
+(* At omega = 0: Boundary state *)
+(* Space context: Zero-point fluctuations persist (Related) *)
+Interpretation: Even at zero frequency, relational structure remains.
 
-**Interpretation:** Time and space coordinates swap roles - temporal boundary.
+Mathematical Structure
+Decidability
+c
+Copy code
+Rlt_dec : forall r1 r2 : R, {r1 < r2} + {~ (r1 < r2)}.
+Rgt_dec : forall r1 r2 : R, {r1 > r2} + {~ (r1 > r2)}.
+Enables constructive case analysis on zero detection.
 
----
-
-### Information Theory: Channel Capacity
-```coqDefinition channel_capacity (SNR : R) : R := log(1 + SNR) / bandwidth.(* At bandwidth = 0: Boundary state )
-( Info context: Interprets as information loss (Undefined) *)
-
-**Interpretation:** Zero bandwidth = no information transmission = true singularity.
-
----
-
-### Quantum Mechanics: Zero-Point Energy
-```coqDefinition quantum_energy (E : R) (h_bar : R) (omega : R) : R :=
-h_bar * omega / 2.(* At omega = 0: Boundary state )
-( Space context: Zero-point fluctuations persist (Related) *)
-
-**Interpretation:** Even at zero frequency, relational structure remains.
-
----
-
-## Mathematical Structure
-
-### Decidability
-```coq(* Real number comparison is decidable *)
-Rlt_dec : forall r1 r2 : R, {r1 < r2} + {¬(r1 < r2)}
-Rgt_dec : forall r1 r2 : R, {r1 > r2} + {¬(r1 > r2)}
-
-**Enables constructive case analysis** on zero detection.
-
----
-
-### Trichotomy
-
+Trichotomy
 For any real h:
-1. h < 0 → Related
-2. h > 0 → Related  
-3. h = 0 → Boundary
 
-**Exhaustive and mutually exclusive.**
+h < 0 → Related
 
----
+h > 0 → Related
 
-## Proof Techniques
+h = 0 → Boundary
 
-1. **Decidable Case Analysis:** Pattern matching on `Rlt_dec`, `Rgt_dec`
-2. **Linear Arithmetic (lra):** Proves impossibility of 0 < 0, 0 > 0
-3. **Reflexivity:** Trivial equalities after case analysis
-4. **Assertion Chaining:** Build intermediate boundary_on_zero result
+Exhaustive and mutually exclusive.
 
----
+Proof Techniques
+Decidable case analysis (Rlt_dec, Rgt_dec)
 
-## Usage Examples
+Linear arithmetic (lra) to rule out 0 < 0 and 0 > 0
 
-### Detecting Boundaries
-```coqRequire Import DivisionbyZero_proven.(* Define domain functions *)
+Reflexivity after normalization
+
+Assertion chaining via boundary_on_zero
+
+Usage Examples
+Detecting Boundaries
+coq
+Copy code
+(* Define domain functions *)
 Parameter time : R.
-Definition h_time (y : unit) : R := time.(* Check if at boundary )
-Compute RelationalBoundary tt tt.  ( Depends on time value *)(* Apply context *)
+Definition h_time (_ : unit) : R := time.
+
+(* Check if at boundary *)
+Compute RelationalBoundary tt tt.
+
+(* Apply context *)
 Compute ContextualBoundary Space tt tt.
-
----
-
-### Physical Model
-```coq(* Schwarzschild metric near event horizon *)
+Physical Model
+coq
+Copy code
+(* Schwarzschild metric near event horizon *)
 Definition metric_component (r r_s : R) : R :=
-1 - r_s / r.(* At r = r_s: boundary detected )
+  1 - r_s / r.
+
 Lemma horizon_is_boundary :
-forall r_s,
-let r := r_s in
-metric_component r r_s = 0.
+  forall r_s,
+    let r := r_s in metric_component r r_s = 0.
 Proof.
-intro r_s. unfold metric_component.
-field. ( Simplify: 1 - r_s/r_s = 0 *)
+  intro r_s. unfold metric_component.
+  field. (* simplifies: 1 - r_s/r_s = 0 *)
 Qed.
-
----
-
-## Comparison with Traditional Approaches
-
-### Traditional MathematicsDivision by zero:
-
+Comparison with Traditional Approaches
+Traditional Mathematics — Division by zero
 Undefined operation
+
 Error condition
+
 Mathematical pathology
 
-
-### IEEE Floating PointDivision by zero:
-
+IEEE Floating Point — Division by zero
 +Infinity (positive numerator)
+
 -Infinity (negative numerator)
+
 NaN (0/0)
 
-
-### Relational ApproachDivision by zero:
-
+Relational Approach — Division by zero
 Boundary state (structured)
+
 Context-dependent interpretation
+
 Relational transition marker
 
+Advantage: Preserves mathematical structure while enabling physical interpretation.
 
-**Advantage:** Preserves mathematical structure while enabling physical interpretation.
+Technical Achievements
+✅ Formal boundary detection for h = 0
 
----
+✅ Three contexts (Space, Time, Info) with proofs
 
-## Technical Achievements
+✅ Decidable, constructive case analysis
 
-✅ **Formal Boundary Detection:** Proven theorem for h=0 case  
-✅ **Three Contexts:** Space, Time, Info interpretations  
-✅ **Decidable Implementation:** Constructive case analysis  
-✅ **Context Preservation:** Spatial/temporal boundaries remain relational  
-✅ **Information Singularity:** Info context properly collapses  
-✅ **Clean Proofs:** Using lra for arithmetic impossibilities
+✅ Context preservation for Space/Time
 
----
+✅ Information-context collapse captured
 
-## Limitations and Extensions
+✅ Clean arithmetic via lra
 
-### Current Limitations
+Limitations and Extensions
+Current Limitations
+Real numbers only (no complex/quaternion extensions)
 
-- Real numbers only (no complex, quaternion extensions)
-- Binary contexts (could add more: Energy, Momentum, etc.)
-- Static functions g, h (could be time-dependent)
+Three contexts (more could be added: Energy, Momentum, etc.)
 
-### Future Extensions
-```coq(* Complex domain *)
-Parameter h_complex : Y -> C.(* Time-dependent boundaries *)
-Parameter h_time : Y -> Time -> R.(* Multi-dimensional boundaries *)
-Definition boundary_surface : (X -> R) -> list X -> Prop := ...(* Higher-order contexts *)
+Static functions g, h (could be time-dependent)
+
+Future Extensions
+coq
+Copy code
+(* Complex domain *)
+Parameter h_complex : Y -> C.
+
+(* Time-dependent boundaries *)
+Parameter h_time_dep : Y -> R -> R.
+
+(* Multi-dimensional boundaries *)
+Definition boundary_surface : (X -> R) -> list X -> Prop := fun _ _ => True.
+
+(* Higher-order contexts *)
 Inductive RichContext :=
 | BasicContext : Context -> RichContext
 | CompositeContext : RichContext -> RichContext -> RichContext.
+Verification Commands
+bash
+Copy code
+# Compile proof
+coqc DivisionbyZero_proven.v
 
----
+# Inspect assumptions (domain parameters)
+coqtop <<'EOF'
+Require Import DivisionbyZero_proven.
+Print Assumptions boundary_on_zero.
+EOF
 
-## Verification Commands
-```bashCompile proof
-coqc DivisionbyZero_proven.vCheck axioms (should show only domain parameters X, Y, g, h)
-coqc -verbose DivisionbyZero_proven.v | grep -i axiomInteractive proof exploration
+# Interactive proof exploration
 coqide DivisionbyZero_proven.v
+Performance Notes
+Compilation Time: < 1s (small proof)
+Proof Checking: Very fast (simple case analysis)
+Memory: Minimal
+Decidability: Efficient (built-in Coq real number tactics)
 
----
+FAQ
+Q: Is this saying 1/0 = something?
+A: No—it's saying the state at division by zero is a boundary, not a number.
 
-## Performance Notes
+Q: How does this differ from limits?
+A: Limits approach the point; boundaries are at the singularity, with context determining interpretation.
 
-**Compilation Time:** < 1 second (small proof)  
-**Proof Checking:** Very fast (simple case analysis)  
-**Memory:** Minimal  
-**Decidability:** Efficient (built-in Coq real number tactics)
+Q: Can this resolve all singularities?
+A: Not all—Info context still yields Undefined. Many physical singularities can be reinterpreted.
 
----
+Q: What about 0/0?
+A: Needs additional structure. Current formalization focuses on non-zero numerator.
 
-## FAQ
+Q: Is this physics or mathematics?
+A: Both—mathematical formalization of a physical/philosophical insight about relational transitions.
 
-**Q: Is this saying 1/0 = something?**  
-A: No - it's saying the *state* at division by zero is a boundary, not a number. We don't assign a value to 1/0.
+Related Work
+Mathematics: Riemann sphere (∞ as point), projective geometry (points at infinity), non-standard analysis (infinitesimals)
+Physics: Renormalization, regularization, Hawking–Penrose singularity theorems
+Philosophy: Process philosophy, relational ontology
 
-**Q: How does this differ from limits?**  
-A: Limits approach from a direction. Boundaries are *at* the singularity, with context determining interpretation.
+References
+Used In: Cosmological models (Big Bang), black hole physics (event horizons), QFT (zero-point energy)
+Foundational: Coq Reals, decidable comparison (Rlt_dec, Rgt_dec), linear arithmetic (lra)
 
-**Q: Can this resolve all singularities?**  
-A: Not all - Info context still produces Undefined (true singularity). But many physical singularities can be reinterpreted.
-
-**Q: What about 0/0?**  
-A: Both numerator and denominator zero would require additional structure. Current formalization focuses on non-zero numerator.
-
-**Q: Is this physics or mathematics?**  
-A: Both - mathematical formalization of physical/philosophical insight about relational transitions.
-
----
-
-## Related Work
-
-**Mathematics:**
-- Riemann sphere (∞ as point)
-- Projective geometry (points at infinity)
-- Non-standard analysis (infinitesimals)
-
-**Physics:**
-- Renormalization (handling divergences)
-- Regularization (cutoff procedures)
-- Singularity theorems (Hawking-Penrose)
-
-**Philosophy:**
-- Process philosophy (transitions over states)
-- Relational ontology (relations as primary)
-
----
-
-## References
-
-**Used In:**
-- Cosmological models (Big Bang)
-- Black hole physics (event horizons)
-- Quantum field theory (zero-point energy)
-
-**Foundational:**
-- Coq Real numbers library
-- Decidable comparison (Rlt_dec, Rgt_dec)
-- Linear arithmetic automation (lra)
-
----
-
-## Copyright
-
-© 2023–2025 Michael Fillippini. All Rights Reserved.  
+Copyright
+© 2023–2025 Michael Fillippini. All Rights Reserved.
 UCF/GUTT™ Research & Evaluation License v1.1
