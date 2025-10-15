@@ -5,7 +5,7 @@
   NOW USING PROVEN PROPOSITION 1 (no axioms!)
   
   Changes from original reduction.v:
-  - Imports Prop1_Refined
+  - Imports Prop1_proven
   - Uses Ux (extended universe) instead of Parameter E
   - Replaces Axiom Connectivity_Holds with proven theorem
   - Maintains all original functionality
@@ -15,7 +15,7 @@
 (* Part A: Import Proven Refined Proposition 1                  *)
 (* ============================================================ *)
 
-Require Import Prop1_Refined.
+Require Import Prop1_proven.
 
 (* Extract the types and definitions we need *)
 Definition E_base : Type := U.      (* Base universe *)
@@ -203,7 +203,7 @@ Qed.
   SUMMARY OF CHANGES FROM reduction.v:
   
   1. ✓ Eliminated Axiom Connectivity_Holds
-  2. ✓ Replaced with proven Theorem using refined_proposition_1
+  2. ✓ Replaced with proven Theorem using proven proposition1
   3. ✓ Extended to work over Ux (with Whole)
   4. ✓ Added lemmas showing how extension relates to base
   5. ✓ Maintained all original Free/Forgetful functionality
@@ -219,6 +219,6 @@ Qed.
   
   COMPILATION:
   
-  Requires: Prop1_Refined.v to be compiled first
+  Requires: Prop1_proven.v to be compiled first
   Tested: Coq 8.12+
 *)
