@@ -14,7 +14,7 @@ Import ListNotations.
 (* Copy the necessary definitions from Complete_Picture_refined.v *)
 Section ProofOfRelationImpliesStructure.
 
-  Definition U := Prop1_Refined.U.
+  Definition U := Prop1_proven.U.
   Definition Hyperedge := list U.
 
   Record Graph := { hedges : list Hyperedge }.
