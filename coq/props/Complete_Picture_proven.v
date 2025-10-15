@@ -499,5 +499,5 @@ End VectorArity.
   proven formally without axioms, transforming philosophical
   claims into mathematical theorems.
   
-  QED. 🎓
+  QED.
 *)
