@@ -1,6 +1,6 @@
 # UCF/GUTT™ — Relation-First, Machine-Checked
 
-A relation-first framework with **machine-verified proofs** (Coq/Isabelle). Core theorems now **proven**: **connectivity** (∀x∃y R), **Complete Picture** (universal connectivity, structural manifestation, dynamic preservation), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **Alena** tensor containment with discrete conservation, and **relational boundaries** (division by zero). **Φ** (Relational Stability) is **withheld**.
+A relation-first framework with **machine-verified proofs** (Coq). Core theorems now **proven**: **connectivity** (∀x∃y R), **Complete Picture** (universal connectivity, structural manifestation, dynamic preservation), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **Alena** tensor containment with discrete conservation, and **relational boundaries** (division by zero). **Φ** (Relational Stability) is **withheld**.
 
 > https://relationalexistence.com
 
@@ -116,7 +116,7 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 - Event Currying: Lossless encoding of typed n-ary events into binary tensors with role labels  
 - Electroweak subsumption: Formal unification proof  
 - Relational Arithmetic: Operations on relational structures  
-- Isabelle ports: Verification in multiple proof assistants
+
 
 ---
 
@@ -141,7 +141,7 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 - ✅ Relational boundaries — division by zero formalized
 
 **Active Development**
-- **Short-term:** Event Currying formalization (n-ary → binary); Isabelle ports  
+- **Short-term:** Event Currying formalization (n-ary → binary);  
 - **Medium:** Electroweak subsumption proof; relational arithmetic operations  
 - **Long-term:** Integration of time/uncertainty channels in full enriched kernel \( \mathcal{K} \)
 
