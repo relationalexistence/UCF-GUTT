@@ -1,6 +1,6 @@
 # UCF/GUTT™ — Relation-First, Machine-Checked
 
-A relation-first framework with **machine-verified proofs** (Coq). Core theorems now **proven**: **connectivity** (∀x∃y R), **Complete Picture** (universal connectivity, structural manifestation, dynamic preservation), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **Alena** tensor containment with discrete conservation, and **relational boundaries** (division by zero). **Φ** (Relational Stability) is **withheld**.
+A relation-first framework with **machine-verified proofs** (Coq). Core theorems now **proven**: **connectivity** (∀x∃y R), **Complete Picture** (universal connectivity, structural manifestation, dynamic preservation), **DSoR** (multi-dimensional tensors), **relational systems/graphs** (with nesting for emergence), **Alena** tensor containment with discrete conservation, and **relational boundaries** (division by zero). Note: **Φ** (Relational Stability) is **withheld**.
 
 > https://relationalexistence.com
 
