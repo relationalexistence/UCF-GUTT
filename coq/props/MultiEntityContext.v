@@ -14,7 +14,10 @@
    - Standard library: Reals, List
    - RelationalBoundaryContext.v definitions
    - Constructive logic
-*)
+
+  UCF/GUTT — Verified Formal Relational Ontology
+  Zero new logical axioms. Fully constructive.
+  The first system to treat relational failure as a first-class ontological event.
 
 (* --- 1. Setup: Importing Libraries and Dependencies --- *)
 
