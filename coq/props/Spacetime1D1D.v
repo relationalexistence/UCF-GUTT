@@ -1,8 +1,7 @@
 (*
   Spacetime1D1.v
   
-  A 1+1 dimensional discrete spacetime as a relational system.
-  Proves emergence of GR-like constraints from relational structure.
+ A 1+1 dimensional discrete spacetime as a relational system, proving that Einstein–Poisson constraints can be realized on a discrete lattice.
   
   Zero axioms, zero admits.
   
