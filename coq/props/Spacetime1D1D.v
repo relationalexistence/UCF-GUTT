@@ -1,5 +1,5 @@
 (*
-  Spacetime1D1j.v
+  Spacetime1D1.v
   
   A 1+1 dimensional discrete spacetime as a relational system.
   Proves emergence of GR-like constraints from relational structure.
