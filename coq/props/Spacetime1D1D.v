@@ -720,36 +720,44 @@ Proof.
 Qed.
 
 (* ================================================================ *)
-(* 17. Final GR Emergence Statement *)
+(* 17. Final GR Recovery Theorem *)
 (* ================================================================ *)
-
 (*
-  MAIN RESULT: Einstein constraints emerge from discrete structure
+  MAIN RESULT: GR-like constraints can be realized in discrete relational structure
   
-  We've proven constructively:
-  1. Causal structure forms strict partial order
-  2. Metric structure has Lorentzian signature  
-  3. Discrete curvature relates to energy via Poisson equation
-  4. Solutions to Poisson equation exist and are constructible
-  5. These solutions automatically satisfy Einstein constraints
+  We've proven constructively (1+1D):
+  1. Causal structure forms strict partial order from integer ordering
+  2. Lorentzian metric signature (-,+) is consistently encoded
+  3. Discrete curvature relates to energy via Poisson equation (R = κρ)
+  4. Vacuum solutions exist explicitly (φ = 1)
+  5. Jacobi fixed points provably satisfy Einstein constraints
+  6. Iterative algorithm provided (correctness proven, convergence conjectured)
   
-  NO AXIOMS. NO ADMITS. FULLY CONSTRUCTIVE.
+  NO NEW AXIOMS. NO ADMITS. FULLY CONSTRUCTIVE.
   
-  This demonstrates that GR-like behavior emerges necessarily
-  from the discrete relational structure of spacetime events.
+  SIGNIFICANCE: This is a recovery theorem showing GR is compatible with
+  and realizable within discrete relational structure. It demonstrates that
+  continuous manifolds and tensor calculus are not strictly necessary for
+  GR-like physics.
+  
+  FUTURE WORK for "necessary emergence":
+  - Derive Lorentzian form from causality axioms (not just encode it)
+  - Prove R = κρ is uniquely forced by locality/conservation
+  - Prove Jacobi convergence (existence, not just correctness)
+  - Extend to 3+1D
 *)
 
-Theorem GR_emergence_from_discrete_structure :
+Theorem GR_realization_in_discrete_structure :
   (* Causal order exists *)
   (forall e1 e2 e3, 
     causal_precedes e1 e2 -> causal_precedes e2 e3 -> causal_precedes e1 e3) /\
   (* Metric signature is Lorentzian *)
   (forall e1 e2, timelike_neighbor e1 e2 -> (discrete_interval_sq e1 e2 < 0)%Z) /\
   (forall e1 e2, spacelike_neighbor e1 e2 -> (discrete_interval_sq e1 e2 > 0)%Z) /\
-  (* Einstein constraints are satisfied by constructible solutions *)
+  (* Einstein constraints satisfied by constructible solutions *)
   (exists φ, satisfies_poisson φ (fun _ => 0) /\ 
              forall e, einstein_constraint φ (fun _ => 0) e) /\
-  (* General finite lattice case has constructive algorithm *)
+  (* General finite lattice: algorithm with fixed-point correctness *)
   (forall L : FiniteLattice, forall ρ,
     exists algorithm : nat -> (FiniteEvent L -> R), forall n, 
       exists φ, φ = algorithm n /\
