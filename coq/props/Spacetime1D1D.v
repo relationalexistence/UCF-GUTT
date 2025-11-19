@@ -323,7 +323,7 @@ Qed.
 (* ================================================================ *)
 
 (*
-  Connect to Michael's existing boundary-context and discrete conservation work.
+  Connect to existing boundary-context and discrete conservation work.
   
   Key insight: In 1+1D, conservation of energy-momentum is automatic
   because there are no dynamical degrees of freedom.
