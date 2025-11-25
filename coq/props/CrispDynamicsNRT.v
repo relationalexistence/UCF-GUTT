@@ -2,7 +2,9 @@
   Standalone: Crisp projector + Dynamics + NRT (no external imports from your prior files)
   Coq ≥ 8.12
 *
-© 2023–2025 Michael Fillippini. All Rights Reserved.
+ UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
 )
 
 From Coq Require Import Reals.
