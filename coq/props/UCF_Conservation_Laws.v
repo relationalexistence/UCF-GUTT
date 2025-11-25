@@ -2,8 +2,13 @@
 (* UCF/GUTT Conservation Laws - Formal Proof                        *)
 (* ================================================================ *)
 (*
+
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   File: UCF_Conservation_Laws.v
-  Author: Michael Fillippini (formalization by Claude)
+  Author: Michael Fillippini
   Date: 2025-11-24
   
   This file formally proves that UCF/GUTT preserves fundamental
