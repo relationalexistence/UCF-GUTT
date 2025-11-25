@@ -3,8 +3,12 @@
 (* ================================================================ *)
 (*
   File: UCF_Subsumes_Schrodinger_proven.v
-  Author: Michael Fillippini (formalization by Claude)
+  Author: Michael Fillippini 
   Date: 2025-01-15
+
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
   
   This file formally proves that the Schrödinger equation is a special
   case of the UCF/GUTT relational wave function framework.
