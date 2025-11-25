@@ -5,7 +5,8 @@
   FULLY PROVEN - ZERO AXIOMS, ZERO ADMITS
   
   All claims proven constructively from Prop1_proven foundation.
-*)
+*
+© 2023–2025 Michael Fillippini. All Rights Reserved.)
 
 (* ============================================================ *)
 (* Part A: Import Proven Refined Proposition 1                  *)
