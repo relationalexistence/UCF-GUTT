@@ -2,6 +2,10 @@
 (* Proposition 12: Sensory Mechanisms and Perception of Relations       *)
 (* ===================================================================== *)
 (*
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   PROPOSITION: Sensory Mechanism (SM₀, SM₁, ...) is an exemplar with 
   relation to the Point of Relation (POR₀, POR₁, ...) - a mechanism 
   that allows entities to perceive relations within a resonant frequency 
