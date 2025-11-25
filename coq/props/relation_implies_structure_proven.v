@@ -5,7 +5,11 @@
   
   Strategy: Given a relation holding on a hyperedge, construct the minimal
   NestedGraph containing that hyperedge.
-*)
+*
+ UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+)
 
 Require Import Prop1_proven.
 From Coq Require Import List Arith PeanoNat.
