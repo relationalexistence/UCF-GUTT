@@ -1,7 +1,9 @@
 (*
   Standalone: Crisp projector + Dynamics + NRT (no external imports from your prior files)
   Coq ≥ 8.12
-*)
+*
+© 2023–2025 Michael Fillippini. All Rights Reserved.
+)
 
 From Coq Require Import Reals.
 From Coq Require Import Logic.FunctionalExtensionality.
