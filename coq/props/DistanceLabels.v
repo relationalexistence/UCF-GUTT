@@ -14,7 +14,10 @@
   Dependencies: Reals, Lra, Morphisms, DistanceMeasure
   Part of: UCF/GUTT Proposition 18 - Distance of Relation
 *
-    © 2023–2025 Michael Fillippini. All Rights Reserved.)
+     UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+)
 
 From Coq Require Import Reals.
 From Coq Require Import micromega.Lra.
