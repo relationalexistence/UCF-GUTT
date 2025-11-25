@@ -1,6 +1,9 @@
 (* ============================================================================ *)
 (*                          Relational Natural Numbers                          *)
-(*                                                                              *)
+(*    UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+ *)
 (* This file constructs natural numbers from relational primitives grounded    *)
 (* in the proven UCF/GUTT framework (Prop1). We establish an isomorphism       *)
 (* between relational naturals (N_rel) and standard Coq naturals (nat),        *)
