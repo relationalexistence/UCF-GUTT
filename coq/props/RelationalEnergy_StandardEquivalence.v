@@ -2,8 +2,12 @@
 (* Relational Energy ≡ Standard Energy: Mathematical Equivalence   *)
 (* ================================================================ *)
 (*
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   File: RelationalEnergy_StandardEquivalence.v
-  Author: Michael Fillippini (formalization by Claude)
+  Author: Michael Fillippini 
   Date: 2025-11-25
   
   This file formally proves that the UCF/GUTT relational energy
