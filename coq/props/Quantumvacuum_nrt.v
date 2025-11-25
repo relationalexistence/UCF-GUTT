@@ -1,4 +1,8 @@
 (*
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   UCF/GUTT: Quantum Vacuum States as Nested Relational Tensors
   ============================================================
   
