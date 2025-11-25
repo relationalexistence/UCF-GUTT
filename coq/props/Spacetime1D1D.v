@@ -1,4 +1,9 @@
 (*
+
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   Spacetime1D1.v
   
  A 1+1 dimensional discrete spacetime as a relational system, proving that Einstein–Poisson constraints can be realized on a discrete lattice.
