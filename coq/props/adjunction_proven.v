@@ -1,4 +1,8 @@
 (*
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   adjunction_proven.v
   --------------------
   Free/Forgetful adjunction between 0/1 graphs and weighted relations
