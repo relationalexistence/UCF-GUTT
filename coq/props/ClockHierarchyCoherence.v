@@ -19,9 +19,9 @@
   - Time is local and relational, not global and absolute
   - Clock synchronization emerges from relational coupling
   
-  Author: Michael Fillippini
-  Date: 2025-11-24
+ UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
   © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
 *)
 
 Require Import Coq.Arith.PeanoNat.
