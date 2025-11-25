@@ -1,4 +1,8 @@
 (*
+   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  
   reduction_proven.v
   -------------------
   Free/Forgetful pattern between 0/1 graphs and weighted relations
