@@ -4,7 +4,7 @@
   UCF/GUTT: Proving General Relativity NECESSARILY EMERGES 
   from Relational Ontology
   
-  Author: Michael Fillippini (formalization with Claude)
+  Author: Michael Fillippini © 2023–2025 Michael Fillippini. All Rights Reserved.
   Date: 2025-11-24
   
   UPGRADE PATH: Recovery → Necessity
