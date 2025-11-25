@@ -12,7 +12,8 @@
   
   Dependencies: Reals, Lra, Morphisms, RelationClasses
   Part of: UCF/GUTT Proposition 18 - Distance of Relation
-*)
+*
+    © 2023–2025 Michael Fillippini. All Rights Reserved.)
 
 From Coq Require Import Reals.
 From Coq Require Import micromega.Lra.
