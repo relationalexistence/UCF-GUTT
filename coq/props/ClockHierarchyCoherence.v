@@ -21,6 +21,7 @@
   
   Author: Michael Fillippini
   Date: 2025-11-24
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
 *)
 
 Require Import Coq.Arith.PeanoNat.
