@@ -3,7 +3,7 @@
 (* ================================================================ *)
 (*
   File: UCF_Singularity_Resolution.v
-  Author: Michael Fillippini (formalization by Claude)
+  Author: Michael Fillippini 
   Date: 2025-11-24
   
   This file formally proves that UCF/GUTT's multi-scale feedback
