@@ -17,7 +17,7 @@
 (*   - No new axioms (all constructions proven, not assumed)                   *)
 (*                                                                              *)
 (* File: proofs/RelationalNaturals_proven.v                                    *)
-(* Dependencies: Proposition_1_proven.v, Coq standard library                          *)
+(* Dependencies: Proposition_01_proven.v, Coq standard library                          *)
 (* Lines of Code: ~615                                                         *)
 (* Total Theorems: 45                                                          *)
 (* ============================================================================ *)
@@ -29,7 +29,7 @@ Require Import Coq.micromega.Lia.
 Require Import Coq.ZArith.BinInt.
 
 (* Import from proven UCF/GUTT framework *)
-Require Import Proposition_1_proven.
+Require Import Proposition_01_proven.
 (* Note: RelationalArithmetic defines RNum=Z, radd=Z.add, rmul=Z.mul *)
 (* We use Z directly here to avoid module import issues *)
 
