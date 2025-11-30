@@ -19,9 +19,11 @@
 (*   Status: ZERO AXIOMS - All theorems proven constructively                 *)
 (*                                                                            *)
 (* ========================================================================== *)
+
 (*      UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
   © 2023–2025 Michael Fillippini. All Rights Reserved.
   See LICENSE, NOTICE, and TRADEMARKS in the repo root. *)
+
 Require Import Coq.Relations.Relation_Definitions.
 Require Import Coq.Classes.RelationClasses.
 Require Import Coq.Arith.PeanoNat.
