@@ -3,7 +3,7 @@
   
   COMPLETING THE UNPROVEN CLAIMS
   
-  Author: Michael Fillippini (formalization by Claude)
+  Author: Michael Fillippini 
   Date: 2025-11-24
   
   This file provides the missing proofs to upgrade claims from
