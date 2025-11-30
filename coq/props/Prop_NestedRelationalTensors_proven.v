@@ -10,7 +10,7 @@
   Progress: 7 axioms → 1 parameter (86% elimination!)
   
   Changes from original Prop_NestedRelationalTensors.v:
-  - Imports Prop1_proven.v for proven foundation
+  - Imports Proposition_01_proven.v for proven foundation
   - Uses Ux (extended universe) instead of Parameter E
   - Uses R_prime (proven relation) instead of Parameter R
   - Proves eq_dec as theorem instead of parameter
@@ -36,7 +36,7 @@ Require Import Arith.
 (* Part A: Import Proven Foundation                             *)
 (* ============================================================ *)
 
-Require Import Prop1_proven.
+Require Import Proposition_01_proven.
 
 (* Use the proven relational structure *)
 Definition E : Type := Ux.  (* Extended universe with Whole *)
