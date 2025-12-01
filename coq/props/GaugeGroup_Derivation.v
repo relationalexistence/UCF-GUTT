@@ -5,8 +5,7 @@
   
   © 2023–2025 Michael Fillippini. All Rights Reserved.
   
-  GOAL: Derive the Standard Model gauge group from physical constraints
-  with ZERO ADMITS.
+  GOAL: prove uniquely minimal given physical constraints consistent with relational ontology
   
   STRATEGY: Use a finite enumeration approach that avoids the 
   complications of list membership and multiplicity counting.
@@ -249,7 +248,7 @@ Qed.
   CONCLUSION:
   
   SU(3) × SU(2) × U(1) is the UNIQUE MINIMAL gauge group
-  satisfying relational constraints. It is DERIVED, not assumed.
+  satisfying relational constraints. It is proven uniquely minimal given physical constraints consistent with relational ontology
 *)
 
 (* ================================================================ *)
