@@ -5,10 +5,24 @@
   
   © 2023–2025 Michael Fillippini. All Rights Reserved.
   
-  GOAL: prove uniquely minimal given physical constraints consistent with relational ontology
+  THEOREM: The Standard Model gauge group SU(3) × SU(2) × U(1) is the
+  UNIQUE MINIMAL structure satisfying physical constraints on dimension.
   
-  STRATEGY: Use a finite enumeration approach that avoids the 
-  complications of list membership and multiplicity counting.
+  STATUS: PROVEN with ZERO ADMITS
+  
+  STRUCTURE:
+  - This file proves: Given constraints (baryon≥8, chiral≥3, long-range=1),
+    the decomposition 8+3+1=12 is uniquely forced.
+  
+  - For justification of WHY these constraints follow from UCF/GUTT
+    relational propositions, see: GaugeGroup_Relational_Bridge.v
+    which proves:
+      * Prop 1 (connectivity) → long-range U(1) constraint
+      * Prop 4 (systems) → baryon SU(3) constraint  
+      * Prop 10 (direction) → chiral SU(2) constraint
+  
+  TOGETHER these files establish:
+    Props 1, 4, 10 → constraints → SU(3) × SU(2) × U(1) unique minimal
 *)
 
 Require Import Coq.Arith.PeanoNat.
@@ -39,235 +53,238 @@ Require Import Lia.
   Note: SO(4) has dim 6 but is NOT simple (≅ SU(2)×SU(2))
 *)
 
+(* Valid simple Lie algebra dimensions *)
 Definition is_lie_dim (d : nat) : bool :=
   match d with
-  | 0 => true   (* trivial *)
-  | 1 => true   (* u(1) *)
-  | 3 => true   (* su(2) ≅ so(3) ≅ sp(1) *)
-  | 8 => true   (* su(3) *)
-  | 10 => true  (* so(5) ≅ sp(2) *)
-  | 14 => true  (* g₂ *)
-  | 15 => true  (* su(4) ≅ so(6) *)
-  | 21 => true  (* so(7) ≅ sp(3) *)
-  | 24 => true  (* su(5) *)
-  | 28 => true  (* so(8) *)
+  | 0 => true    (* trivial *)
+  | 1 => true    (* u(1) *)
+  | 3 => true    (* su(2), so(3), sp(1) *)
+  | 8 => true    (* su(3) *)
+  | 10 => true   (* so(5), sp(2) *)
+  | 14 => true   (* g2 *)
+  | 15 => true   (* su(4), so(6) *)
+  | 21 => true   (* so(7), sp(3) *)
+  | 24 => true   (* su(5) *)
+  | 28 => true   (* so(8) *)
   | _ => false
   end.
 
-(* Key non-existence lemmas *)
-Lemma no_lie_dim_2 : is_lie_dim 2 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_4 : is_lie_dim 4 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_5 : is_lie_dim 5 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_6 : is_lie_dim 6 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_7 : is_lie_dim 7 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_9 : is_lie_dim 9 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_11 : is_lie_dim 11 = false. Proof. reflexivity. Qed.
-Lemma no_lie_dim_12 : is_lie_dim 12 = false. Proof. reflexivity. Qed.
-
 (* ================================================================ *)
-(* PART 2: PHYSICAL CONSTRAINT FUNCTIONS                            *)
-(* ================================================================ *)
-
-(* Supports baryons: SU(n) with n ≥ 3, minimal dim = 8 *)
-Definition supports_baryons (d : nat) : bool := 8 <=? d.
-
-(* Supports long-range force: unbroken U(1), dim = 1 *)
-Definition supports_long_range (d : nat) : bool := d =? 1.
-
-(* Is non-abelian: dim ≥ 3 *)
-Definition is_nonabelian (d : nat) : bool := 3 <=? d.
-
-(* ================================================================ *)
-(* PART 3: THREE-FACTOR GAUGE STRUCTURE                             *)
+(* PART 2: GAUGE STRUCTURE AS TRIPLE                                *)
 (* ================================================================ *)
 
 (*
-  We model gauge structures as THREE dimensions (d₁, d₂, d₃).
-  This is sufficient because:
-  - We need at least 3 factors (baryon, long-range, weak)
-  - Having more factors only increases the total dimension
-  - We're proving minimality at 12
+  Physical argument requires exactly 3 distinct gauge factors:
+  1. Baryon/color factor (supports 3-quark bound states)
+  2. Weak/chiral factor (supports parity violation)
+  3. Long-range factor (supports infinite-range EM)
+  
+  We model this as a triple of dimensions rather than a list,
+  avoiding complications with list membership and ordering.
 *)
 
 Record GaugeTriple := mkGauge {
-  dim1 : nat;  (* baryon factor *)
-  dim2 : nat;  (* weak factor *)
-  dim3 : nat   (* long-range factor *)
+  dim1 : nat;  (* baryon factor - needs ε_{ijk} for colorless baryons *)
+  dim2 : nat;  (* weak factor - needs non-abelian for chirality *)
+  dim3 : nat   (* long-range factor - needs unbroken for massless photon *)
 }.
 
-Definition total (g : GaugeTriple) : nat := dim1 g + dim2 g + dim3 g.
+Definition total (g : GaugeTriple) : nat :=
+  dim1 g + dim2 g + dim3 g.
 
-(* Physical consistency *)
+(* ================================================================ *)
+(* PART 3: PHYSICAL CONSTRAINTS                                     *)
+(* ================================================================ *)
+
+(*
+  CONSTRAINT 1: Baryon support
+  - Baryons are qqq bound states (proton, neutron)
+  - Must be color singlets: ε_{ijk} q^i q^j q^k
+  - Need 3-index antisymmetric tensor → SU(n) with n ≥ 3
+  - SU(3) is minimal: dim = 3² - 1 = 8
+  
+  JUSTIFICATION: See GaugeGroup_Relational_Bridge.v, theorem
+  baryon_constraint_from_relations (derived from Prop 4)
+*)
+Definition supports_baryons (d : nat) : bool := 8 <=? d.
+
+(*
+  CONSTRAINT 2: Weak/chiral support  
+  - Weak force violates parity (Wu experiment 1957)
+  - Left and right-handed particles transform differently
+  - Requires non-abelian gauge group
+  - SU(2) is minimal non-abelian: dim = 2² - 1 = 3
+  
+  JUSTIFICATION: See GaugeGroup_Relational_Bridge.v, theorem
+  chirality_constraint_from_relations (derived from Prop 10)
+*)
+Definition is_nonabelian (d : nat) : bool := 3 <=? d.
+
+(*
+  CONSTRAINT 3: Long-range support
+  - Electromagnetism has infinite range (1/r² law)
+  - Requires massless gauge boson (photon)
+  - Massless requires unbroken gauge symmetry
+  - Only U(1) naturally stays unbroken
+  - U(1) dimension = 1
+  
+  JUSTIFICATION: See GaugeGroup_Relational_Bridge.v, theorem
+  long_range_constraint_from_relations (derived from Prop 1)
+*)
+Definition supports_long_range (d : nat) : bool := d =? 1.
+
+(* Combined validity *)
 Definition is_valid (g : GaugeTriple) : bool :=
-  supports_baryons (dim1 g) &&      (* d₁ ≥ 8 for baryons *)
-  is_nonabelian (dim2 g) &&          (* d₂ ≥ 3 for weak *)
-  supports_long_range (dim3 g) &&    (* d₃ = 1 for EM *)
-  is_lie_dim (dim1 g) &&             (* d₁ is a valid Lie dim *)
-  is_lie_dim (dim2 g) &&             (* d₂ is a valid Lie dim *)
-  is_lie_dim (dim3 g).               (* d₃ is a valid Lie dim *)
+  supports_baryons (dim1 g) &&
+  is_nonabelian (dim2 g) &&
+  supports_long_range (dim3 g) &&
+  is_lie_dim (dim1 g) &&
+  is_lie_dim (dim2 g) &&
+  is_lie_dim (dim3 g).
 
-(* Standard Model *)
-Definition SM := mkGauge 8 3 1.
+(* ================================================================ *)
+(* PART 4: THE STANDARD MODEL                                       *)
+(* ================================================================ *)
 
-(* SM is valid *)
+(* Standard Model: SU(3) × SU(2) × U(1) with dims 8, 3, 1 *)
+Definition SM : GaugeTriple := mkGauge 8 3 1.
+
+(* SM satisfies all constraints *)
 Theorem SM_valid : is_valid SM = true.
 Proof. reflexivity. Qed.
 
-(* SM has total 12 *)
+(* SM has total dimension 12 *)
 Theorem SM_total : total SM = 12.
 Proof. reflexivity. Qed.
 
 (* ================================================================ *)
-(* PART 4: LOWER BOUND THEOREM                                      *)
+(* PART 5: LOWER BOUND THEOREM                                      *)
 (* ================================================================ *)
 
-(*
-  Any valid gauge triple has total ≥ 12.
-  
-  Proof:
-  - d₁ ≥ 8 (baryon constraint)
-  - d₂ ≥ 3 (non-abelian for weak)
-  - d₃ = 1 (long-range constraint)
-  - Total ≥ 8 + 3 + 1 = 12
-*)
-
-Theorem lower_bound :
-  forall g, is_valid g = true -> total g >= 12.
+(* Any valid gauge triple has total dimension at least 12 *)
+Theorem lower_bound : forall g : GaugeTriple,
+  is_valid g = true -> total g >= 12.
 Proof.
   intros g H.
   unfold is_valid in H.
-  (* Use Bool.andb_true_iff repeatedly *)
+  unfold total.
+  (* Extract each constraint *)
   destruct (supports_baryons (dim1 g)) eqn:E1; [|discriminate].
-  destruct (is_nonabelian (dim2 g)) eqn:E2; [|simpl in H; discriminate].
-  destruct (supports_long_range (dim3 g)) eqn:E3; [|simpl in H; discriminate].
-  (* Extract the numeric constraints *)
-  unfold supports_baryons in E1. apply Nat.leb_le in E1.
-  unfold is_nonabelian in E2. apply Nat.leb_le in E2.
-  unfold supports_long_range in E3. apply Nat.eqb_eq in E3.
-  unfold total. lia.
-Qed.
-
-(* SM achieves the lower bound *)
-Theorem SM_minimal :
-  forall g, is_valid g = true -> total g >= total SM.
-Proof.
-  intros g H.
-  rewrite SM_total.
-  apply lower_bound.
-  exact H.
+  destruct (is_nonabelian (dim2 g)) eqn:E2; [simpl in H|discriminate].
+  destruct (supports_long_range (dim3 g)) eqn:E3; [simpl in H|discriminate].
+  (* Convert boolean to propositions *)
+  apply Nat.leb_le in E1.  (* dim1 g >= 8 *)
+  apply Nat.leb_le in E2.  (* dim2 g >= 3 *)
+  apply Nat.eqb_eq in E3.  (* dim3 g = 1 *)
+  (* Arithmetic conclusion *)
+  lia.
 Qed.
 
 (* ================================================================ *)
-(* PART 5: UNIQUENESS AT 12                                         *)
+(* PART 6: UNIQUENESS THEOREM                                       *)
 (* ================================================================ *)
 
-(*
-  If total = 12 and valid, then g = (8, 3, 1).
-  
-  Proof by case analysis:
-  - d₃ = 1 (from long-range constraint)
-  - d₁ + d₂ = 11
-  - d₁ ≥ 8 and d₂ ≥ 3
-  - So d₁ ∈ {8} and d₂ ∈ {3} (the only values that work)
-*)
-
-Theorem uniqueness :
-  forall g,
-    is_valid g = true ->
-    total g = 12 ->
-    dim1 g = 8 /\ dim2 g = 3 /\ dim3 g = 1.
+(* If valid with total exactly 12, must be (8, 3, 1) *)
+Theorem uniqueness : forall g : GaugeTriple,
+  is_valid g = true ->
+  total g = 12 ->
+  dim1 g = 8 /\ dim2 g = 3 /\ dim3 g = 1.
 Proof.
   intros g Hvalid Htotal.
   unfold is_valid in Hvalid.
-  (* Extract the boolean constraints *)
-  destruct (supports_baryons (dim1 g)) eqn:E1; [|discriminate].
-  destruct (is_nonabelian (dim2 g)) eqn:E2; [|simpl in Hvalid; discriminate].
-  destruct (supports_long_range (dim3 g)) eqn:E3; [|simpl in Hvalid; discriminate].
-  (* Convert to numeric constraints *)
-  unfold supports_baryons in E1. apply Nat.leb_le in E1.
-  unfold is_nonabelian in E2. apply Nat.leb_le in E2.
-  unfold supports_long_range in E3. apply Nat.eqb_eq in E3.
-  (* E1: 8 ≤ dim1 g *)
-  (* E2: 3 ≤ dim2 g *)
-  (* E3: dim3 g = 1 *)
-  (* Htotal: dim1 g + dim2 g + dim3 g = 12 *)
   unfold total in Htotal.
-  (* From E3 and Htotal: dim1 g + dim2 g = 11 *)
-  (* From E1: dim1 g ≥ 8 *)
-  (* From E2: dim2 g ≥ 3, so dim1 g ≤ 8 *)
-  (* Therefore dim1 g = 8 and dim2 g = 3 *)
-  assert (dim1 g = 8) by lia.
-  assert (dim2 g = 3) by lia.
-  auto.
+  (* Extract constraints *)
+  destruct (supports_baryons (dim1 g)) eqn:E1; [|discriminate].
+  destruct (is_nonabelian (dim2 g)) eqn:E2; [simpl in Hvalid|discriminate].
+  destruct (supports_long_range (dim3 g)) eqn:E3; [simpl in Hvalid|discriminate].
+  (* Convert to propositions *)
+  apply Nat.leb_le in E1.  (* dim1 g >= 8 *)
+  apply Nat.leb_le in E2.  (* dim2 g >= 3 *)
+  apply Nat.eqb_eq in E3.  (* dim3 g = 1 *)
+  (* 
+    We have:
+    - dim1 g >= 8
+    - dim2 g >= 3  
+    - dim3 g = 1
+    - dim1 g + dim2 g + dim3 g = 12
+    
+    Substituting dim3 g = 1:
+    dim1 g + dim2 g = 11
+    
+    With dim1 g >= 8: dim2 g <= 3
+    With dim2 g >= 3: dim2 g = 3, hence dim1 g = 8
+  *)
+  lia.
 Qed.
 
-(* The full characterization *)
-Theorem gauge_group_characterization :
-  forall g,
-    is_valid g = true ->
-    total g = 12 ->
-    g = SM.
+(* ================================================================ *)
+(* PART 7: MAIN CHARACTERIZATION THEOREM                            *)
+(* ================================================================ *)
+
+(* SM is THE unique minimal valid gauge triple *)
+Theorem gauge_group_characterization : forall g : GaugeTriple,
+  is_valid g = true ->
+  total g = 12 ->
+  g = SM.
 Proof.
   intros g Hvalid Htotal.
   destruct g as [d1 d2 d3].
-  apply uniqueness in Hvalid as [H1 [H2 H3]]; [| exact Htotal].
+  assert (H := uniqueness {| dim1 := d1; dim2 := d2; dim3 := d3 |} Hvalid Htotal).
+  destruct H as [H1 [H2 H3]].
   simpl in H1, H2, H3.
-  subst.
+  subst d1 d2 d3.
   reflexivity.
 Qed.
 
 (* ================================================================ *)
-(* PART 6: INTERPRETATION                                           *)
+(* SUMMARY                                                          *)
 (* ================================================================ *)
 
 (*
-  THEOREM SUMMARY:
+  PROVEN WITH ZERO ADMITS:
   
-  1. lower_bound: Any valid gauge structure has dim ≥ 12
-  2. SM_valid: The Standard Model (8,3,1) is valid
-  3. SM_total: The Standard Model has dim = 12
-  4. uniqueness: Any valid structure with dim = 12 has (8,3,1)
+  1. SM_valid: The Standard Model gauge group satisfies all constraints
   
-  INTERPRETATION:
+  2. SM_total: SM has total dimension 12
   
-  8 = dim(su(3)) - color gauge group (strong force, baryons)
-  3 = dim(su(2)) - weak isospin group (weak force, flavor)
-  1 = dim(u(1))  - hypercharge group (electromagnetic)
+  3. lower_bound: Any valid gauge triple has dimension ≥ 12
   
-  PHYSICAL CONSTRAINTS → UCF/GUTT PROPOSITIONS:
+  4. uniqueness: At dimension 12, must have (8, 3, 1)
   
-  1. Baryons (d₁ ≥ 8) ← Prop 4 (relational systems bind into composites)
-     Three quarks → colorless baryon requires ε_{ijk} → SU(n≥3) → dim ≥ 8
+  5. gauge_group_characterization: SM is THE unique minimal solution
   
-  2. Weak force (d₂ ≥ 3) ← Prop 10 (relations are directional)
-     Chirality + flavor change needs non-abelian group → dim ≥ 3
+  PHYSICAL INTERPRETATION:
   
-  3. Long-range (d₃ = 1) ← Prop 1 (universal connectivity)
-     Infinite-range force needs unbroken U(1) → dim = 1
+  SU(3): Color force, dimension 8
+         - Smallest group supporting colorless baryons (ε_{ijk})
+         
+  SU(2): Weak force, dimension 3  
+         - Smallest non-abelian group (for chirality/parity violation)
+         
+  U(1):  Electromagnetic force, dimension 1
+         - Only unbroken gauge symmetry (massless photon)
   
-  CONCLUSION:
+  TOTAL: 8 + 3 + 1 = 12 generators
   
-  SU(3) × SU(2) × U(1) is the UNIQUE MINIMAL gauge group
-  satisfying relational constraints. It is proven uniquely minimal given physical constraints consistent with relational ontology
+  This is not an accident - it's the UNIQUE MINIMAL structure
+  satisfying the physical requirements.
+  
+  CONNECTION TO UCF/GUTT:
+  
+  The physical constraints derive from relational propositions:
+  - Prop 1 (universal connectivity) → long-range force needed → U(1)
+  - Prop 4 (relational systems) → bound states possible → SU(3)
+  - Prop 10 (directionality) → asymmetry possible → SU(2)
+  
+  See GaugeGroup_Relational_Bridge.v for the formal proofs of these
+  connections.
 *)
 
-(* ================================================================ *)
-(* PART 7: VERIFICATION                                             *)
-(* ================================================================ *)
+(* Verify compilation *)
+Check SM_valid.
+Check SM_total.
+Check lower_bound.
+Check uniqueness.
+Check gauge_group_characterization.
 
-(* Count admits in this file: should be ZERO *)
-(* All theorems proved by computation and lia *)
-
-(* Final check: the key results *)
-Check SM_valid.          (* is_valid SM = true *)
-Check SM_total.          (* total SM = 12 *)
-Check lower_bound.       (* is_valid g = true -> total g >= 12 *)
-Check uniqueness.        (* is_valid g = true -> total g = 12 -> dims are 8,3,1 *)
-Check gauge_group_characterization.  (* is_valid g = true -> total g = 12 -> g = SM *)
-
-(* Print the proofs to verify no admits *)
-Print SM_valid.
-Print SM_total.
-Print lower_bound.
-Print uniqueness.
-Print gauge_group_characterization.
+Print Assumptions gauge_group_characterization.
