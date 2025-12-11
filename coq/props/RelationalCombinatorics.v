@@ -993,63 +993,144 @@ Export RelationalDerangements.
 Module RelationalCatalan.
 
 (* ─────────────────────────────────────────────────────────────────────────── *)
-(* 7.1: Catalan Number Definition                                              *)
+(* 7.1: Catalan Number Definition (Recursive via Bottom-Up Construction)       *)
 (* ─────────────────────────────────────────────────────────────────────────── *)
 
-(* C_n = C(2n, n) / (n + 1) 
-   We define specific values directly since the recursive definition
-   is complex for Coq's termination checker *)
+(*
+   The Catalan recurrence: C_0 = 1, C_{n+1} = sum_{i=0}^{n} C_i * C_{n-i}
+   
+   This is mathematically equivalent to C_n = C(2n,n)/(n+1) but avoids
+   division, making it fully constructive and termination-friendly.
+   
+   We implement this using a bottom-up list construction that builds
+   [C_0, C_1, ..., C_n] iteratively.
+*)
 
-(* Catalan numbers via explicit computation *)
-Definition catalan (n : nat) : nat :=
-  match n with
-  | 0 => 1
-  | 1 => 1
-  | 2 => 2
-  | 3 => 5
-  | 4 => 14
-  | 5 => 42
-  | 6 => 132
-  | 7 => 429
-  | 8 => 1430
-  | 9 => 4862
-  | 10 => 16796
-  | _ => 0  (* For larger values, explicit computation needed *)
+(* Sum of products C_i * C_{n-i} for i = 0 to k, using precomputed list *)
+Fixpoint sum_catalan_products (cats : list nat) (n k : nat) : nat :=
+  match k with
+  | 0 => nth 0 cats 0 * nth n cats 0
+  | S k' => nth (S k') cats 0 * nth (n - S k') cats 0 + sum_catalan_products cats n k'
   end.
 
-(* ─────────────────────────────────────────────────────────────────────────── *)
-(* 7.2: Basic Catalan Values                                                   *)
-(* ─────────────────────────────────────────────────────────────────────────── *)
+(* Build list of Catalan numbers [C_0, C_1, ..., C_n] *)
+Fixpoint catalan_list (n : nat) : list nat :=
+  match n with
+  | 0 => [1]
+  | S n' => catalan_list n' ++ [sum_catalan_products (catalan_list n') n' n']
+  end.
 
-Theorem catalan_0 : catalan 0 = 1.
-Proof. reflexivity. Qed.
-
-Theorem catalan_1 : catalan 1 = 1.
-Proof. reflexivity. Qed.
-
-Theorem catalan_2 : catalan 2 = 2.
-Proof. reflexivity. Qed.
-
-Theorem catalan_3 : catalan 3 = 5.
-Proof. reflexivity. Qed.
-
-Theorem catalan_4 : catalan 4 = 14.
-Proof. reflexivity. Qed.
-
-Theorem catalan_5 : catalan 5 = 42.
-Proof. reflexivity. Qed.
+(* The n-th Catalan number *)
+Definition catalan (n : nat) : nat := nth n (catalan_list n) 0.
 
 (* ─────────────────────────────────────────────────────────────────────────── *)
-(* 7.3: Catalan Positivity                                                     *)
+(* 7.2: Helper Lemmas for Catalan Properties                                   *)
 (* ─────────────────────────────────────────────────────────────────────────── *)
 
-(* Catalan positivity for defined values *)
-Lemma catalan_pos_0 : 0 < catalan 0. Proof. simpl. lia. Qed.
-Lemma catalan_pos_1 : 0 < catalan 1. Proof. simpl. lia. Qed.
-Lemma catalan_pos_2 : 0 < catalan 2. Proof. simpl. lia. Qed.
-Lemma catalan_pos_3 : 0 < catalan 3. Proof. simpl. lia. Qed.
-Lemma catalan_pos_4 : 0 < catalan 4. Proof. simpl. lia. Qed.
-Lemma catalan_pos_5 : 0 < catalan 5. Proof. simpl. lia. Qed.
+Lemma catalan_list_length : forall n, length (catalan_list n) = S n.
+Proof.
+  induction n; [reflexivity |].
+  simpl. rewrite app_length. simpl. rewrite IHn. lia.
+Qed.
+
+Lemma catalan_list_prefix : forall n m i,
+  (n <= m)%nat -> (i <= n)%nat -> 
+  nth i (catalan_list n) 0 = nth i (catalan_list m) 0.
+Proof.
+  intros n m. revert n.
+  induction m; intros n i Hnm Hi.
+  - assert (n = 0) by lia. subst. reflexivity.
+  - destruct (Nat.eq_dec n (S m)).
+    + subst. reflexivity.
+    + simpl. rewrite app_nth1.
+      * apply IHm; lia.
+      * rewrite catalan_list_length. lia.
+Qed.
+
+Lemma sum_catalan_products_pos : forall cats n k,
+  (k <= n)%nat ->
+  (forall i, (i <= n)%nat -> nth i cats 0 > 0) ->
+  sum_catalan_products cats n k > 0.
+Proof.
+  intros cats n k Hk Hpos.
+  induction k as [|k' IHk].
+  - simpl.
+    assert (H0: nth 0 cats 0 > 0) by (apply Hpos; lia).
+    assert (Hn: nth n cats 0 > 0) by (apply Hpos; lia).
+    nia.
+  - simpl.
+    assert (Hk': (k' <= n)%nat) by lia.
+    specialize (IHk Hk').
+    assert (HSk': nth (S k') cats 0 > 0) by (apply Hpos; lia).
+    assert (Hminus: nth (n - S k') cats 0 > 0) by (apply Hpos; lia).
+    nia.
+Qed.
+
+Lemma catalan_list_all_pos : forall n i,
+  (i <= n)%nat -> nth i (catalan_list n) 0 > 0.
+Proof.
+  induction n as [|n' IHn]; intros i Hi.
+  - destruct i; [simpl; lia | lia].
+  - destruct (Nat.le_gt_cases i n') as [Hle | Hgt].
+    + assert (Hprefix: nth i (catalan_list n') 0 = nth i (catalan_list (S n')) 0).
+      { apply catalan_list_prefix; lia. }
+      rewrite <- Hprefix.
+      apply IHn. exact Hle.
+    + assert (Heq: i = S n') by lia. subst i.
+      simpl.
+      rewrite app_nth2 by (rewrite catalan_list_length; lia).
+      rewrite catalan_list_length.
+      replace (S n' - S n') with 0 by lia.
+      simpl.
+      apply sum_catalan_products_pos.
+      * lia.
+      * intros j Hj. apply IHn. lia.
+Qed.
+
+(* ─────────────────────────────────────────────────────────────────────────── *)
+(* 7.3: CATALAN POSITIVITY - FULLY PROVEN FOR ALL n                            *)
+(* ─────────────────────────────────────────────────────────────────────────── *)
+
+Theorem catalan_pos : forall n, catalan n > 0.
+Proof.
+  intro n. unfold catalan.
+  apply catalan_list_all_pos. lia.
+Qed.
+
+(* ─────────────────────────────────────────────────────────────────────────── *)
+(* 7.4: CATALAN RECURRENCE - FULLY PROVEN FOR ALL n                            *)
+(* ─────────────────────────────────────────────────────────────────────────── *)
+
+Lemma catalan_recurrence_aux : forall n,
+  nth (S n) (catalan_list (S n)) 0 = sum_catalan_products (catalan_list n) n n.
+Proof.
+  intro n. simpl.
+  rewrite app_nth2 by (rewrite catalan_list_length; lia).
+  rewrite catalan_list_length.
+  replace (S n - S n) with 0 by lia.
+  reflexivity.
+Qed.
+
+Theorem catalan_recurrence : forall n,
+  catalan (S n) = sum_catalan_products (catalan_list n) n n.
+Proof.
+  intro n. unfold catalan.
+  rewrite catalan_recurrence_aux.
+  reflexivity.
+Qed.
+
+(* ─────────────────────────────────────────────────────────────────────────── *)
+(* 7.5: Basic Catalan Values - Computationally Verified                        *)
+(* ─────────────────────────────────────────────────────────────────────────── *)
+
+Theorem catalan_0 : catalan 0 = 1. Proof. reflexivity. Qed.
+Theorem catalan_1 : catalan 1 = 1. Proof. reflexivity. Qed.
+Theorem catalan_2 : catalan 2 = 2. Proof. reflexivity. Qed.
+Theorem catalan_3 : catalan 3 = 5. Proof. reflexivity. Qed.
+Theorem catalan_4 : catalan 4 = 14. Proof. reflexivity. Qed.
+Theorem catalan_5 : catalan 5 = 42. Proof. reflexivity. Qed.
+Theorem catalan_6 : catalan 6 = 132. Proof. reflexivity. Qed.
+Theorem catalan_7 : catalan 7 = 429. Proof. reflexivity. Qed.
 
 End RelationalCatalan.
 
