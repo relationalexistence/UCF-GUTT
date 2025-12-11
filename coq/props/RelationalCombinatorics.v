@@ -490,17 +490,57 @@ Proof.
   intro n. simpl. apply binomial_0_r.
 Qed.
 
+(* Key lemma: Pascal-based decomposition of sum_binomial *)
+Lemma sum_succ_split : forall n k,
+  (k <= n)%nat ->
+  sum_binomial (S n) k = sum_binomial n k + (match k with 0 => 0 | S k' => sum_binomial n k' end).
+Proof.
+  intros n k. revert n.
+  induction k; intros n Hk.
+  - simpl. rewrite !binomial_0_r. lia.
+  - assert (Hk': (k <= n)%nat) by lia.
+    specialize (IHk n Hk').
+    simpl sum_binomial at 1.
+    simpl sum_binomial at 2.
+    rewrite IHk.
+    simpl binomial at 1.
+    destruct k.
+    + simpl. rewrite binomial_0_r. lia.
+    + simpl sum_binomial at 3. lia.
+Qed.
+
+(* The doubling lemma: core of row sum proof *)
+Lemma sum_binomial_double : forall n,
+  sum_binomial (S n) (S n) = 2 * sum_binomial n n.
+Proof.
+  intro n.
+  unfold sum_binomial at 1; fold sum_binomial.
+  rewrite binomial_n_n.
+  rewrite (sum_succ_split n n (Nat.le_refl n)).
+  destruct n as [|n'].
+  - simpl. lia.
+  - replace (sum_binomial (S n') (S n')) with 
+            (binomial (S n') (S n') + sum_binomial (S n') n') at 1 by reflexivity.
+    rewrite binomial_n_n.
+    replace (sum_binomial (S n') (S n')) with
+            (binomial (S n') (S n') + sum_binomial (S n') n') by reflexivity.
+    rewrite binomial_n_n.
+    ring.
+Qed.
+
+(* MAIN THEOREM: Row Sum - FULLY PROVEN *)
 Theorem sum_binomial_full : forall n,
   sum_binomial n n = pow2 n.
 Proof.
   induction n.
-  - reflexivity.
-  - simpl.
-    (* This requires more machinery - we'll prove a simpler version *)
-    (* For now, we prove specific cases *)
-Abort.
+  - simpl. reflexivity.
+  - rewrite sum_binomial_double.
+    simpl pow2.
+    rewrite IHn.
+    ring.
+Qed.
 
-(* Specific cases proven directly *)
+(* Specific cases - now trivial corollaries of the general theorem *)
 Lemma row_sum_0 : sum_binomial 0 0 = 1.
 Proof. reflexivity. Qed.
 
@@ -1315,83 +1355,148 @@ Qed.
 
 (* If n+1 items go into n boxes, some box has ≥ 2 items *)
 
-(* Simplified version: if a list has more elements than distinct values, 
-   there must be a repeat *)
+(* All values in [0,n) are distinct under f *)
+Definition all_distinct (f : nat -> nat) (n : nat) : Prop :=
+  forall i j, (i < n)%nat -> (j < n)%nat -> i <> j -> f i <> f j.
 
-Definition has_duplicate {A : Type} (eq_dec : forall x y : A, {x = y} + {x <> y}) 
-                          (l : list A) : bool :=
-  let fix check (l : list A) (seen : list A) : bool :=
-    match l with
-    | [] => false
-    | h :: t => 
-        if existsb (fun x => if eq_dec x h then true else false) seen
-        then true
-        else check t (h :: seen)
-    end
-  in check l [].
+(* Key lemma: if f: [0, n+1) -> [0, n) is injective, contradiction *)
+Lemma pigeonhole_injective : forall n (f : nat -> nat),
+  (forall i, (i < S n)%nat -> (f i < n)%nat) ->
+  all_distinct f (S n) ->
+  False.
+Proof.
+  induction n as [|m IHm]; intros f Hbound Hdistinct.
+  - specialize (Hbound 0 (Nat.lt_0_succ 0)). lia.
+  - set (v := f (S m)).
+    
+    assert (Hneq: forall i, (i < S m)%nat -> f i <> v).
+    { intros i Hi. unfold v. apply Hdistinct; lia. }
+    
+    set (g := fun i => if f i <? v then f i else f i - 1).
+    
+    assert (Hv_bound: (v < S m)%nat).
+    { unfold v. apply Hbound. lia. }
+    
+    assert (Hgbound : forall i, (i < S m)%nat -> (g i < m)%nat).
+    { intros i Hi. unfold g, v in *.
+      assert (Hfi: (f i < S m)%nat) by (apply Hbound; lia).
+      assert (Hfineq: f i <> f (S m)) by (apply Hneq; exact Hi).
+      destruct (f i <? f (S m)) eqn:Hcmp.
+      - apply Nat.ltb_lt in Hcmp. lia.
+      - apply Nat.ltb_ge in Hcmp. lia. }
+    
+    assert (Hgdist : all_distinct g (S m)).
+    { unfold all_distinct, g, v in *.
+      intros i j Hi Hj Hij.
+      assert (Hdij: f i <> f j) by (apply Hdistinct; lia).
+      assert (Hneqi: f i <> f (S m)) by (apply Hneq; exact Hi).
+      assert (Hneqj: f j <> f (S m)) by (apply Hneq; exact Hj).
+      destruct (f i <? f (S m)) eqn:Hcmpi; destruct (f j <? f (S m)) eqn:Hcmpj.
+      - exact Hdij.
+      - apply Nat.ltb_lt in Hcmpi. apply Nat.ltb_ge in Hcmpj. intro Heq. lia.
+      - apply Nat.ltb_ge in Hcmpi. apply Nat.ltb_lt in Hcmpj. intro Heq. lia.
+      - apply Nat.ltb_ge in Hcmpi. apply Nat.ltb_ge in Hcmpj. intro Heq. lia. }
+    
+    exact (IHm g Hgbound Hgdist).
+Qed.
 
-Theorem pigeonhole_count : forall n,
+(* Helper: check if any earlier value equals the target *)
+Fixpoint check_earlier (f : nat -> nat) (target : nat) (i : nat) : option nat :=
+  match i with
+  | 0 => None
+  | S i' => if f i' =? f target then Some i' else check_earlier f target i'
+  end.
+
+Lemma check_earlier_some : forall f target i result,
+  check_earlier f target i = Some result ->
+  (result < i)%nat /\ f result = f target.
+Proof.
+  intros f target i.
+  induction i; intros result Hcheck.
+  - simpl in Hcheck. discriminate.
+  - simpl in Hcheck.
+    destruct (f i =? f target) eqn:Hcmp.
+    + injection Hcheck as Hr. subst. apply Nat.eqb_eq in Hcmp. split; lia.
+    + specialize (IHi result Hcheck). lia.
+Qed.
+
+Lemma check_earlier_none : forall f target i,
+  check_earlier f target i = None ->
+  forall j, (j < i)%nat -> f j <> f target.
+Proof.
+  intros f target i.
+  induction i; intros Hnone j Hj.
+  - lia.
+  - simpl in Hnone.
+    destruct (f i =? f target) eqn:Hcmp; [discriminate|].
+    apply Nat.eqb_neq in Hcmp.
+    destruct (Nat.eq_dec j i); [subst; exact Hcmp | apply IHi; [exact Hnone | lia]].
+Qed.
+
+(* Find collision by checking each position *)
+Fixpoint find_collision_aux (f : nat -> nat) (checked : nat) : option (nat * nat) :=
+  match checked with
+  | 0 => None
+  | S k => match check_earlier f k k with
+           | Some i => Some (i, k)
+           | None => find_collision_aux f k
+           end
+  end.
+
+Definition find_collision (f : nat -> nat) (n : nat) : option (nat * nat) :=
+  find_collision_aux f n.
+
+Lemma find_collision_aux_some : forall f checked i j,
+  find_collision_aux f checked = Some (i, j) ->
+  (i < j)%nat /\ (j < checked)%nat /\ f i = f j.
+Proof.
+  intros f checked.
+  induction checked; intros i j Hfind.
+  - simpl in Hfind. discriminate.
+  - simpl in Hfind.
+    destruct (check_earlier f checked checked) eqn:Hcheck.
+    + injection Hfind as Hi Hj. subst. apply check_earlier_some in Hcheck. lia.
+    + specialize (IHchecked i j Hfind). lia.
+Qed.
+
+Lemma find_collision_aux_none : forall f checked,
+  find_collision_aux f checked = None ->
+  all_distinct f checked.
+Proof.
+  intros f checked.
+  induction checked; intros Hnone.
+  - unfold all_distinct. intros. lia.
+  - simpl in Hnone.
+    destruct (check_earlier f checked checked) eqn:Hcheck; [discriminate|].
+    specialize (IHchecked Hnone).
+    unfold all_distinct in *.
+    intros i j Hi Hj Hij.
+    destruct (Nat.eq_dec j checked).
+    + subst j. apply (check_earlier_none f checked checked Hcheck i); lia.
+    + destruct (Nat.eq_dec i checked).
+      * subst i. intro Heq. symmetry in Heq.
+        apply (check_earlier_none f checked checked Hcheck j); lia.
+      * apply IHchecked; lia.
+Qed.
+
+(* MAIN THEOREM: Pigeonhole Principle - FULLY PROVEN *)
+Theorem pigeonhole_count : forall n (f : nat -> nat),
   (n > 0)%nat ->
-  forall (f : nat -> nat),
   (forall i, (i < S n)%nat -> (f i < n)%nat) ->
   exists i j, (i < S n)%nat /\ (j < S n)%nat /\ i <> j /\ f i = f j.
 Proof.
-  intros n Hn f Hf.
-  destruct n; [lia |].
-  destruct n.
-  - (* n = 1: 2 values into 1 slot *)
-    exists 0, 1. 
-    assert (f 0 < 1)%nat by (apply Hf; lia).
-    assert (f 1 < 1)%nat by (apply Hf; lia).
-    lia.
-  - (* n = 2: 3 values into 2 slots *)
-    destruct n.
-    + assert (f 0 < 2)%nat by (apply Hf; lia).
-      assert (f 1 < 2)%nat by (apply Hf; lia).
-      assert (f 2 < 2)%nat by (apply Hf; lia).
-      destruct (Nat.eq_dec (f 0) (f 1)); [exists 0, 1; lia |].
-      destruct (Nat.eq_dec (f 0) (f 2)); [exists 0, 2; lia |].
-      destruct (Nat.eq_dec (f 1) (f 2)); [exists 1, 2; lia |].
-      exfalso.
-      assert (f 0 = 0 \/ f 0 = 1) by lia.
-      assert (f 1 = 0 \/ f 1 = 1) by lia.
-      assert (f 2 = 0 \/ f 2 = 1) by lia.
-      lia.
-    + (* n >= 3: Use n=2 as base demonstration *)
-      (* General proof requires list-based reasoning *)
-      destruct n.
-      * (* n = 3: 4 into 3 *)
-        assert (f 0 < 3)%nat by (apply Hf; lia).
-        assert (f 1 < 3)%nat by (apply Hf; lia).
-        assert (f 2 < 3)%nat by (apply Hf; lia).
-        assert (f 3 < 3)%nat by (apply Hf; lia).
-        destruct (Nat.eq_dec (f 0) (f 1)); [exists 0, 1; lia |].
-        destruct (Nat.eq_dec (f 0) (f 2)); [exists 0, 2; lia |].
-        destruct (Nat.eq_dec (f 0) (f 3)); [exists 0, 3; lia |].
-        destruct (Nat.eq_dec (f 1) (f 2)); [exists 1, 2; lia |].
-        destruct (Nat.eq_dec (f 1) (f 3)); [exists 1, 3; lia |].
-        destruct (Nat.eq_dec (f 2) (f 3)); [exists 2, 3; lia |].
-        exfalso.
-        assert (f 0 = 0 \/ f 0 = 1 \/ f 0 = 2) by lia.
-        assert (f 1 = 0 \/ f 1 = 1 \/ f 1 = 2) by lia.
-        assert (f 2 = 0 \/ f 2 = 1 \/ f 2 = 2) by lia.
-        assert (f 3 = 0 \/ f 3 = 1 \/ f 3 = 2) by lia.
-        lia.
-      * (* n >= 4: Similar pattern continues *)
-        (* For n >= 4, the principle holds by similar reasoning *)
-        (* but requires more case analysis. We prove small cases. *)
-        assert (f 0 < S (S (S (S n))))%nat by (apply Hf; lia).
-        assert (f 1 < S (S (S (S n))))%nat by (apply Hf; lia).
-        destruct (Nat.eq_dec (f 0) (f 1)).
-        -- exists 0, 1. lia.
-        -- (* Need more case analysis - demonstrated for n <= 3 *)
-           (* For completeness, we'd need to enumerate all pairs *)
-           exists 0, 1.
-           (* This branch is incomplete without full enumeration *)
-           (* The structure is: check all pairs, if all different, contradiction *)
-Abort. (* Full proof for n >= 4 requires exhaustive pair checking *)
+  intros n f Hn Hf.
+  destruct (find_collision f (S n)) eqn:Hfind.
+  - destruct p as [i j]. exists i, j.
+    unfold find_collision in Hfind.
+    apply find_collision_aux_some in Hfind. lia.
+  - exfalso.
+    unfold find_collision in Hfind.
+    apply find_collision_aux_none in Hfind.
+    exact (pigeonhole_injective n f Hf Hfind).
+Qed.
 
-(* Pigeonhole for small cases - constructively verified *)
+(* Specific cases - now trivial corollaries *)
 Lemma pigeonhole_2 : forall f : nat -> nat,
   (f 0 < 1 /\ f 1 < 1) -> f 0 = f 1.
 Proof.
