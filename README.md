@@ -94,9 +94,9 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 
 | File | Status | Description |
 |------|--------|-------------|
-| **prop1_proven.v** | **Proven** | **Proposition 1 (Connectivity):** ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y). Universal connectivity via Whole construct, proven constructively. |
+| **Proposition_01_proven.v** | **Proven** | **Proposition 1 (Connectivity):** ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y). Universal connectivity via Whole construct, proven constructively. |
 | **Complete_Picture_proven.v** | **Proven** | **Complete Picture Theorem:** Universal connectivity, structural manifestation, and dynamic preservation proven in both list-arity and vector-arity, closing the relation→structure→dynamics chain. |
-| **Prop4_RelationalSystem_proven.v** | **Proven** | **Proposition 4 (Relational Systems):** Relations manifest as graph structures with adjacency tensors. Identity dynamics preserve edges. |
+| **Proposition_04_RelationalSystem_proven.v** | **Proven** | **Proposition 4 (Relational Systems):** Relations manifest as graph structures with adjacency tensors. Identity dynamics preserve edges. |
 
 **Core Framework Results**
 
