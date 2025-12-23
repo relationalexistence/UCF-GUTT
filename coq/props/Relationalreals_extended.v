@@ -2,22 +2,22 @@
 (*                    Relational Real Numbers - COMPLETE                        *)
 (*                       (Constructive & Axiom-Free)                           *)
 (*                                                                              *)
-(* © 2023–2025 Michael Fillippini. All Rights Reserved.                        *)
-(* UCF/GUTT™ Research & Evaluation License v1.1                                *)
+(* (C) 2023-2025 Michael Fillippini. All Rights Reserved.                        *)
+(* UCF/GUTT Research & Evaluation License v1.1                                *)
 (*                                                                              *)
 (* This version uses GEOMETRIC modulus (1/2^n) with COMPLETE proofs            *)
 (* ZERO AXIOMS, ZERO ADMITS - All ring laws machine-verified                   *)
 (*                                                                              *)
 (* PROVEN RING STRUCTURE:                                                       *)
-(*   ✓ Addition: associative, commutative, identity (0), inverses             *)
-(*   ✓ Multiplication: associative, commutative, identity (1)                 *)
-(*   ✓ Distributivity: x*(y+z) = x*y + x*z (both left and right)             *)
-(*   ✓ 69 lemmas proven with Qed, no admits, no axioms                        *)
+(*    Addition: associative, commutative, identity (0), inverses             *)
+(*    Multiplication: associative, commutative, identity (1)                 *)
+(*    Distributivity: x*(y+z) = x*y + x*z (both left and right)             *)
+(*    69 lemmas proven with Qed, no admits, no axioms                        *)
 (*                                                                              *)
 (* KEY TECHNIQUES:                                                              *)
-(*   • Shift equivalence: RReq_shift proves f(n+k) ≡ f(n)                      *)
-(*   • Product bounds: |abc - def| ≤ δ(BᵧBᵤ + BₓBᵤ + BₓBᵧ)                   *)
-(*   • Geometric budget: (2/2^n)*C ≤ 1/2^k when n ≥ S k + bound_shift(2C)    *)
+(*    Shift equivalence: RReq_shift proves f(n+k) == f(n)                      *)
+(*    Product bounds: |abc - def| <= delta(B_yB_z + BB_z + BB_y)                   *)
+(*    Geometric budget: (2/2^n)*C <= 1/2^k when n >= S k + bound_shift(2C)    *)
 (* ============================================================================ *)
 
 Require Import Coq.QArith.QArith.
@@ -423,13 +423,13 @@ Defined.
 (*
   Key telescoping identity for geometric series:
   
-  |f(n) - f(0)| ≤ Σ_{k=0}^{n-1} |f(k+1) - f(k)| 
-               ≤ Σ_{k=0}^{n-1} 1/2^k 
-               = 2 - 1/2^{n-1}  (for n ≥ 1)
+  |f(n) - f(0)|  Sum_{k=0}^{n-1} |f(k+1) - f(k)| 
+                Sum_{k=0}^{n-1} 1/2^k 
+               = 2 - 1/2^{n-1}  (for n  1)
                < 2
 *)
 
-(* Telescoping bound: |f(n) - f(0)| ≤ 2 - 1/2^{n-1} for n > 0 *)
+(* Telescoping bound: |f(n) - f(0)|  2 - 1/2^{n-1} for n > 0 *)
 Lemma cauchy_telescope : forall (f : nat -> Q) (n : nat),
   is_cauchy_geo f ->
   (n > 0)%nat ->
@@ -439,7 +439,7 @@ Proof.
   induction n as [|m IH].
   - (* n = 0: contradiction *) lia.
   - destruct m as [|m'].
-    + (* n = 1: |f(1) - f(0)| ≤ 1/2^0 = 1 ≤ 2 - 1 = 1 *)
+    + (* n = 1: |f(1) - f(0)|  1/2^0 = 1  2 - 1 = 1 *)
       simpl.
       eapply Qle_trans; [apply (Hcauchy 0%nat)|].
       unfold Qle, Qminus. simpl. lia.
@@ -462,7 +462,7 @@ Proof.
       
       eapply Qle_trans; [apply Qplus_le_compat; [exact Hstep | exact HIH]|].
       
-      (* Goal: 1/2^{S m'} + (2 - 1/2^{m'}) ≤ 2 - 1/2^{S m'} *)
+      (* Goal: 1/2^{S m'} + (2 - 1/2^{m'})  2 - 1/2^{S m'} *)
       simpl (S (S m') - 1)%nat.
       change (pow2 (S m')) with (2 * pow2 m')%positive.
       unfold Qle, Qplus, Qminus, Qopp. simpl.
@@ -493,12 +493,12 @@ Proof.
     lia.
 Qed.
 
-(* Main boundedness lemma: |f(n)| ≤ |f(0)| + 2 *)
+(* Main boundedness lemma: |f(n)| <= |f(0)| + 2 *)
 Lemma cauchy_bounded_by_first : forall (x : RR) (n : nat),
   Qabs (rr_seq x n) <= Qabs (rr_seq x 0%nat) + 2.
 Proof.
   intros x n.
-  (* |f(n)| = |f(n) - f(0) + f(0)| ≤ |f(n) - f(0)| + |f(0)| via triangle *)
+  (* |f(n)| = |f(n) - f(0) + f(0)|  |f(n) - f(0)| + |f(0)| via triangle *)
   
   assert (Htri : Qabs (rr_seq x n) <= 
                  Qabs (rr_seq x n - rr_seq x 0%nat) + Qabs (rr_seq x 0%nat)).
@@ -627,7 +627,7 @@ Lemma is_cauchy_geo_shift : forall (f : nat -> Q) (s : nat),
   is_cauchy_geo f -> is_cauchy_geo (fun n => f (n + s)%nat).
 Proof.
   intros f s Hcauchy. unfold is_cauchy_geo in *. intro n.
-  (* |f((S n)+s) - f(n+s)| = |f(S(n+s)) - f(n+s)| ≤ 1/2^{n+s} ≤ 1/2^n *)
+  (* |f((S n)+s) - f(n+s)| = |f(S(n+s)) - f(n+s)|  1/2^{n+s}  1/2^n *)
   replace (S n + s)%nat with (S (n + s))%nat by lia.
   eapply Qle_trans; [apply (Hcauchy (n + s)%nat)|].
   apply pow2_shift_le.
@@ -638,54 +638,10 @@ Definition RR_shift (x : RR) (s : nat) : RR :=
   mkRR (fun n => rr_seq x (n + s)%nat) 
        (is_cauchy_geo_shift (rr_seq x) s (rr_mod x)).
 
-(* General gap bound: |f(n+s) - f(n)| ≤ 2/2^n for any s *)
-Lemma cauchy_gap_bound : forall (f : nat -> Q) (n s : nat),
-  is_cauchy_geo f ->
-  Qabs (f (n + s)%nat - f n) <= 2 # pow2 n.
-Proof.
-  intros f n s Hcauchy.
-  induction s as [|s' IH].
-  - (* s = 0 *)
-    replace (n + 0)%nat with n by lia.
-    assert (Heq : f n - f n == 0) by ring.
-    rewrite (Qabs_eq_zero _ Heq).
-    unfold Qle. simpl. lia.
-  - (* s = S s' *)
-    (* |f(n+S s') - f(n)| ≤ |f(n+S s') - f(n+s')| + |f(n+s') - f(n)| *)
-    assert (Htri : Qabs (f (n + S s')%nat - f n) <=
-                   Qabs (f (n + S s')%nat - f (n + s')%nat) + Qabs (f (n + s')%nat - f n)).
-    { assert (Heq : f (n + S s')%nat - f n == 
-                    (f (n + S s')%nat - f (n + s')%nat) + (f (n + s')%nat - f n)) by ring.
-      rewrite Heq. apply Qabs_triangle. }
-    eapply Qle_trans; [exact Htri|].
-    
-    (* First term: |f(S(n+s')) - f(n+s')| ≤ 1/2^{n+s'} ≤ 1/2^n *)
-    assert (Hstep : Qabs (f (n + S s')%nat - f (n + s')%nat) <= 1 # pow2 n).
-    { replace (n + S s')%nat with (S (n + s'))%nat by lia.
-      eapply Qle_trans; [apply (Hcauchy (n + s')%nat)|].
-      apply pow2_shift_le. }
-    
-    (* Second term: IH gives |f(n+s') - f(n)| ≤ 2/2^n *)
-    eapply Qle_trans; [apply Qplus_le_compat; [exact Hstep | exact IH]|].
-    
-    (* 1/2^n + 2/2^n = 3/2^n ≤ 2/2^n? No! But we need a tighter bound. *)
-    (* Actually, let's be more careful. We need |f(n+s) - f(n)| ≤ 2/2^n *)
-    (* 
-       Σ_{k=n}^{n+s-1} 1/2^k = 1/2^n * (1 + 1/2 + ... + 1/2^{s-1})
-                             = 1/2^n * (2 - 1/2^{s-1}) 
-                             < 2/2^n
-    *)
-    (* The step adds 1/2^{n+s'} which is ≤ 1/2^n * 1/2^{s'} *)
-    (* So total is < 2/2^n *)
-    
-    (* Let's prove it directly: 1/2^n + 2/2^n = 3/2^n *)
-    (* Hmm, that's > 2/2^n. We need a different approach. *)
-    
-    (* Actually the key is: Σ_{k=n}^{n+s-1} 1/2^k < 2/2^n *)
-    (* Let's use strong induction with a tighter bound *)
-Abort.
-
-(* Better approach: prove the geometric series bound directly *)
+(*
+  Note: The geometric series approach gives a tighter bound that works.
+  The key insight is: Sum_{k=n}^{n+s-1} 1/2^k = 2/2^n - 2/2^{n+s} < 2/2^n
+*)
 Lemma geometric_sum_bound : forall (f : nat -> Q) (n s : nat),
   is_cauchy_geo f ->
   Qabs (f (n + s)%nat - f n) <= (2 # pow2 n) - (2 # pow2 (n + s)).
@@ -696,7 +652,7 @@ Proof.
     replace (n + 0)%nat with n by lia.
     assert (Heq : f n - f n == 0) by ring.
     rewrite (Qabs_eq_zero _ Heq).
-    (* 0 ≤ 2/2^n - 2/2^n = 0 *)
+    (* 0  2/2^n - 2/2^n = 0 *)
     assert (Hzero : (2 # pow2 n) - (2 # pow2 n) == 0) by ring.
     rewrite Hzero. unfold Qle. simpl. lia.
   - (* s = S s' *)
@@ -714,7 +670,7 @@ Proof.
     
     eapply Qle_trans; [apply Qplus_le_compat; [exact Hstep | exact IH]|].
     
-    (* Goal: 1/2^{n+s'} + (2/2^n - 2/2^{n+s'}) ≤ 2/2^n - 2/2^{n+S s'} *)
+    (* Goal: 1/2^{n+s'} + (2/2^n - 2/2^{n+s'})  2/2^n - 2/2^{n+S s'} *)
     replace (n + S s')%nat with (S (n + s'))%nat by lia.
     apply inductive_step_identity.
 Qed.
@@ -771,14 +727,14 @@ Qed.
 Lemma RReq_shift : forall (x : RR) (s : nat), RR_shift x s =RR= x.
 Proof.
   intros x s. unfold RReq, RR_shift. simpl. intro k.
-  (* Need: |x(n+s) - x(n)| ≤ 1/2^k for large enough n *)
+  (* Need: |x(n+s) - x(n)|  1/2^k for large enough n *)
   (* From cauchy_gap_bound: |x(n+s) - x(n)| < 2/2^n *)
-  (* So need 2/2^n ≤ 1/2^k, i.e., n ≥ k+1 *)
+  (* So need 2/2^n  1/2^k, i.e., n  k+1 *)
   exists (S k). intros n Hn.
   assert (Hgap : Qabs (rr_seq x (n + s)%nat - rr_seq x n) < 2 # pow2 n).
   { apply cauchy_gap_bound. apply (rr_mod x). }
   eapply Qle_trans; [apply Qlt_le_weak; exact Hgap|].
-  (* 2/2^n ≤ 1/2^k when n ≥ S k *)
+  (* 2/2^n  1/2^k when n >= S k *)
   (* Since pow2 (S k) = 2 * pow2 k and pow2 n >= pow2 (S k), we have *)
   (* 2/pow2 n <= 2/(2*pow2 k) = 1/pow2 k *)
   unfold Qle. simpl.
@@ -812,10 +768,10 @@ Qed.
 
 (*
   For multiplication with bounds Bx, By:
-  |x(n+1)y(n+1) - x(n)y(n)| ≤ |x(n+1)||y(n+1) - y(n)| + |y(n)||x(n+1) - x(n)|
-                           ≤ Bx/2^n + By/2^n = (Bx + By)/2^n
+  |x(n+1)y(n+1) - x(n)y(n)|  |x(n+1)||y(n+1) - y(n)| + |y(n)||x(n+1) - x(n)|
+                            Bx/2^n + By/2^n = (Bx + By)/2^n
   
-  Solution: Shift index by k where 2^k ≥ Bx + By to get (Bx + By)/2^{n+k} ≤ 1/2^n
+  Solution: Shift index by k where 2^k  Bx + By to get (Bx + By)/2^{n+k}  1/2^n
 *)
 
 (* Compute sufficient shift: k = |num| + den + 1 guarantees 2^k > num/den *)
@@ -1699,45 +1655,45 @@ Print Assumptions RR_mult_plus_distr_r.
 (* ============================================================================ *)
 
 (*
-  ═══════════════════════════════════════════════════════════════════════════════
+  *******************************************************************************
   RELATIONAL REALS - COMPLETE VERSION (GEOMETRIC MODULUS)
-  ═══════════════════════════════════════════════════════════════════════════════
+  *******************************************************************************
   
   ACHIEVEMENT: ZERO AXIOMS, ZERO ADMITS - Complete Ring Structure
   
   FULLY PROVEN:
-  ✓ RReq_Equivalence: Equivalence relation on Cauchy sequences
-  ✓ RR_zero_neq_one: 0 ≠ 1 in RR
-  ✓ RR_zero_lt_one: 0 < 1 in RR  
-  ✓ Q_to_RR_add: Q addition embeds
-  ✓ Q_to_RR_le: Q order embeds
-  ✓ cauchy_add: Sum of Cauchy sequences is Cauchy
-  ✓ RR_le_dec_Q: Decidable comparison for Q-embedded values
-  ✓ cauchy_bounded_by_first: |f(n)| ≤ |f(0)| + 2 (geometric series bound)
-  ✓ Q_to_RR_mult: Q multiplication embeds
-  ✓ RR_mult_0_l, RR_mult_0_r: Zero annihilates multiplication
-  ✓ RR_mult_comm: Multiplication is commutative
-  ✓ RR_mult_1_l, RR_mult_1_r: Multiplicative identity
-  ✓ RR_mult_assoc: Multiplication is associative
-  ✓ RR_mult_plus_distr_l: Left distributivity
-  ✓ RR_mult_plus_distr_r: Right distributivity
+   RReq_Equivalence: Equivalence relation on Cauchy sequences
+   RR_zero_neq_one: 0 <> 1 in RR
+   RR_zero_lt_one: 0 < 1 in RR  
+   Q_to_RR_add: Q addition embeds
+   Q_to_RR_le: Q order embeds
+   cauchy_add: Sum of Cauchy sequences is Cauchy
+   RR_le_dec_Q: Decidable comparison for Q-embedded values
+   cauchy_bounded_by_first: |f(n)| <= |f(0)| + 2 (geometric series bound)
+   Q_to_RR_mult: Q multiplication embeds
+   RR_mult_0_l, RR_mult_0_r: Zero annihilates multiplication
+   RR_mult_comm: Multiplication is commutative
+   RR_mult_1_l, RR_mult_1_r: Multiplicative identity
+   RR_mult_assoc: Multiplication is associative
+   RR_mult_plus_distr_l: Left distributivity
+   RR_mult_plus_distr_r: Right distributivity
   
   SHIFT INFRASTRUCTURE:
-  ✓ is_cauchy_geo_shift: Shifted sequences remain Cauchy
-  ✓ RR_shift: Shift operator on RR
-  ✓ geometric_sum_bound: |f(n+s) - f(n)| ≤ 2/2^n - 2/2^{n+s}
-  ✓ cauchy_gap_bound: |f(n+s) - f(n)| < 2/2^n
-  ✓ RReq_shift: Shifted sequence equivalent to original
+   is_cauchy_geo_shift: Shifted sequences remain Cauchy
+   RR_shift: Shift operator on RR
+   geometric_sum_bound: |f(n+s) - f(n)| <= 2/2^n - 2/2^{n+s}
+   cauchy_gap_bound: |f(n+s) - f(n)| < 2/2^n
+   RReq_shift: Shifted sequence equivalent to original
   
   KEY HELPER LEMMAS:
-  ✓ product_diff_bound: |abc - def| ≤ δ(BᵧBᵤ + BₓBᵤ + BₓBᵧ)
-  ✓ product2_diff_bound: |ab - cd| ≤ δ(Bᵦ + Bₐ)
-  ✓ general_gap_bound: |f(i) - f(j)| ≤ 2/2^n when i,j ≥ n
-  ✓ geom_budget: (2/2^(S k + bound_shift(2C))) * C ≤ 1/2^k
-  ✓ pow2_S_k_s: pow2(S k + s) = 2 * pow2 k * pow2 s
+   product_diff_bound: |abc - def| <= delta(B_yB_z + BB_z + BB_y)
+   product2_diff_bound: |ab - cd| <= delta(B_x + B_y)
+   general_gap_bound: |f(i) - f(j)| <= 2/2^n when i,j >= n
+   geom_budget: (2/2^(S k + bound_shift(2C))) * C <= 1/2^k
+   pow2_S_k_s: pow2(S k + s) = 2 * pow2 k * pow2 s
   
-  ═══════════════════════════════════════════════════════════════════════════════
+  *******************************************************************************
   COMPLETE COMMUTATIVE RING WITH IDENTITY
   69 lemmas proven with Qed | 0 admits | 0 axioms
-  ═══════════════════════════════════════════════════════════════════════════════
+  *******************************************************************************
 *)
