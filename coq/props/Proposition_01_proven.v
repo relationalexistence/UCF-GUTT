@@ -1,317 +1,574 @@
 (*
-  UCF/GUTT™ - Proven Proposition 1: Complete Formal Proof
-  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║                                                                           ║
+  ║              PROPOSITION 1: SERIALITY VIA WHOLE-COMPLETION                ║
+  ║                                                                           ║
+  ║                         UCF/GUTT™ Formal Verification                     ║
+  ║                                                                           ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                           ║
+  ║  THEOREM: ∀x∈U_x, ∃y∈U_x: R'(x,y)                                        ║
+  ║                                                                           ║
+  ║  "Every entity in the extended universe has at least one outgoing edge"  ║
+  ║                                                                           ║
+  ║  This is SERIALITY (every node has a successor), not pairwise            ║
+  ║  connectivity. The construction adds a terminal sink (Whole) that        ║
+  ║  every entity relates to, guaranteeing seriality by definition.          ║
+  ║                                                                           ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                           ║
+  ║  IMPORTANT CLARIFICATION:                                                 ║
+  ║                                                                           ║
+  ║  Proposition 1 holds for ALL base relations R because R' is DEFINED      ║
+  ║  to relate every x to Whole. This is a definitional/constructive         ║
+  ║  principle, not a constraint discovered about arbitrary relations.       ║
+  ║                                                                           ║
+  ║  The philosophical claim is: by EXTENDING any universe U with the Whole, ║
+  ║  and DEFINING R' to include universal Whole-targeting, we transform      ║
+  ║  "no entity is isolated" from an assumption into a construction.         ║
+  ║                                                                           ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                           ║
+  ║  STATUS: ✓ ZERO AXIOMS                                                    ║
+  ║          ✓ ZERO ADMITS                                                    ║
+  ║          ✓ FULLY CONSTRUCTIVE                                             ║
+  ║          ✓ MACHINE VERIFIED (Coq 8.18+)                                   ║
+  ║                                                                           ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                           ║
+  ║  USAGE: Import Core and ignore build artifacts (.glob, .aux, .vo, etc.)  ║
+  ║         BackwardCompat is provided only for legacy code compatibility.   ║
+  ║                                                                           ║
+  ║  © 2023–2025 Michael Fillippini. All Rights Reserved.                     ║
+  ║  UCF/GUTT™ Research & Evaluation License v1.1                             ║
+  ║                                                                           ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+*)
+
+Require Import Coq.Relations.Relation_Operators.
+Require Import Coq.Relations.Relation_Definitions.
+
+(* ========================================================================== *)
+(*                                                                            *)
+(*                        MODULE: Core (Fully Closed)                         *)
+(*                                                                            *)
+(*  All theorems here are explicitly quantified over U and R.                 *)
+(*  Print Assumptions shows: "Closed under the global context"                *)
+(*                                                                            *)
+(*  This is the CANONICAL interface. New code should use Core.*              *)
+(*                                                                            *)
+(* ========================================================================== *)
+
+Module Core.
+
+  (* ------------------------------------------------------------------------ *)
+  (*                    Serial Completion (Whole-Completion)                  *)
+  (* ------------------------------------------------------------------------ *)
   
-  THEOREM: ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y)
-  
-  This proof establishes that the refined relation R' with the Whole
-  guarantees universal connectivity by construction.
-*)
+  (*
+    The "serial completion" pattern:
+    
+    Given any universe U and relation R, we construct:
+    - An extended universe Ux = U ∪ {Whole}
+    - An extended relation R' that adds Whole as a terminal sink w.r.t. U
+    
+    This makes R' serial (every element has an outgoing edge)
+    while preserving R on the original universe (conservative extension).
+    
+    Terminology:
+    - "Serial" = every node has at least one successor (outgoing edge)
+    - "Terminal sink w.r.t. U" = Whole has no outgoing edges TO U
+      (but Whole does have a self-loop: R'(Whole,Whole) = True)
+    - This is NOT pairwise connectivity; we only guarantee seriality
+  *)
 
-Require Import Coq.Logic.Classical_Prop.
+  (* Extended universe: U_x = U ∪ {Whole} via option type *)
+  Definition Ux (U : Type) : Type := option U.
 
-(* ================================================================ *)
-(* SECTION 1: Base Universe and Original Relation                  *)
-(* ================================================================ *)
+  (* Constructors with implicit type argument for ergonomics *)
+  Definition Whole {U : Type} : Ux U := None.
+  Definition elem  {U : Type} (e : U) : Ux U := Some e.
 
-(* U: The original universe of entities *)
-Parameter U : Type.
+  (*
+    Extended relation R' (the serial completion of R):
+    
+    1. R'(Some a, Some b) := R a b    -- conservative: restricts to R on U
+    2. R'(x, None) := True            -- completion: everything relates to Whole
+    3. R'(None, Some _) := False      -- Whole is terminal sink w.r.t. U
+    
+    Note: R'(Whole, Whole) = True (self-loop on the sink).
+    This construction guarantees seriality.
+  *)
+  Definition R_prime {U : Type} (R : U -> U -> Prop) (x y : Ux U) : Prop :=
+    match x, y with
+    | Some a, Some b => R a b
+    | _,      None   => True
+    | None,   Some _ => False
+    end.
 
-(* R: The original binary relation on U *)
-Parameter R : U -> U -> Prop.
+  (* Named serial completion operator with explicit arity *)
+  Definition serial_completion {U : Type} (R : U -> U -> Prop) : Ux U -> Ux U -> Prop :=
+    R_prime R.
 
-(* Note: We make NO assumptions about R. It may be empty, partial, etc. *)
+  (* ------------------------------------------------------------------------ *)
+  (*                    PROPOSITION 1: Seriality                              *)
+  (* ------------------------------------------------------------------------ *)
 
-(* ================================================================ *)
-(* SECTION 2: Extended Universe Uₓ = U ∪ {Whole}                  *)
-(* ================================================================ *)
-
-(*
-  We represent Uₓ using Coq's option type:
-  - Some e : represents an element e ∈ U
-  - None   : represents the Whole
-  
-  This gives us Uₓ = U ∪ {Whole} by construction.
-*)
-
-Definition Ux : Type := option U.
-
-(* Explicit constructors for clarity *)
-Definition elem (e : U) : Ux := Some e.
-Definition Whole : Ux := None.
-
-(* ================================================================ *)
-(* SECTION 3: Definition of Extended Relation R'                   *)
-(* ================================================================ *)
-
-(*
-  R' is defined by cases:
-  1. If both arguments are in U, use original R
-  2. If the target is Whole, the relation always holds
-  3. If Whole is the source and target is in U, the relation fails
-*)
-
-Definition R_prime (x y : Ux) : Prop :=
-  match x, y with
-  | Some a, Some b => R a b           (* R(a,b) for a,b ∈ U *)
-  | _,      None   => True            (* Anything relates to Whole *)
-  | None,   Some _ => False           (* Whole doesn't relate out to U *)
-  end.
-
-(* ================================================================ *)
-(* SECTION 4: Main Theorem - Universal Connectivity                *)
-(* ================================================================ *)
-
-(*
-  REFINED PROPOSITION 1:
-  Every entity in the extended universe Uₓ relates to at least one
-  entity in Uₓ via R'.
-*)
-
-Theorem refined_proposition_1 :
-  forall x : Ux, exists y : Ux, R_prime x y.
-Proof.
-  intro x.
-  (* Universal witness: Whole always works *)
-  exists None.
-  unfold R_prime.
-  (* Case analysis on x *)
-  destruct x as [e | ].
-  - (* Case: x = Some e (i.e., x ∈ U) *)
-    (* Goal: R_prime (Some e) None = True *)
-    reflexivity.
-  - (* Case: x = None (i.e., x = Whole) *)
-    (* Goal: R_prime None None = True *)
-    reflexivity.
-Qed.
-
-(* ================================================================ *)
-(* SECTION 5: Key Properties of R'                                 *)
-(* ================================================================ *)
-
-(* Property 1: R' restricts to R on U *)
-Lemma R_prime_restricts :
-  forall (a b : U), R_prime (Some a) (Some b) <-> R a b.
-Proof.
-  intros a b.
-  unfold R_prime.
-  split; intro H; exact H.
-Qed.
-
-(* Property 2: Everything relates to Whole *)
-Lemma everything_relates_to_Whole :
-  forall x : Ux, R_prime x None.
-Proof.
-  intro x.
-  unfold R_prime.
-  destruct x; reflexivity.
-Qed.
-
-(* Property 3: Whole doesn't relate out to U elements *)
-Lemma Whole_no_outgoing :
-  forall (b : U), ~ R_prime None (Some b).
-Proof.
-  intros b H.
-  unfold R_prime in H.
-  exact H.
-Qed.
-
-(* Property 4: Whole relates to itself *)
-Lemma Whole_relates_to_Whole :
-  R_prime None None.
-Proof.
-  unfold R_prime.
-  reflexivity.
-Qed.
-
-(* ================================================================ *)
-(* SECTION 6: Alternative Characterizations                        *)
-(* ================================================================ *)
-
-(* Alternative proof: explicit witness function *)
-Definition witness (x : Ux) : Ux := None.
-
-Theorem refined_proposition_1_constructive :
-  forall x : Ux, R_prime x (witness x).
-Proof.
-  intro x.
-  unfold witness.
-  apply everything_relates_to_Whole.
-Qed.
-
-(* ================================================================ *)
-(* SECTION 7: Comparison with Original Proposition 1               *)
-(* ================================================================ *)
-
-(*
-  The original ∀x∈U, ∃y∈U: R(x,y) cannot be proven without assumptions
-  on R (e.g., R could be empty). However, the refined version with Whole
-  is provable by construction.
-*)
-
-(* Create a Coq Section to scope the hypothetical assumption *)
-Section OriginalComparison.
-
-  (* Hypothetical: If we assume original connectivity, we can embed it *)
-  Hypothesis original_connectivity : forall x : U, exists y : U, R x y.
-
-  Theorem original_embedded_in_refined :
-    forall x : U, exists y : Ux, R_prime (Some x) y.
+  (*
+    MAIN THEOREM: R' is serial (every entity has an outgoing edge).
+    
+    Proof: The witness is always Whole. By construction, R'(x, Whole) = True.
+    This is the core insight: seriality is CONSTRUCTED by definition of R'.
+  *)
+  Theorem proposition_1 :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      exists y : Ux U, R_prime R x y.
   Proof.
-    intro x.
-    destruct (original_connectivity x) as [y Hxy].
-    exists (Some y).
-    unfold R_prime.
-    exact Hxy.
+    intros U R x.
+    exists Whole.
+    cbn; destruct x; exact I.
   Qed.
 
-End OriginalComparison.
+  (* Alternate name emphasizing what we actually prove *)
+  Definition seriality := proposition_1.
 
-(* But crucially, the refined version needs no such assumption! *)
+  (* Constructive witness function *)
+  Definition witness {U : Type} : Ux U -> Ux U := fun _ => Whole.
 
-(* ================================================================ *)
-(* SECTION 8: Philosophical Implications                           *)
-(* ================================================================ *)
+  Theorem proposition_1_constructive :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      R_prime R x (witness x).
+  Proof.
+    intros U R x.
+    cbn; destruct x; exact I.
+  Qed.
 
-(*
-  This proof demonstrates that by introducing the Whole as a
-  guaranteed relational target, we transform Proposition 1 from
-  an asserted universal truth into a constructed necessity.
-  
-  Key insights:
-  1. No entity can be truly isolated (everything relates to Whole)
-  2. The Whole acts as the self-referential totality
-  3. Observation itself becomes a relation (observer relates to Whole)
-  4. Subject-object dichotomy dissolves in favor of relational continuum
-*)
+  (* ------------------------------------------------------------------------ *)
+  (*                         Key Properties of R'                             *)
+  (* ------------------------------------------------------------------------ *)
 
-(* ================================================================ *)
-(* SECTION 9: Seriality and Totality                               *)
-(* ================================================================ *)
+  (* R' is a conservative extension: it restricts to R on U × U *)
+  Lemma R_prime_restricts :
+    forall (U : Type) (R : U -> U -> Prop) (a b : U),
+      R_prime R (elem a) (elem b) <-> R a b.
+  Proof.
+    intros; cbn; tauto.
+  Qed.
 
-(* R' is a serial relation (every element has a successor) *)
-Theorem R_prime_is_serial :
-  forall x : Ux, exists y : Ux, R_prime x y.
-Proof.
-  exact refined_proposition_1.
-Qed.
+  (* Lift lemma: any base edge lifts to extended universe *)
+  Lemma R_lift :
+    forall (U : Type) (R : U -> U -> Prop) (a b : U),
+      R a b -> R_prime R (elem a) (elem b).
+  Proof.
+    intros; cbn; assumption.
+  Qed.
 
-(* R' is total from every point to Whole *)
-Theorem R_prime_total_to_Whole :
-  forall x : Ux, R_prime x Whole.
-Proof.
-  exact everything_relates_to_Whole.
-Qed.
+  (* Everything relates to Whole (this IS the definition, made explicit) *)
+  Lemma everything_relates_to_Whole :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      R_prime R x Whole.
+  Proof.
+    intros; cbn; destruct x; exact I.
+  Qed.
 
-(* ================================================================ *)
-(* SECTION 10: Decidability Properties                             *)
-(* ================================================================ *)
+  (* Whole has a self-loop *)
+  Lemma Whole_self_relates :
+    forall (U : Type) (R : U -> U -> Prop),
+      R_prime R Whole Whole.
+  Proof.
+    intros; exact I.
+  Qed.
 
-(* Create a Section to scope the decidability assumption *)
-Section Decidability.
+  (* Whole is a terminal sink w.r.t. U (no outgoing edges to U elements) *)
+  Lemma Whole_terminal_sink :
+    forall (U : Type) (R : U -> U -> Prop) (b : U),
+      ~ R_prime R Whole (elem b).
+  Proof.
+    intros; cbn; tauto.
+  Qed.
 
-  (* If R is decidable, so is R' *)
-  Hypothesis R_decidable : forall (a b : U), {R a b} + {~ R a b}.
+  (* Legacy alias *)
+  Definition Whole_no_outgoing := Whole_terminal_sink.
+
+  (* ------------------------------------------------------------------------ *)
+  (*                           Derived Properties                             *)
+  (* ------------------------------------------------------------------------ *)
+
+  (* No entity is isolated (contrapositive of seriality) *)
+  Theorem no_isolated_entities :
+    forall (U : Type) (R : U -> U -> Prop),
+      ~ exists x : Ux U, forall y : Ux U, ~ R_prime R x y.
+  Proof.
+    intros U R [x Hx].
+    apply (Hx Whole).
+    apply everything_relates_to_Whole.
+  Qed.
+
+  (* R' is serial: same statement as proposition_1, semantic alias *)
+  Notation R_prime_is_serial := proposition_1 (only parsing).
+
+  (* R' is total to Whole: same as everything_relates_to_Whole *)
+  Notation R_prime_total_to_Whole := everything_relates_to_Whole (only parsing).
+
+  (* ------------------------------------------------------------------------ *)
+  (*                    Adjacency and Reachability                            *)
+  (* ------------------------------------------------------------------------ *)
+
+  (* 
+    is_adjacent: 1-step connection via R' 
+    This is what R_prime directly gives us.
+  *)
+  Definition is_adjacent {U : Type} (R : U -> U -> Prop) (x y : Ux U) : Prop :=
+    R_prime R x y.
+
+  Lemma all_adjacent_to_Whole :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      is_adjacent R x Whole.
+  Proof.
+    intros; apply everything_relates_to_Whole.
+  Qed.
+
+  Lemma one_step_adjacent :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      exists y : Ux U, is_adjacent R x y.
+  Proof.
+    intros; exists Whole; apply everything_relates_to_Whole.
+  Qed.
+
+  (*
+    reachable: multi-step path via reflexive-transitive closure of R'
+    This is true graph-theoretic reachability.
+  *)
+  Definition reachable {U : Type} (R : U -> U -> Prop) : Ux U -> Ux U -> Prop :=
+    clos_refl_trans (Ux U) (R_prime R).
+
+  (* Everything is reachable from itself (reflexivity) *)
+  Lemma reachable_refl :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      reachable R x x.
+  Proof.
+    intros; apply rt_refl.
+  Qed.
+
+  (* If adjacent, then reachable (1-step implies reachability) *)
+  Lemma adjacent_implies_reachable :
+    forall (U : Type) (R : U -> U -> Prop) (x y : Ux U),
+      is_adjacent R x y -> reachable R x y.
+  Proof.
+    intros; apply rt_step; assumption.
+  Qed.
+
+  (* Everything reaches Whole in one step *)
+  Lemma all_reach_Whole :
+    forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
+      reachable R x Whole.
+  Proof.
+    intros; apply rt_step; apply everything_relates_to_Whole.
+  Qed.
+
+  (* Reachability is transitive *)
+  Lemma reachable_trans :
+    forall (U : Type) (R : U -> U -> Prop) (x y z : Ux U),
+      reachable R x y -> reachable R y z -> reachable R x z.
+  Proof.
+    intros; eapply rt_trans; eassumption.
+  Qed.
+
+  (*
+    Common successor: any two elements have a common successor (Whole).
+    This is what people often MEAN by "no isolation" - everyone is
+    connected THROUGH the Whole, even if not directly to each other.
+  *)
+  Lemma common_successor :
+    forall (U : Type) (R : U -> U -> Prop) (x y : Ux U),
+      exists z : Ux U, reachable R x z /\ reachable R y z.
+  Proof.
+    intros.
+    exists Whole.
+    split; apply all_reach_Whole.
+  Qed.
+
+  (* ------------------------------------------------------------------------ *)
+  (*                    Decidability (Conditional)                            *)
+  (* ------------------------------------------------------------------------ *)
 
   Theorem R_prime_decidable :
-    forall (x y : Ux), {R_prime x y} + {~ R_prime x y}.
+    forall (U : Type) (R : U -> U -> Prop),
+      (forall a b : U, {R a b} + {~ R a b}) ->
+      forall (x y : Ux U), {R_prime R x y} + {~ R_prime R x y}.
   Proof.
-    intros x y.
-    destruct x as [a | ]; destruct y as [b | ].
-    - (* Both in U: use R decidability *)
-      unfold R_prime.
-      apply R_decidable.
-    - (* x in U, y = Whole: always True *)
-      left. unfold R_prime. reflexivity.
-    - (* x = Whole, y in U: always False *)
-      right. unfold R_prime. intro H. exact H.
-    - (* Both Whole: always True *)
-      left. unfold R_prime. reflexivity.
+    intros U R Hdec x y.
+    destruct x as [a|], y as [b|]; cbn.
+    - apply Hdec.
+    - left; exact I.
+    - right; tauto.
+    - left; exact I.
   Qed.
 
-End Decidability.
+End Core.
 
-(* ================================================================ *)
-(* SECTION 11: Relation to Graph Theory                            *)
-(* ================================================================ *)
+(* ========================================================================== *)
+(*                                                                            *)
+(*               MODULE: ConcreteExample (Worst-Case Sanity Check)            *)
+(*                                                                            *)
+(*  Instantiates U := nat, R := False (empty relation).                       *)
+(*  Demonstrates that seriality holds even with NO base edges.                *)
+(*                                                                            *)
+(* ========================================================================== *)
+
+Module ConcreteExample.
+
+  Definition U : Type := nat.
+  Definition R : U -> U -> Prop := fun _ _ => False.
+
+  (* Reuse Core definitions *)
+  Definition Ux : Type := Core.Ux U.
+  Definition Whole : Ux := @Core.Whole U.
+  Definition R_prime : Ux -> Ux -> Prop := Core.R_prime R.
+
+  (* Seriality follows from Core.proposition_1 *)
+  Theorem seriality :
+    forall x : Ux, exists y : Ux, R_prime x y.
+  Proof.
+    intro x; exact (Core.proposition_1 U R x).
+  Qed.
+
+  (* Legacy alias *)
+  Definition connectivity := seriality.
+
+  (* Verify R is indeed empty on U *)
+  Lemma R_is_empty : forall a b : U, ~ R a b.
+  Proof.
+    intros; cbn; tauto.
+  Qed.
+
+  (* But R' has edges (to Whole) *)
+  Lemma R_prime_has_edges : exists x y : Ux, R_prime x y.
+  Proof.
+    exists Whole, Whole; exact I.
+  Qed.
+
+End ConcreteExample.
+
+(* ========================================================================== *)
+(*                                                                            *)
+(*              MODULE: BackwardCompat (Legacy Parameterized API)             *)
+(*                                                                            *)
+(*  Provides the same API as the original Proposition_01_proven.v for         *)
+(*  compatibility with existing files that import this module.                *)
+(*                                                                            *)
+(*  Note: Print Assumptions will show U, R as parameters (expected).          *)
+(*  For truly closed theorems, use Core.* with explicit quantification.       *)
+(*                                                                            *)
+(* ========================================================================== *)
+
+Module BackwardCompat.
+
+  Parameter U : Type.
+  Parameter R : U -> U -> Prop.
+
+  (* Definitions delegating to Core *)
+  Definition Ux : Type := Core.Ux U.
+  Definition elem (e : U) : Ux := @Core.elem U e.
+  Definition Whole : Ux := @Core.Whole U.
+  Definition R_prime (x y : Ux) : Prop := Core.R_prime R x y.
+  Definition witness (x : Ux) : Ux := @Core.witness U x.
+
+  (* Main theorems - delegate to Core *)
+  Definition refined_proposition_1 : forall x : Ux, exists y : Ux, R_prime x y :=
+    Core.proposition_1 U R.
+
+  Definition refined_proposition_1_constructive : forall x : Ux, R_prime x (witness x) :=
+    Core.proposition_1_constructive U R.
+
+  (* Properties - delegate to Core *)
+  Lemma R_prime_restricts :
+    forall (a b : U), R_prime (elem a) (elem b) <-> R a b.
+  Proof. intros; apply Core.R_prime_restricts. Qed.
+
+  Definition R_lift : forall (a b : U), R a b -> R_prime (elem a) (elem b) :=
+    Core.R_lift U R.
+
+  Definition everything_relates_to_Whole : forall x : Ux, R_prime x Whole :=
+    Core.everything_relates_to_Whole U R.
+
+  Definition Whole_terminal_sink : forall (b : U), ~ R_prime Whole (elem b) :=
+    Core.Whole_terminal_sink U R.
+
+  (* Legacy alias *)
+  Definition Whole_no_outgoing := Whole_terminal_sink.
+
+  Definition Whole_relates_to_Whole : R_prime Whole Whole :=
+    Core.Whole_self_relates U R.
+
+  (* Derived - aliases *)
+  Definition R_prime_is_serial := refined_proposition_1.
+  Definition R_prime_total_to_Whole := everything_relates_to_Whole.
+
+  Theorem no_isolated_entities :
+    ~ exists x : Ux, forall y : Ux, ~ R_prime x y.
+  Proof.
+    intros [x Hx]; apply (Hx Whole); apply everything_relates_to_Whole.
+  Qed.
+
+  (* Adjacency - delegate to Core *)
+  Definition is_adjacent (x y : Ux) : Prop := Core.is_adjacent R x y.
+  Definition all_adjacent_to_Whole : forall x : Ux, is_adjacent x Whole :=
+    Core.all_adjacent_to_Whole U R.
+
+  Lemma one_step_adjacent : forall x : Ux, exists y : Ux, is_adjacent x y.
+  Proof. intro x; exists Whole; apply all_adjacent_to_Whole. Qed.
+
+  (* Reachability - delegate to Core *)
+  Definition reachable : Ux -> Ux -> Prop := Core.reachable R.
+  Definition all_reach_Whole : forall x : Ux, reachable x Whole :=
+    Core.all_reach_Whole U R.
+
+  Definition common_successor : forall (x y : Ux), exists z, reachable x z /\ reachable y z :=
+    Core.common_successor U R.
+
+  (* Decidability *)
+  Section Decidability.
+    Hypothesis R_decidable : forall (a b : U), {R a b} + {~ R a b}.
+
+    Definition R_prime_decidable : forall (x y : Ux), {R_prime x y} + {~ R_prime x y} :=
+      Core.R_prime_decidable U R R_decidable.
+  End Decidability.
+
+  (* Original comparison section *)
+  Section OriginalComparison.
+    Hypothesis original_seriality : forall x : U, exists y : U, R x y.
+
+    Theorem original_embedded_in_refined :
+      forall x : U, exists y : Ux, R_prime (elem x) y.
+    Proof.
+      intro x.
+      destruct (original_seriality x) as [y Hxy].
+      exists (elem y); cbn; exact Hxy.
+    Qed.
+  End OriginalComparison.
+
+  (* Exports with UCF_GUTT prefix *)
+  Definition UCF_GUTT_Proposition_1_Refined := refined_proposition_1.
+  Definition UCF_GUTT_Whole_Universal := everything_relates_to_Whole.
+  Definition UCF_GUTT_R_Restriction := R_prime_restricts.
+  Definition UCF_GUTT_No_Isolation := no_isolated_entities.
+  Definition UCF_GUTT_Witness := witness.
+  Definition UCF_GUTT_Witness_Works := refined_proposition_1_constructive.
+
+End BackwardCompat.
+
+(* ========================================================================== *)
+(*                                                                            *)
+(*                      TOP-LEVEL EXPORTS (Legacy Support)                    *)
+(*                                                                            *)
+(*  These re-exports maintain compatibility with files that do:               *)
+(*    Require Import Proposition_01_proven.                                   *)
+(*    Check refined_proposition_1.                                            *)
+(*                                                                            *)
+(*  NOTE: U and R are NOT exported at top level to avoid namespace pollution. *)
+(*  Use BackwardCompat.U / BackwardCompat.R if you need direct access.        *)
+(*                                                                            *)
+(* ========================================================================== *)
+
+(* Core definitions *)
+Definition Ux := BackwardCompat.Ux.
+Definition elem := BackwardCompat.elem.
+Definition Whole := BackwardCompat.Whole.
+Definition R_prime := BackwardCompat.R_prime.
+Definition witness := BackwardCompat.witness.
+
+(* Main theorems *)
+Definition refined_proposition_1 := BackwardCompat.refined_proposition_1.
+Definition refined_proposition_1_constructive := BackwardCompat.refined_proposition_1_constructive.
+
+(* Properties *)
+Definition R_prime_restricts := BackwardCompat.R_prime_restricts.
+Definition R_lift := BackwardCompat.R_lift.
+Definition everything_relates_to_Whole := BackwardCompat.everything_relates_to_Whole.
+Definition Whole_terminal_sink := BackwardCompat.Whole_terminal_sink.
+Definition Whole_no_outgoing := BackwardCompat.Whole_no_outgoing.
+Definition Whole_relates_to_Whole := BackwardCompat.Whole_relates_to_Whole.
+Definition R_prime_is_serial := BackwardCompat.R_prime_is_serial.
+Definition R_prime_total_to_Whole := BackwardCompat.R_prime_total_to_Whole.
+Definition no_isolated_entities := BackwardCompat.no_isolated_entities.
+
+(* Adjacency and reachability *)
+Definition is_adjacent := BackwardCompat.is_adjacent.
+Definition all_adjacent_to_Whole := BackwardCompat.all_adjacent_to_Whole.
+Definition one_step_adjacent := BackwardCompat.one_step_adjacent.
+Definition reachable := BackwardCompat.reachable.
+Definition all_reach_Whole := BackwardCompat.all_reach_Whole.
+Definition common_successor := BackwardCompat.common_successor.
+
+(* UCF_GUTT prefixed exports *)
+Definition UCF_GUTT_Proposition_1_Refined := BackwardCompat.UCF_GUTT_Proposition_1_Refined.
+Definition UCF_GUTT_Whole_Universal := BackwardCompat.UCF_GUTT_Whole_Universal.
+Definition UCF_GUTT_R_Restriction := BackwardCompat.UCF_GUTT_R_Restriction.
+Definition UCF_GUTT_No_Isolation := BackwardCompat.UCF_GUTT_No_Isolation.
+Definition UCF_GUTT_Witness := BackwardCompat.UCF_GUTT_Witness.
+Definition UCF_GUTT_Witness_Works := BackwardCompat.UCF_GUTT_Witness_Works.
+
+(* Explicit access to parameters via module - NO top-level U/R pollution *)
+Module Params := BackwardCompat.
+
+(* ========================================================================== *)
+(*                           VERIFICATION SUMMARY                             *)
+(* ========================================================================== *)
 
 (*
-  In graph-theoretic terms:
-  - Uₓ is the vertex set
-  - R' defines the edge relation
-  - Whole is a universal sink (all vertices point to it)
-  - The graph is strongly connected through Whole
-*)
-
-(* Simplified reachability: direct connection *)
-Definition is_reachable (x y : Ux) : Prop := R_prime x y.
-
-Lemma all_reach_Whole :
-  forall x : Ux, is_reachable x Whole.
-Proof.
-  intro x.
-  unfold is_reachable.
-  apply everything_relates_to_Whole.
-Qed.
-
-(* Alternative formulation: 1-step reachability is guaranteed *)
-Lemma one_step_reachable :
-  forall x : Ux, exists y : Ux, is_reachable x y.
-Proof.
-  intro x.
-  exists Whole.
-  unfold is_reachable.
-  apply everything_relates_to_Whole.
-Qed.
-
-(* ================================================================ *)
-(* SECTION 12: Final Theorem - Completeness                        *)
-(* ================================================================ *)
-
-(*
-  COMPLETENESS THEOREM:
-  The extended system (Uₓ, R') is complete in the sense that
-  no entity is isolated - every entity participates in at least
-  one relation.
-*)
-
-Theorem no_isolated_entities :
-  ~ exists x : Ux, forall y : Ux, ~ R_prime x y.
-Proof.
-  intro H.
-  destruct H as [x H].
-  specialize (H None).
-  assert (R_prime x None) by apply everything_relates_to_Whole.
-  contradiction.
-Qed.
-
-(* ================================================================ *)
-(* SECTION 13: Export for Use in UCF/GUTT Framework                *)
-(* ================================================================ *)
-
-(* Main result for export *)
-Definition UCF_GUTT_Proposition_1_Refined := refined_proposition_1.
-
-(* Key lemmas for downstream use *)
-Definition UCF_GUTT_Whole_Universal := everything_relates_to_Whole.
-Definition UCF_GUTT_R_Restriction := R_prime_restricts.
-Definition UCF_GUTT_No_Isolation := no_isolated_entities.
-
-(* ================================================================ *)
-(* VERIFICATION COMPLETE                                            *)
-(* ================================================================ *)
-
-(*
-  QED: ∀x∈Uₓ, ∃y∈Uₓ: R'(x,y)
-  
-  This completes the formal verification of Proven Proposition 1.
-  The proof is constructive, machine-verified, and makes no assumptions
-  about the original relation R.
-  
-  Proven in: Coq 8.12+
-  Proof method: Direct construction with witness (Whole)
-  Proof complexity: O(1) - trivial by construction
-  
-  This transforms Proposition 1 from philosophical assertion to
-  mathematical necessity.
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║                           VERIFICATION SUMMARY                            ║
+  ╠═══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                           ║
+  ║  Theorem: ∀x∈U_x, ∃y∈U_x: R'(x,y)    [SERIALITY, not connectivity]       ║
+  ║                                                                           ║
+  ║  This theorem holds BY CONSTRUCTION: R' is defined so that               ║
+  ║  R'(x, Whole) = True for all x. The Whole is a terminal sink w.r.t. U.   ║
+  ║                                                                           ║
+  ║  TERMINOLOGY:                                                             ║
+  ║    • Seriality = every node has at least one successor (outgoing edge)   ║
+  ║    • Terminal sink w.r.t. U = no outgoing edges to U (but has self-loop) ║
+  ║    • This is NOT pairwise connectivity; we guarantee only seriality      ║
+  ║    • common_successor provides: ∀x,y. ∃z. reachable x z ∧ reachable y z  ║
+  ║                                                                           ║
+  ║  CONSTRUCTION PATTERN: Serial Completion (Whole-Completion)               ║
+  ║    Given (U, R), construct (Ux, R') where:                                ║
+  ║    - Ux = U ∪ {Whole}                                                     ║
+  ║    - R' extends R with universal Whole-targeting                          ║
+  ║    - R' is serial by construction                                         ║
+  ║    - R' is a conservative extension of R                                  ║
+  ║                                                                           ║
+  ║  Three formulations provided:                                             ║
+  ║                                                                           ║
+  ║  1. Core.proposition_1 (CLOSED - CANONICAL)                               ║
+  ║     - Explicit ∀ U R quantification                                       ║
+  ║     - Print Assumptions: "Closed under the global context"                ║
+  ║                                                                           ║
+  ║  2. ConcreteExample.seriality                                             ║
+  ║     - U = nat, R = False (empty relation)                                 ║
+  ║     - Demonstrates worst-case still works                                 ║
+  ║                                                                           ║
+  ║  3. BackwardCompat.refined_proposition_1                                  ║
+  ║     - Parameter U, R for legacy imports                                   ║
+  ║     - Print Assumptions shows U, R (expected)                             ║
+  ║                                                                           ║
+  ║  Key Lemmas:                                                              ║
+  ║    • R_prime_restricts : R'(elem a, elem b) ↔ R a b                       ║
+  ║    • R_lift : R a b → R'(elem a, elem b)                                  ║
+  ║    • everything_relates_to_Whole : R'(x, Whole)                           ║
+  ║    • Whole_terminal_sink : ¬R'(Whole, elem b)                             ║
+  ║    • common_successor : ∀x,y. ∃z. reach x z ∧ reach y z                   ║
+  ║                                                                           ║
+  ║  Proof Method:                                                            ║
+  ║    • Witness: Whole (always works by definition of R')                    ║
+  ║    • Fully constructive (no classical logic)                              ║
+  ║    • Proof obligation reduces to True; solved by exact I                  ║
+  ║                                                                           ║
+  ║  Key Insight:                                                             ║
+  ║    By extending any universe with the Whole and defining R' to include    ║
+  ║    universal Whole-targeting, "no entity is isolated" becomes a           ║
+  ║    mathematical necessity rather than an empirical assumption.            ║
+  ║                                                                           ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
 *)
