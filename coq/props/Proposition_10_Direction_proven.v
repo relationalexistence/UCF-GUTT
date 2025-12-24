@@ -16,8 +16,11 @@
   
   STATUS: FULLY PROVEN - ZERO AXIOMS - NO ADMITS
   
+  VERSION 2: Now imports from Proposition_01_proven.v Core module
+             All definitions parametric over U - no Parameter axioms
+  
   Building on:
-  - Prop1_proven.v (Universal connectivity)
+  - Proposition_01_proven.v Core module (Universal connectivity)
   - Proposition9_Attributes_proven.v (Relations with optional attributes)
 *)
 
@@ -28,22 +31,38 @@ Require Import Coq.Init.Nat.
 Import ListNotations.
 
 (* ============================================================ *)
-(* Part A: Import Proven Foundations                            *)
+(* Part A: Import from Proposition_01_proven Core Module        *)
 (* ============================================================ *)
 
-(* From Prop1_proven.v *)
-Parameter U : Type.
-Definition Ux : Type := option U.
-Definition Whole : Ux := None.
+Require Import Proposition_01_proven.
 
-(* Universal connectivity (proven in Prop1) *)
-Axiom universal_connectivity : forall x : Ux, exists y : Ux, True.
+(* Import the Core module which is fully parametric and closed *)
+Module P1 := Proposition_01_proven.Core.
 
-(* From Prop4_RelationalSystem_proven.v *)
+(* ============================================================ *)
+(* Part B: Parametric Direction Module                          *)
+(* ============================================================ *)
+
+(*
+  All definitions are now parametric over the base universe U.
+  This eliminates the need for Parameter axioms.
+*)
+
+Section DirectionTheory.
+
+(* Base universe - a type parameter, not an axiom *)
+Variable U : Type.
+
+(* Extended universe from Prop 1 *)
+Definition Ux : Type := P1.Ux U.
+Definition Whole : Ux := @P1.Whole U.
+Definition elem (e : U) : Ux := @P1.elem U e.
+
+(* Entity type for relations *)
 Definition E : Type := Ux.
 
 (* ============================================================ *)
-(* Part B: Direction Type and Core Relation (from Prop 9)       *)
+(* Part C: Direction Type and Core Relation                     *)
 (* ============================================================ *)
 
 (*
@@ -74,23 +93,14 @@ Record RelationWithDirection := {
   direction : option Direction;  (* OPTIONAL - this is what we're proving *)
 }.
 
-(* Relation existence depends only on core (from Prop 9) *)
+(* Relation existence depends only on core *)
 Definition RelationExists (r : RelationWithDirection) : Prop :=
   exists (src tgt : E), 
     core r = {| source := src; target := tgt |}.
 
 (* ============================================================ *)
-(* Part C: Direction as Optional Attribute                      *)
+(* Part D: Direction as Optional Attribute                      *)
 (* ============================================================ *)
-
-(*
-  PROPOSITION 10 FORMALIZATION:
-  
-  1. Relations can exist WITHOUT direction specified
-  2. Relations can exist WITH direction specified
-  3. Direction does not determine existence
-  4. All direction types are valid attributes
-*)
 
 (* Relations without direction *)
 Definition UndirectedRelation (src tgt : E) : RelationWithDirection :=
@@ -113,7 +123,7 @@ Definition DirectedRelation_Multi (entities : list E) (src tgt : E) : RelationWi
      direction := Some (MultiDirectional entities) |}.
 
 (* ============================================================ *)
-(* Part D: Main Theorems - Direction as Optional Attribute     *)
+(* Part E: Main Theorems - Direction as Optional Attribute      *)
 (* ============================================================ *)
 
 (* THEOREM 1: Relations exist without direction *)
@@ -167,31 +177,21 @@ Proof.
   intros src tgt r1 r2 H1 H2.
   unfold RelationExists.
   split; intro H.
-  - (* r1 exists -> r2 exists *)
-    exists src, tgt. exact H2.
-  - (* r2 exists -> r1 exists *)
-    exists src, tgt. exact H1.
+  - exists src, tgt. exact H2.
+  - exists src, tgt. exact H1.
 Qed.
 
 (* ============================================================ *)
-(* Part E: Direction Diversity and Equivalence                  *)
+(* Part F: Direction Diversity and Equivalence                  *)
 (* ============================================================ *)
-
-(*
-  Show that the SAME core relation can manifest with
-  DIFFERENT direction attributes, demonstrating that
-  direction is truly an optional enrichment.
-*)
 
 (* THEOREM 6: Same core, different directions *)
 Theorem same_core_different_directions :
   forall (src tgt : E),
     exists (r1 r2 r3 r4 : RelationWithDirection),
-      (* All have same core *)
       core r1 = core r2 /\
       core r2 = core r3 /\
       core r3 = core r4 /\
-      (* But different direction attributes *)
       direction r1 <> direction r2 /\
       direction r2 <> direction r3 /\
       direction r3 <> direction r4.
@@ -230,16 +230,8 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part F: Direction Types - Self, Other, Internal, External   *)
+(* Part G: Direction Types - Self, Other, Internal, External    *)
 (* ============================================================ *)
-
-(*
-  Direction can describe various relational flows:
-  - To self (reflexive)
-  - To other (entity-to-entity)
-  - Internal to system
-  - External to other systems
-*)
 
 (* Self-relation (entity to itself) *)
 Definition SelfRelation (x : E) : RelationWithDirection :=
@@ -282,13 +274,8 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part G: Direction Properties                                 *)
+(* Part H: Direction Properties                                 *)
 (* ============================================================ *)
-
-(*
-  Direction has important properties that make it a
-  meaningful attribute for characterizing relations.
-*)
 
 (* Direction can be extracted from a relation *)
 Definition get_direction (r : RelationWithDirection) : option Direction :=
@@ -340,13 +327,8 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part H: Bidirectionality and Symmetry                        *)
+(* Part I: Bidirectionality and Symmetry                        *)
 (* ============================================================ *)
-
-(*
-  Bidirectional relations capture mutual or symmetric flows.
-  This is distinct from having two separate unidirectional relations.
-*)
 
 (* Two separate unidirectional relations *)
 Definition TwoUnidirectionalRelations (x y : E) : RelationWithDirection * RelationWithDirection :=
@@ -387,14 +369,8 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part I: Multi-Directional Relations                          *)
+(* Part J: Multi-Directional Relations                          *)
 (* ============================================================ *)
-
-(*
-  Multi-directional relations involve more than two entities
-  in complex flow patterns. This captures network effects,
-  emergent group dynamics, and systemic interactions.
-*)
 
 (* Multi-directional with specific entity list *)
 Definition MultiEntityFlow (entities : list E) (src tgt : E) : RelationWithDirection :=
@@ -432,16 +408,8 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part J: Origin and Flow of Relations                         *)
+(* Part K: Origin and Flow of Relations                         *)
 (* ============================================================ *)
-
-(*
-  Direction incorporates the concept of "Origin of Relation" (OOR)
-  - Where does the relation originate?
-  - How does it flow?
-  
-  This connects to Proposition 11.
-*)
 
 (* Extract source as origin *)
 Definition origin_of_relation (r : RelationWithDirection) : E :=
@@ -450,19 +418,6 @@ Definition origin_of_relation (r : RelationWithDirection) : E :=
 (* Extract target as destination *)
 Definition destination_of_relation (r : RelationWithDirection) : E :=
   target (core r).
-
-(* Check if relation is self-directed *)
-Definition is_self_directed (r : RelationWithDirection) : bool :=
-  match core r with
-  | {| source := src; target := tgt |} =>
-      match direction r with
-      | Some (Unidirectional s t) => 
-          (* Compare if source and target are the "same" - 
-             in practice would need entity equality *)
-          true  (* Placeholder - would use E_eq_dec src tgt *)
-      | _ => false
-      end
-  end.
 
 (* THEOREM 19: Self-directed relations have same source and target *)
 Theorem self_directed_same_source_target :
@@ -489,128 +444,166 @@ Proof.
 Qed.
 
 (* ============================================================ *)
-(* Part K: Summary - Proposition 10 Fully Proven               *)
+(* Part L: Connection to Proposition 1 - Universal Connectivity *)
 (* ============================================================ *)
 
 (*
-  ╔══════════════════════════════════════════════════════════╗
-  ║           🎉 PROPOSITION 10 - PROVEN! 🎉                  ║
-  ║                                                          ║
-  ║  "Direction of Relation (DOR₀, DOR₁, ...) is one such   ║
-  ║   attribute of relation"                                 ║
-  ║                                                          ║
-  ║  KEY ACHIEVEMENTS:                                       ║
-  ║                                                          ║
-  ║  ✅ Direction is OPTIONAL attribute                      ║
-  ║  ✅ Relations exist WITHOUT direction                    ║
-  ║  ✅ Relations exist WITH direction                       ║
-  ║  ✅ Direction does NOT determine existence               ║
-  ║  ✅ All direction types valid (Uni/Bi/Multi)             ║
-  ║  ✅ Self, Other, Internal, External relations            ║
-  ║  ✅ Origin and flow captured                             ║
-  ║  ✅ ZERO AXIOMS (builds on Prop1 & Prop9)                ║
-  ║                                                          ║
-  ╚══════════════════════════════════════════════════════════╝
-  
-  PROVEN THEOREMS (20 total):
-  
-  Existence Theorems:
-  1. ✅ relation_exists_without_direction
-  2. ✅ relation_exists_with_unidirectional
-  3. ✅ relation_exists_with_bidirectional
-  4. ✅ relation_exists_with_multidirectional
-  
-  Independence Theorems:
-  5. ✅ direction_independent_of_existence
-  6. ✅ same_core_different_directions
-  7. ✅ direction_creates_diversity
-  
-  Relational Type Theorems:
-  8. ✅ self_relation_exists
-  9. ✅ other_relation_exists
-  10. ✅ internal_relation_exists
-  
-  Property Theorems:
-  11. ✅ add_direction_preserves_existence
-  12. ✅ change_direction_preserves_core
-  13. ✅ direction_independent_of_entities
-  
-  Bidirectionality Theorems:
-  14. ✅ bidirectional_distinct_from_two_uni
-  15. ✅ bidirectional_representation_symmetric
-  
-  Multi-Directionality Theorems:
-  16. ✅ multidirectional_arbitrary_entities
-  17. ✅ multidirectional_empty_list
-  18. ✅ multidirectional_distinct_from_bidirectional
-  
-  Origin & Flow Theorems:
-  19. ✅ self_directed_same_source_target
-  20. ✅ other_directed_has_endpoints
-  
-  ──────────────────────────────────────────────────────────
-  
-  PHILOSOPHICAL SIGNIFICANCE:
-  
-  - Direction describes HOW relations flow
-  - Relations can be UNDIRECTED (pure connection)
-  - Relations can be DIRECTED (oriented flow)
-  - Direction is OPTIONAL (enriches but doesn't define)
-  - Multiple direction types capture different patterns:
-    * Unidirectional: One-way flow (cause → effect)
-    * Bidirectional: Mutual flow (interaction ↔ feedback)
-    * Multi-directional: Network effects (emergence)
-  
-  ──────────────────────────────────────────────────────────
-  
-  CONNECTION TO OTHER PROPOSITIONS:
-  
-  Builds on:
-  - Prop 1: Universal connectivity provides entities
-  - Prop 9: Framework for optional attributes
-  
-  Supports:
-  - Prop 11: Origin of Relation (OOR)
-  - Prop 12: Sensory Mechanisms at points of relation
-  - Props 13-20: Additional optional attributes
-  
-  ──────────────────────────────────────────────────────────
-  
-  PRACTICAL APPLICATIONS:
-  
-  1. Graph Theory:
-     - Directed graphs: Unidirectional
-     - Undirected graphs: Bidirectional
-     - Hypergraphs: Multi-directional
-  
-  2. Physics:
-     - Force direction: Unidirectional
-     - Action-reaction: Bidirectional
-     - Field interactions: Multi-directional
-  
-  3. Information Flow:
-     - Broadcasting: Unidirectional
-     - Dialogue: Bidirectional
-     - Network protocols: Multi-directional
-  
-  4. Social Networks:
-     - Following: Unidirectional
-     - Friendship: Bidirectional
-     - Group dynamics: Multi-directional
-  
-  5. Causality:
-     - Cause → Effect: Unidirectional
-     - Feedback loops: Bidirectional
-     - Emergent causation: Multi-directional
+  Every entity in the extended universe can relate to Whole.
+  This ensures no entity is relationally isolated.
 *)
 
-(* Sanity check: compilation *)
-Check Direction.
-Check RelationWithDirection.
-Check relation_exists_without_direction.
-Check direction_independent_of_existence.
-Check same_core_different_directions.
-Check multidirectional_arbitrary_entities.
-Check self_directed_same_source_target.
+(* Base relation parameter for connectivity *)
+Variable R : U -> U -> Prop.
 
-(* End of Proposition10_Direction_proven.v *)
+(* The extended relation from Prop 1 *)
+Definition R' : Ux -> Ux -> Prop := P1.R_prime R.
+
+(* THEOREM 21: All entities can form directed relations to Whole *)
+Theorem all_entities_relate_to_Whole :
+  forall (x : Ux), R' x Whole.
+Proof.
+  intro x.
+  unfold R', Whole.
+  apply P1.everything_relates_to_Whole.
+Qed.
+
+(* THEOREM 22: Direction can be added to any connectivity relation *)
+Theorem connectivity_supports_direction :
+  forall (x : Ux),
+    R' x Whole ->
+    RelationExists (DirectedRelation_Uni x Whole).
+Proof.
+  intros x _.
+  apply relation_exists_with_unidirectional.
+Qed.
+
+End DirectionTheory.
+
+(* ============================================================ *)
+(* Part M: Concrete Instantiation (for backward compatibility)  *)
+(* ============================================================ *)
+
+(*
+  For backward compatibility, we provide a concrete instantiation
+  with nat as the base universe. This is NOT an axiom - it's a
+  specific choice that can be used by legacy code.
+*)
+
+Module ConcreteDirection.
+
+  Definition U : Type := nat.
+  Definition Ux : Type := P1.Ux U.
+  Definition Whole : Ux := @P1.Whole U.
+  Definition E : Type := Ux.
+  
+  (* Re-instantiate Direction for nat *)
+  Inductive Direction : Type :=
+    | Unidirectional : E -> E -> Direction
+    | Bidirectional : E -> E -> Direction
+    | MultiDirectional : list E -> Direction.
+  
+  Record CoreRelation := {
+    source : E;
+    target : E;
+  }.
+
+  Record RelationWithDirection := {
+    core : CoreRelation;
+    direction : option Direction;
+  }.
+
+  Definition RelationExists (r : RelationWithDirection) : Prop :=
+    exists (src tgt : E), 
+      core r = {| source := src; target := tgt |}.
+
+  Definition DirectedRelation_Uni (src tgt : E) : RelationWithDirection :=
+    {| core := {| source := src; target := tgt |};
+       direction := Some (Unidirectional src tgt) |}.
+
+  Definition DirectedRelation_Bi (src tgt : E) : RelationWithDirection :=
+    {| core := {| source := src; target := tgt |};
+       direction := Some (Bidirectional src tgt) |}.
+
+  Definition DirectedRelation_Multi (entities : list E) (src tgt : E) : RelationWithDirection :=
+    {| core := {| source := src; target := tgt |};
+       direction := Some (MultiDirectional entities) |}.
+
+  Definition UndirectedRelation (src tgt : E) : RelationWithDirection :=
+    {| core := {| source := src; target := tgt |};
+       direction := None |}.
+
+  Theorem direction_creates_diversity :
+    forall (src tgt : E),
+      exists (r1 r2 : RelationWithDirection),
+        core r1 = core r2 /\
+        direction r1 <> direction r2 /\
+        RelationExists r1 /\
+        RelationExists r2.
+  Proof.
+    intros src tgt.
+    set (r1 := UndirectedRelation src tgt).
+    set (r2 := DirectedRelation_Uni src tgt).
+    exists r1, r2.
+    split. { unfold r1, r2. simpl. reflexivity. }
+    split. { unfold r1, r2. simpl. discriminate. }
+    split.
+    - unfold RelationExists, r1, UndirectedRelation. exists src, tgt. reflexivity.
+    - unfold RelationExists, r2, DirectedRelation_Uni. exists src, tgt. reflexivity.
+  Qed.
+
+  Theorem relation_exists_with_unidirectional :
+    forall (x y : E), RelationExists (DirectedRelation_Uni x y).
+  Proof.
+    intros x y. unfold RelationExists, DirectedRelation_Uni.
+    exists x, y. simpl. reflexivity.
+  Qed.
+
+End ConcreteDirection.
+
+(* ============================================================ *)
+(* Part N: Verification - Zero Axioms                           *)
+(* ============================================================ *)
+
+(* Verify all theorems are closed under the global context *)
+Print Assumptions relation_exists_without_direction.
+Print Assumptions direction_creates_diversity.
+Print Assumptions self_relation_exists.
+Print Assumptions all_entities_relate_to_Whole.
+Print Assumptions ConcreteDirection.direction_creates_diversity.
+
+(* ============================================================ *)
+(*                        SUMMARY                                *)
+(* ============================================================ *)
+
+(*
+  ╔══════════════════════════════════════════════════════════════╗
+  ║           PROPOSITION 10 - VERSION 2 - ZERO AXIOMS           ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║                                                              ║
+  ║  KEY CHANGES FROM V1:                                        ║
+  ║                                                              ║
+  ║  ✓ Imports Proposition_01_proven.v Core module               ║
+  ║  ✓ All definitions parametric over base universe U           ║
+  ║  ✓ No Parameter axioms                                       ║
+  ║  ✓ No Axiom statements                                       ║
+  ║  ✓ Fully constructive proofs                                 ║
+  ║                                                              ║
+  ║  PROVEN THEOREMS (22 total):                                 ║
+  ║                                                              ║
+  ║  1-4.   Existence with various direction types               ║
+  ║  5-7.   Direction independence and diversity                 ║
+  ║  8-10.  Self, other, internal relations                      ║
+  ║  11-13. Direction manipulation preserves existence           ║
+  ║  14-15. Bidirectionality properties                          ║
+  ║  16-18. Multi-directionality properties                      ║
+  ║  19-20. Origin and flow characterization                     ║
+  ║  21-22. Connection to Prop 1 universal connectivity          ║
+  ║                                                              ║
+  ║  AXIOM STATUS: ZERO AXIOMS                                   ║
+  ║  ADMIT STATUS: ZERO ADMITS                                   ║
+  ║                                                              ║
+  ╚══════════════════════════════════════════════════════════════╝
+  
+  © 2023–2025 Michael Fillippini. All Rights Reserved.
+  UCF/GUTT™ Research & Evaluation License v1.1
+*)
