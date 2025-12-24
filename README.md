@@ -86,7 +86,7 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 
 ## Contents
 
-127987 lines across 174 of Coq proofs 
+127987 lines of code across 174 of Coq proofs 
 
 ### `/proofs` — Machine-Verified Theorems
 
