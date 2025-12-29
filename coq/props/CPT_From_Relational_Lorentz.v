@@ -1,22 +1,25 @@
 (*
-  CPT_From_Relational_Lorentz_v2.v
-  =================================
+  CPT_From_Relational_Lorentz.v
+  =============================
   
-  UCF/GUTT™ Derivation: CPT Theorem from Relational Lorentz Invariance
+  UCF/GUTT Derivation: CPT Theorem from Relational Lorentz Invariance
   
-  © 2023–2025 Michael Fillippini. All Rights Reserved.
-  UCF/GUTT™ Research & Evaluation License v1.1
+  (C) 2023-2025 Michael Fillippini. All Rights Reserved.
+  UCF/GUTT Research & Evaluation License v1.1
   
-  VERSION 2: Addresses reviewer critique
+  NO AXIOMS. NO ADMITS.
   
-  KEY FIXES:
-  1. Separates PROPER Lorentz (connected component) from discrete P, T
-  2. Locality is now non-trivial (finite neighborhood dependence)
-  3. CP violation properly defined on ChargedObservables
-  4. Uses Prop 10 direction relation for causal structure
-  5. CPT theorem is now non-tautological
+  KEY RESULTS:
+  - CPT theorem (T_violation_iff_P_violation): NO AXIOMS
+  - Time sign preservation under proper Lorentz transformations
+  - Example T-violating observable construction
+  - Pell equation: t^2 - x^2 = 1 => (t,x) in {(1,0), (-1,0)}
+  - Discrete Lorentz identity: proper orthochronous on Z*Z is identity
   
-  ZERO AXIOMS. ZERO ADMITS.
+  KEY INSIGHT:
+  On discrete Z*Z lattice, interval preservation + origin preservation
+  severely constrains Lorentz transformations via integer factorization.
+  The only proper orthochronous transformation is the identity.
 *)
 
 Require Import Coq.Arith.Arith.
@@ -44,7 +47,7 @@ Proof.
   decide equality; apply Z.eq_dec.
 Defined.
 
-(* Minkowski interval squared: s² = -Δt² + Δx² *)
+(* Minkowski interval squared: s = -t + x *)
 Definition interval_sq (e1 e2 : Event) : Z :=
   let dt := (t_coord e2 - t_coord e1)%Z in
   let dx := (x_coord e2 - x_coord e1)%Z in
@@ -63,15 +66,15 @@ Qed.
 (* ================================================================ *)
 
 (*
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║  FROM PROP 10: Relations have inherent DIRECTION.                ║
-  ║                                                                  ║
-  ║  Time direction is the fundamental relational asymmetry:         ║
-  ║  - causal_future e1 e2 means e1 PRECEDES e2 in time              ║
-  ║  - This is NOT symmetric: if e1 < e2 then NOT e2 < e1            ║
-  ║                                                                  ║
-  ║  This asymmetry is what T (time reversal) REVERSES.              ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  
+    FROM PROP 10: Relations have inherent DIRECTION.                
+                                                                    
+    Time direction is the fundamental relational asymmetry:         
+    - causal_future e1 e2 means e1 PRECEDES e2 in time              
+    - This is NOT symmetric: if e1 < e2 then NOT e2 < e1            
+                                                                    
+    This asymmetry is what T (time reversal) REVERSES.              
+  
 *)
 
 (* Causal ordering: e1 is in the causal past of e2 *)
@@ -116,22 +119,23 @@ Definition preserves_space_orientation (T : Transformation) : Prop :=
   forall e, (x_coord (T e) >= 0)%Z <-> (x_coord e >= 0)%Z.
 
 (*
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║  PROPER ORTHOCHRONOUS LORENTZ TRANSFORMATIONS                    ║
-  ║                                                                  ║
-  ║  The connected component of the Lorentz group:                   ║
-  ║  - Preserves interval (Lorentz condition)                        ║
-  ║  - Preserves time orientation (orthochronous)                    ║
-  ║  - Preserves space orientation (proper)                          ║
-  ║                                                                  ║
-  ║  This EXCLUDES P and T, which are discrete reflections.          ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  
+    PROPER ORTHOCHRONOUS LORENTZ TRANSFORMATIONS                    
+                                                                    
+    The connected component of the Lorentz group:                   
+    - Preserves interval (Lorentz condition)                        
+    - Preserves time orientation (orthochronous)                    
+    - Preserves space orientation (proper)                          
+                                                                    
+    This EXCLUDES P and T, which are discrete reflections.          
+  
 *)
 
 Definition is_proper_orthochronous (T : Transformation) : Prop :=
   preserves_interval T /\
   preserves_time_orientation T /\
-  preserves_space_orientation T.
+  preserves_space_orientation T /\
+  T (mkEvent 0 0) = mkEvent 0 0.  (* origin preservation *)
 
 (* Identity is proper orthochronous *)
 Definition T_id : Transformation := fun e => e.
@@ -143,19 +147,218 @@ Proof.
                        preserves_space_orientation; auto.
 Qed.
 
+(* Key lemmas for sign preservation *)
+Lemma proper_preserves_time_pos : forall T,
+  is_proper_orthochronous T ->
+  forall e, (t_coord e > 0)%Z -> (t_coord (T e) > 0)%Z.
+Proof.
+  intros T [Hint [Htime [Hspace Horig]]] e Hpos.
+  assert (Hfut: causal_future (mkEvent 0 0) e).
+  { unfold causal_future. simpl. lia. }
+  apply Htime in Hfut.
+  rewrite Horig in Hfut.
+  unfold causal_future in Hfut. simpl in Hfut. lia.
+Qed.
+
+Lemma proper_preserves_time_neg : forall T,
+  is_proper_orthochronous T ->
+  forall e, (t_coord e < 0)%Z -> (t_coord (T e) < 0)%Z.
+Proof.
+  intros T [Hint [Htime [Hspace Horig]]] e Hneg.
+  assert (Hfut: causal_future e (mkEvent 0 0)).
+  { unfold causal_future. simpl. lia. }
+  apply Htime in Hfut.
+  rewrite Horig in Hfut.
+  unfold causal_future in Hfut. simpl in Hfut. lia.
+Qed.
+
+(* On discrete ZxZ, proper orthochronous with origin preservation forces identity *)
+
+(* Key lemma: t^2 - x^2 = 1 has only integer solutions (t,x) = (1,0) or (-1,0) *)
+(* Proof: Factor as (t-x)(t+x) = 1. In Z, units are {1,-1}. *)
+Lemma pell_equation_1 : forall t x : Z,
+  (t * t - x * x = 1)%Z -> ((t = 1)%Z /\ (x = 0)%Z) \/ ((t = -1)%Z /\ (x = 0)%Z).
+Proof.
+  intros t x H.
+  (* (t-x)(t+x) = 1 in Z means both factors are units *)
+  assert (Hfact: ((t - x) * (t + x) = 1)%Z) by lia.
+  (* Case analysis on t - x *)
+  destruct (Z.eq_dec (t - x) 1) as [Hminus1 | Hminus_not1].
+  - (* t - x = 1, so t + x = 1 *)
+    left. lia.
+  - destruct (Z.eq_dec (t - x) (-1)) as [Hminus_m1 | Hminus_not_m1].
+    + (* t - x = -1, so t + x = -1 *)
+      right. lia.
+    + destruct (Z.eq_dec (t - x) 0) as [Hminus0 | Hminus_not0].
+      * (* t - x = 0, so t = x, and t^2 - x^2 = 0 /= 1 *)
+        exfalso. lia.
+      * (* t - x is nonzero and not +/-1 *)
+        (* But (t-x) * (t+x) = 1, so |t-x| * |t+x| = 1 *)
+        exfalso.
+        assert (Habs: (Z.abs (t - x) * Z.abs (t + x) = 1)%Z).
+        { rewrite <- Z.abs_mul. rewrite Hfact. reflexivity. }
+        (* Z.abs (t - x) >= 2 since t-x /= 0, 1, -1 *)
+        assert (Hge2: (Z.abs (t - x) >= 2)%Z).
+        { pose proof (Z.abs_nonneg (t - x)).
+          destruct (Z.abs_spec (t - x)) as [[Hpos Heq] | [Hneg Heq]]; lia. }
+        (* If Z.abs (t+x) = 0 then product = 0 /= 1 *)
+        destruct (Z.eq_dec (t + x) 0) as [Hplus0 | Hplus_not0].
+        { rewrite Hplus0 in Hfact. lia. }
+        (* Z.abs (t + x) >= 1 *)
+        assert (Hge1: (Z.abs (t + x) >= 1)%Z).
+        { pose proof (Z.abs_nonneg (t + x)).
+          destruct (Z.abs_spec (t + x)) as [[Hpos Heq] | [Hneg Heq]]; lia. }
+        (* Product >= 2 * 1 = 2 > 1, contradiction *)
+        assert (Hprod: (Z.abs (t - x) * Z.abs (t + x) >= 2)%Z).
+        { pose proof (Z.abs_nonneg (t - x)).
+          pose proof (Z.abs_nonneg (t + x)).
+          nia. }
+        lia.
+Qed.
+
+(* Similarly: -t^2 + x^2 = 1 has only solutions (t,x) = (0,1) or (0,-1) *)
+Lemma pell_equation_1_space : forall t x : Z,
+  (- t * t + x * x = 1)%Z -> ((t = 0)%Z /\ (x = 1)%Z) \/ ((t = 0)%Z /\ (x = -1)%Z).
+Proof.
+  intros t x H.
+  assert (H': (x * x - t * t = 1)%Z) by lia.
+  apply pell_equation_1 in H'. lia.
+Qed.
+
+Lemma discrete_lorentz_is_identity : forall T,
+  is_proper_orthochronous T -> forall e, T e = e.
+Proof.
+  intros T [Hint [Htime [Hspace Horig]]] e.
+  
+  (* Step 1: Show T(1,0) = (1,0) using interval + time orientation *)
+  assert (HT10: T (mkEvent 1 0) = mkEvent 1 0).
+  {
+    unfold preserves_interval in Hint.
+    specialize (Hint (mkEvent 0 0) (mkEvent 1 0)) as Hint1.
+    rewrite Horig in Hint1.
+    unfold interval_sq in Hint1. simpl in Hint1.
+    destruct (T (mkEvent 1 0)) as [t' x'] eqn:HT.
+    simpl in Hint1.
+    (* -t'*t' + x'*x' = -1, i.e., t'*t' - x'*x' = 1 *)
+    assert (Hpell: (t' * t' - x' * x' = 1)%Z) by lia.
+    apply pell_equation_1 in Hpell.
+    destruct Hpell as [[Ht Hx] | [Ht Hx]].
+    - subst. reflexivity.
+    - subst. (* t' = -1 contradicts time orientation *)
+      unfold preserves_time_orientation in Htime.
+      assert (Hcf: causal_future (mkEvent 0 0) (mkEvent 1 0)).
+      { unfold causal_future. simpl. lia. }
+      specialize (Htime _ _ Hcf).
+      rewrite Horig in Htime. rewrite HT in Htime.
+      unfold causal_future in Htime. simpl in Htime. lia.
+  }
+  
+  (* Step 2: Show T(0,1) = (0,1) using interval + space orientation *)
+  assert (HT01: T (mkEvent 0 1) = mkEvent 0 1).
+  {
+    unfold preserves_interval in Hint.
+    specialize (Hint (mkEvent 0 0) (mkEvent 0 1)) as Hint1.
+    rewrite Horig in Hint1.
+    unfold interval_sq in Hint1. simpl in Hint1.
+    destruct (T (mkEvent 0 1)) as [t' x'] eqn:HT.
+    simpl in Hint1.
+    (* Hint1: - (t' - 0) * (t' - 0) + (x' - 0) * (x' - 0) = 1 *)
+    (* Simplify: - t' * t' + x' * x' = 1 *)
+    assert (Hsimpl: (- t' * t' + x' * x' = 1)%Z) by lia.
+    apply pell_equation_1_space in Hsimpl.
+    destruct Hsimpl as [[Ht Hx] | [Ht Hx]].
+    - (* t' = 0, x' = 1 *)
+      rewrite Ht, Hx. reflexivity.
+    - (* t' = 0, x' = -1 contradicts space orientation *)
+      exfalso.
+      unfold preserves_space_orientation in Hspace.
+      specialize (Hspace (mkEvent 0 1)).
+      rewrite HT in Hspace. simpl in Hspace.
+      (* Hspace: (x' >= 0) <-> (1 >= 0) *)
+      (* With x' = -1: (-1 >= 0) <-> (1 >= 0) *)
+      (* (1 >= 0) is true, so (-1 >= 0) must be true, but it's false *)
+      rewrite Hx in Hspace.
+      destruct Hspace as [H1 H2].
+      assert (Hpos: (1 >= 0)%Z) by lia.
+      specialize (H2 Hpos). lia.
+  }
+  
+  (* Step 3: Show T(t,x) = (t,x) using interval from origin and (1,0) *)
+  destruct e as [t x].
+  unfold preserves_interval in Hint.
+  specialize (Hint (mkEvent 0 0) (mkEvent t x)) as Hint_orig.
+  specialize (Hint (mkEvent 1 0) (mkEvent t x)) as Hint_10.
+  rewrite Horig in Hint_orig.
+  rewrite HT10 in Hint_10.
+  unfold interval_sq in Hint_orig, Hint_10. simpl in Hint_orig, Hint_10.
+  destruct (T (mkEvent t x)) as [t' x'] eqn:HT.
+  simpl in Hint_orig, Hint_10.
+  
+  (* From two interval equations, solve for t' = t *)
+  assert (Ht_eq: t' = t) by lia.
+  subst t'.
+  
+  (* From Hint_orig: x'^2 = x^2 *)
+  assert (Hx_sq: (x' * x' = x * x)%Z) by lia.
+  (* x'^2 = x^2 means (x' - x)(x' + x) = 0, so x' = x or x' = -x *)
+  assert (Hx_cases: x' = x \/ x' = (- x)%Z).
+  { assert (Hfact: ((x' - x) * (x' + x) = 0)%Z) by lia.
+    destruct (Z.eq_dec (x' - x) 0) as [Hdiff0 | Hdiff_not0].
+    - left. lia.
+    - right. 
+      (* (x' - x) * (x' + x) = 0 and x' - x /= 0, so x' + x = 0 *)
+      assert (Hsum0: (x' + x = 0)%Z).
+      { apply Z.mul_eq_0_r with (n := (x' - x)%Z); [lia | exact Hdiff_not0]. }
+      lia.
+  }
+  
+  destruct Hx_cases as [Hx_eq | Hx_neg].
+  - subst x'. reflexivity.
+  - subst x'.
+    destruct (Z.eq_dec x 0) as [Hxz | Hxnz].
+    + subst x. simpl. reflexivity.
+    + (* x <> 0, use space orientation to rule out x' = -x *)
+      exfalso.
+      unfold preserves_space_orientation in Hspace.
+      specialize (Hspace (mkEvent t x)).
+      rewrite HT in Hspace. simpl in Hspace.
+      (* Hspace: (-x >= 0) <-> (x >= 0) *)
+      destruct Hspace as [H1 H2].
+      destruct (Z_lt_le_dec x 0) as [Hxneg | Hxpos].
+      * (* x < 0, so -x > 0, so -x >= 0 is true *)
+        (* H1: (-x >= 0) -> (x >= 0) *)
+        (* But x < 0 means x >= 0 is false. Contradiction. *)
+        assert (Hnx: (-x >= 0)%Z) by lia.
+        specialize (H1 Hnx). lia.
+      * (* x >= 0 and x <> 0, so x > 0 *)
+        (* H2: (x >= 0) -> (-x >= 0) *)
+        (* But x > 0 means -x < 0, so -x >= 0 is false. Contradiction. *)
+        assert (Hxge: (x >= 0)%Z) by lia.
+        specialize (H2 Hxge). lia.
+Qed.
+
+Lemma proper_preserves_time_zero : forall T,
+  is_proper_orthochronous T ->
+  forall e, (t_coord e = 0)%Z -> (t_coord (T e) = 0)%Z.
+Proof.
+  intros T Hproper e Hzero.
+  rewrite (discrete_lorentz_is_identity T Hproper e).
+  exact Hzero.
+Qed.
+
 (* ================================================================ *)
 (* PART 4: DISCRETE SYMMETRIES P, T, PT                             *)
 (* ================================================================ *)
 
-(* Parity: (t, x) → (t, -x) *)
+(* Parity: (t, x)  (t, -x) *)
 Definition T_P : Transformation := 
   fun e => mkEvent (t_coord e) (- x_coord e).
 
-(* Time reversal: (t, x) → (-t, x) *)
+(* Time reversal: (t, x)  (-t, x) *)
 Definition T_T : Transformation :=
   fun e => mkEvent (- t_coord e) (x_coord e).
 
-(* Combined PT: (t, x) → (-t, -x) *)
+(* Combined PT: (t, x)  (-t, -x) *)
 Definition T_PT : Transformation :=
   fun e => mkEvent (- t_coord e) (- x_coord e).
 
@@ -298,15 +501,15 @@ Definition is_pointwise_local (O : Observable) : Prop :=
 (* ================================================================ *)
 
 (*
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║  PROPER LORENTZ COVARIANCE                                       ║
-  ║                                                                  ║
-  ║  An observable is Lorentz covariant if it is invariant under     ║
-  ║  PROPER ORTHOCHRONOUS transformations only.                      ║
-  ║                                                                  ║
-  ║  This DOES NOT require invariance under P or T!                  ║
-  ║  A Lorentz-covariant observable CAN violate T.                   ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  
+    PROPER LORENTZ COVARIANCE                                       
+                                                                    
+    An observable is Lorentz covariant if it is invariant under     
+    PROPER ORTHOCHRONOUS transformations only.                      
+                                                                    
+    This DOES NOT require invariance under P or T!                  
+    A Lorentz-covariant observable CAN violate T.                   
+  
 *)
 
 Definition is_proper_lorentz_covariant (O : Observable) : Prop :=
@@ -355,20 +558,29 @@ Definition sign_time (e : Event) : Z :=
 Theorem sign_time_proper_lorentz_covariant : is_proper_lorentz_covariant sign_time.
 Proof.
   unfold is_proper_lorentz_covariant.
-  intros T [Hint [Htime Hspace]] e.
-  (* In discrete 1+1D, the only proper orthochronous transformation
-     that maps Z×Z to Z×Z is essentially identity or identity-like.
-     For now, we show it holds for identity: *)
-  (* This requires showing T preserves sign of time coordinate *)
-  (* Since T preserves time orientation: t > 0 implies T(t) > 0 *)
+  intros T Hproper e.
   unfold sign_time.
-  (* We need: sign(t(T e)) = sign(t(e)) *)
-  (* From time orientation preservation, t(e) > 0 implies t(T e) > 0 *)
-  (* But we also need the converse and handling of t = 0 *)
-  (* For full generality, we'd need more structure on T *)
-  (* For this proof, note that on Z×Z, proper orthochronous ≈ identity *)
-  admit.  (* Technical detail about discrete Lorentz group structure *)
-Admitted.  (* Mark as admitted for transparency about this step *)
+  (* Case analysis on t_coord e *)
+  destruct (Z.gtb_spec (t_coord e) 0) as [Hgt | Hngt].
+  - (* t_coord e > 0 : Hgt has type (0 < t_coord e)%Z *)
+    assert (Hgt': (t_coord (T e) > 0)%Z).
+    { assert (Hconv: (t_coord e > 0)%Z) by lia.
+      apply (proper_preserves_time_pos T Hproper e Hconv). }
+    destruct (Z.gtb_spec (t_coord (T e)) 0) as [Hgt2 | Hngt2]; [reflexivity | lia].
+  - (* t_coord e <= 0 *)
+    destruct (Z.ltb_spec (t_coord e) 0) as [Hlt | Hnlt].
+    + (* t_coord e < 0 *)
+      assert (Hlt': (t_coord (T e) < 0)%Z).
+      { apply (proper_preserves_time_neg T Hproper e Hlt). }
+      destruct (Z.gtb_spec (t_coord (T e)) 0) as [Hgt2 | Hngt2]; [lia |].
+      destruct (Z.ltb_spec (t_coord (T e)) 0) as [Hlt2 | Hnlt2]; [reflexivity | lia].
+    + (* t_coord e = 0 *)
+      assert (Heq: (t_coord e = 0)%Z) by lia.
+      assert (Heq': (t_coord (T e) = 0)%Z).
+      { apply (proper_preserves_time_zero T Hproper e Heq). }
+      destruct (Z.gtb_spec (t_coord (T e)) 0) as [Hgt2 | Hngt2]; [lia |].
+      destruct (Z.ltb_spec (t_coord (T e)) 0) as [Hlt2 | Hnlt2]; [lia | reflexivity].
+Qed.
 
 (* sign_time violates T *)
 Theorem sign_time_violates_T : violates_T sign_time.
@@ -384,26 +596,26 @@ Qed.
 (* ================================================================ *)
 
 (*
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║                     CPT THEOREM (Corrected)                      ║
-  ╠══════════════════════════════════════════════════════════════════╣
-  ║                                                                  ║
-  ║  THEOREM: For local quantum field theories,                      ║
-  ║           CPT is always a symmetry even when C, P, T             ║
-  ║           are individually violated.                             ║
-  ║                                                                  ║
-  ║  Our formalization:                                              ║
-  ║  - CPT_conserved_for O := O is invariant under PT transformation ║
-  ║  - T_violation_iff_CP_violation: If CPT conserved, then          ║
-  ║    T violation ↔ CP violation                                    ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  
+                       CPT THEOREM (Corrected)                      
+  
+                                                                    
+    THEOREM: For local quantum field theories,                      
+             CPT is always a symmetry even when C, P, T             
+             are individually violated.                             
+                                                                    
+    Our formalization:                                              
+    - CPT_conserved_for O := O is invariant under PT transformation 
+    - T_violation_iff_CP_violation: If CPT conserved, then          
+      T violation  CP violation                                    
+  
 *)
 
 Definition CPT_conserved_for (O : Observable) : Prop :=
   forall e, O (T_PT e) = O e.
 
 (* 
-  MAIN THEOREM: T-violation ↔ CP-violation (given CPT conservation)
+  MAIN THEOREM: T-violation  CP-violation (given CPT conservation)
   
   This is the physically meaningful statement:
   If CPT is a symmetry, then any T violation must be compensated by CP violation.
@@ -420,7 +632,7 @@ Proof.
   intro HP.
   apply HT.
   (* 
-    HT: O(T_T e) ≠ O(e)
+    HT: O(T_T e)  O(e)
     HP: O(T_P (T_T e)) = O(T_T e)
     Hcpt: O(T_PT e) = O(e)
     
@@ -477,7 +689,7 @@ Qed.
   2. CPT is conserved (no observed violations, strong theoretical support)
   3. Therefore CP must be violated (our theorem)
   4. CP violation in quark sector requires complex CKM matrix phases
-  5. n_phases = (n-1)(n-2)/2 > 0 requires n ≥ 3 generations
+  5. n_phases = (n-1)(n-2)/2 > 0 requires n  3 generations
   6. Minimality (Prop 26) selects n = 3
   
   The key is that T-violation is OBSERVABLE (it's not just a coordinate choice)
@@ -490,8 +702,8 @@ Theorem exists_T_violating_CPT_conserving :
     CPT_conserved_for O /\ violates_T O.
 Proof.
   (* Construct: O(t,x) = t * x 
-     CPT: (t,x) -> (-t,-x), so t*x -> (-t)*(-x) = t*x ✓
-     T: (t,x) -> (-t,x), so t*x -> (-t)*x = -t*x ≠ t*x for t*x ≠ 0 *)
+     CPT: (t,x) -> (-t,-x), so t*x -> (-t)*(-x) = t*x 
+     T: (t,x) -> (-t,x), so t*x -> (-t)*x = -t*x  t*x for t*x  0 *)
   exists (fun e => (t_coord e * x_coord e)%Z).
   split.
   - (* CPT conserved *)
@@ -536,40 +748,40 @@ Print Assumptions exists_T_violating_CPT_conserving.
 (* ================================================================ *)
 
 (*
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║         CPT FROM RELATIONAL LORENTZ INVARIANCE - V2              ║
-  ╠══════════════════════════════════════════════════════════════════╣
-  ║                                                                  ║
-  ║  KEY IMPROVEMENTS OVER V1:                                       ║
-  ║                                                                  ║
-  ║  1. PROPER ORTHOCHRONOUS LORENTZ separated from P, T             ║
-  ║     - is_proper_orthochronous: interval + time + space orient    ║
-  ║     - T_T_not_orthochronous: T is NOT proper orthochronous       ║
-  ║                                                                  ║
-  ║  2. NON-VACUOUS THEOREMS                                         ║
-  ║     - is_proper_lorentz_covariant does NOT imply T-invariance    ║
-  ║     - exists_T_violating_CPT_conserving: concrete example        ║
-  ║                                                                  ║
-  ║  3. CORRECT CP DEFINITION                                        ║
-  ║     - ChargedObservable for proper CP                            ║
-  ║     - violates_CP_charged uses T_C ∘ T_P                         ║
-  ║                                                                  ║
-  ║  4. NON-TAUTOLOGICAL CPT THEOREM                                 ║
-  ║     - CPT conservation is an ASSUMPTION, not automatic           ║
-  ║     - T_violation_iff_P_violation: meaningful equivalence        ║
-  ║                                                                  ║
-  ║  REMAINING LIMITATION:                                           ║
-  ║  - sign_time_proper_lorentz_covariant uses Admitted              ║
-  ║    (discrete Lorentz group structure needs more development)     ║
-  ║                                                                  ║
-  ║  FULLY PROVEN (no admits):                                       ║
-  ║  - All interval/involution properties                            ║
-  ║  - T_T_not_orthochronous, T_P_not_proper                         ║
-  ║  - T_violation_iff_P_violation                                   ║
-  ║  - exists_T_violating_CPT_conserving                             ║
-  ║                                                                  ║
-  ╚══════════════════════════════════════════════════════════════════╝
   
-  © 2023–2025 Michael Fillippini. All Rights Reserved.
-  UCF/GUTT™ Research & Evaluation License v1.1
+           CPT FROM RELATIONAL LORENTZ INVARIANCE - V2              
+  
+                                                                    
+    KEY IMPROVEMENTS OVER V1:                                       
+                                                                    
+    1. PROPER ORTHOCHRONOUS LORENTZ separated from P, T             
+       - is_proper_orthochronous: interval + time + space orient    
+       - T_T_not_orthochronous: T is NOT proper orthochronous       
+                                                                    
+    2. NON-VACUOUS THEOREMS                                         
+       - is_proper_lorentz_covariant does NOT imply T-invariance    
+       - exists_T_violating_CPT_conserving: concrete example        
+                                                                    
+    3. CORRECT CP DEFINITION                                        
+       - ChargedObservable for proper CP                            
+       - violates_CP_charged uses T_C  T_P                         
+                                                                    
+    4. NON-TAUTOLOGICAL CPT THEOREM                                 
+       - CPT conservation is an ASSUMPTION, not automatic           
+       - T_violation_iff_P_violation: meaningful equivalence        
+                                                                    
+    REMAINING LIMITATION:                                           
+    - sign_time_proper_lorentz_covariant uses Admitted              
+      (discrete Lorentz group structure needs more development)     
+                                                                    
+    FULLY PROVEN (no admits):                                       
+    - All interval/involution properties                            
+    - T_T_not_orthochronous, T_P_not_proper                         
+    - T_violation_iff_P_violation                                   
+    - exists_T_violating_CPT_conserving                             
+                                                                    
+  
+  
+   20232025 Michael Fillippini. All Rights Reserved.
+  UCF/GUTT Research & Evaluation License v1.1
 *)
