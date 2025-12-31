@@ -92,7 +92,7 @@ The proofs establish relational properties of Whole. Interpreting Whole as "the 
 
 ## Contents
 
-**129413 lines of code across 177 Coq proofs**
+**131969 lines of code across 181 Coq proofs**
 
 ---
 
