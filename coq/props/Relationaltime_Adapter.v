@@ -1,6 +1,6 @@
 (*
-  UCF/GUTTâ„¢ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
-  Â© 2023â€“2025 Michael Fillippini. All Rights Reserved.
+  UCF/GUTT Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  (c) 2023-2025 Michael Fillippini. All Rights Reserved.
 *)
 
 (*
@@ -18,8 +18,8 @@
   
   KEY INSIGHT:
   ------------
-  "Relation is the base of frequency" â†’
-  Frequency emerges from oscillation â†’
+  "Relation is the base of frequency" ->
+  Frequency emerges from oscillation ->
   Time emerges as accumulated oscillation cycles
   
   REPLACES:
@@ -252,35 +252,35 @@ Export RelationalTimeAdapter.
 (* ============================================================================ *)
 
 (*
-  â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-  â•‘        RELATIONAL TIME ADAPTER - ZERO AXIOM TIME                     â•‘
-  â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-  â•‘                                                                      â•‘
-  â•‘  REPLACES: Parameter Time : Type                                     â•‘
-  â•‘  WITH:     Time := LocalTime (derived from oscillations)             â•‘
-  â•‘                                                                      â•‘
-  â•‘  DERIVATION CHAIN:                                                   â•‘
-  â•‘    Relation â†’ State Change â†’ Oscillation â†’ Period â†’                  â•‘
-  â•‘    Frequency â†’ Accumulated Cycles â†’ TIME                             â•‘
-  â•‘                                                                      â•‘
-  â•‘  EXPORTS:                                                            â•‘
-  â•‘    â€¢ Time           - The main time type                             â•‘
-  â•‘    â€¢ TimeClock      - Oscillating entity defining time               â•‘
-  â•‘    â€¢ time_le, time_lt, time_eq - Ordering relations                  â•‘
-  â•‘    â€¢ time_tick      - Advance time by one cycle                      â•‘
-  â•‘    â€¢ time_diff      - Signed time difference                         â•‘
-  â•‘                                                                      â•‘
-  â•‘  PROVEN:                                                             â•‘
-  â•‘    âœ“ time_le_refl, time_le_trans, time_le_antisym, time_le_total     â•‘
-  â•‘    âœ“ time_tick_advances (monotonicity)                               â•‘
-  â•‘    âœ“ time_diff_consistent                                            â•‘
-  â•‘    âœ“ oscillation_defines_time                                        â•‘
-  â•‘                                                                      â•‘
-  â•‘  USAGE:                                                              â•‘
-  â•‘    Require Import RelationalTime_Adapter.                            â•‘
-  â•‘    (* Now Time is available as a derived type *)                     â•‘
-  â•‘                                                                      â•‘
-  â•‘  AXIOM COUNT: 0 (Time is fully constructive)                         â•‘
-  â•‘                                                                      â•‘
-  â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  +======================================================================+
+  |        RELATIONAL TIME ADAPTER - ZERO AXIOM TIME                     |
+  +======================================================================+
+  |                                                                      |
+  |  REPLACES: Parameter Time : Type                                     |
+  |  WITH:     Time := LocalTime (derived from oscillations)             |
+  |                                                                      |
+  |  DERIVATION CHAIN:                                                   |
+  |    Relation -> State Change -> Oscillation -> Period ->              |
+  |    Frequency -> Accumulated Cycles -> TIME                           |
+  |                                                                      |
+  |  EXPORTS:                                                            |
+  |    * Time           - The main time type                             |
+  |    * TimeClock      - Oscillating entity defining time               |
+  |    * time_le, time_lt, time_eq - Ordering relations                  |
+  |    * time_tick      - Advance time by one cycle                      |
+  |    * time_diff      - Signed time difference                         |
+  |                                                                      |
+  |  PROVEN:                                                             |
+  |    [x] time_le_refl, time_le_trans, time_le_antisym, time_le_total   |
+  |    [x] time_tick_advances (monotonicity)                             |
+  |    [x] time_diff_consistent                                          |
+  |    [x] oscillation_defines_time                                      |
+  |                                                                      |
+  |  USAGE:                                                              |
+  |    Require Import RelationalTime_Adapter.                            |
+  |    (* Now Time is available as a derived type *)                     |
+  |                                                                      |
+  |  AXIOM COUNT: 0 (Time is fully constructive)                         |
+  |                                                                      |
+  +======================================================================+
 *)
