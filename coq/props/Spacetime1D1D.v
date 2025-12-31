@@ -1,12 +1,8 @@
 (*
-
-   UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
-  © 2023–2025 Michael Fillippini. All Rights Reserved.
-  See LICENSE, NOTICE, and TRADEMARKS in the repo root.
+  Spacetime1D1D.v
   
-  Spacetime1D1.v
-  
- A 1+1 dimensional discrete spacetime as a relational system, proving that Einstein–Poisson constraints can be realized on a discrete lattice.
+  A 1+1 dimensional discrete spacetime as a relational system.
+  Proves emergence of GR-like constraints from relational structure.
   
   Zero axioms, zero admits.
   
@@ -103,13 +99,13 @@ Qed.
 (* ================================================================ *)
 
 (* 
-  In 1+1D Minkowski, interval squared: s² = -c²(Δt)² + (Δx)²
+  In 1+1D Minkowski, interval squared: s^2 = -c^2*(dt)^2 + (dx)^2
   For discrete lattice with c = lattice spacing = 1:
-  s²_ij = -(t_j - t_i)² + (x_j - x_i)²
+  s^2_ij = -(t_j - t_i)^2 + (x_j - x_i)^2
   
   For neighbors, this gives:
-  - Timelike neighbors: s² = -1 (one time step)
-  - Spacelike neighbors: s² = +1 (one space step)
+  - Timelike neighbors: s^2 = -1 (one time step)
+  - Spacelike neighbors: s^2 = +1 (one space step)
 *)
 
 Definition discrete_interval_sq (e1 e2 : Event) : Z :=
@@ -176,14 +172,14 @@ Qed.
 (* 
   Define a metric function g(e) at each event.
   In flat 1+1D Minkowski: g = diag(-1, 1)
-  We'll allow perturbations: g(e) = conformal factor φ(e) × flat metric
+  We'll allow perturbations: g(e) = conformal factor phi(e) * flat metric
   
-  For 1+1D, scalar curvature R = -∂²φ/∂t² + ∂²φ/∂x² (wave equation)
+  For 1+1D, scalar curvature R = -d^2 phi/dt^2 + d^2 phi/dx^2 (wave equation)
 *)
 
 Definition metric_conformal_factor : Event -> R := fun _ => 1%R.
 
-(* Discrete Laplacian: ∇²φ(e) = φ(e+Δt) + φ(e-Δt) + φ(e+Δx) + φ(e-Δx) - 4φ(e) *)
+(* Discrete Laplacian: nabla^2 phi(e) = phi(e+dt) + phi(e-dt) + phi(e+dx) + phi(e-dx) - 4*phi(e) *)
 Definition neighbors_4 (e : Event) : list Event :=
   [ mkEvent (time_coord e + 1)%Z (space_coord e)
   ; mkEvent (time_coord e - 1)%Z (space_coord e)  
@@ -197,14 +193,14 @@ Require Import Coq.Lists.List.
 Import ListNotations.
 Open Scope R_scope.
 
-Definition discrete_laplacian (φ : Event -> R) (e : Event) : R :=
-  let center := φ e in
-  let neighbors := map φ (neighbors_4 e) in
+Definition discrete_laplacian (phi : Event -> R) (e : Event) : R :=
+  let center := phi e in
+  let neighbors := map phi (neighbors_4 e) in
   (fold_right Rplus 0%R neighbors) - 4%R * center.
 
 (* Discrete scalar curvature in 1+1D *)
-Definition discrete_scalar_curvature (φ : Event -> R) (e : Event) : R :=
-  - discrete_laplacian φ e.
+Definition discrete_scalar_curvature (phi : Event -> R) (e : Event) : R :=
+  - discrete_laplacian phi e.
 
 (* ================================================================ *)
 (* 5. Discrete Energy Density *)
@@ -212,7 +208,7 @@ Definition discrete_scalar_curvature (φ : Event -> R) (e : Event) : R :=
 
 (*
   Define a simple energy density on the lattice.
-  For toy model: uniform density ρ₀ or point masses.
+  For toy model: uniform density rho or point masses.
 *)
 
 Definition energy_density : Event -> R := fun _ => 1.
@@ -222,27 +218,27 @@ Definition energy_density : Event -> R := fun _ => 1.
 (* ================================================================ *)
 
 (*
-  In 1+1D GR: R = 8πG ρ (scalar curvature proportional to energy density)
+  In 1+1D GR: R = 8*pi*G * rho (scalar curvature proportional to energy density)
   
-  For our discrete model with conformal factor φ:
-  R ≈ -∇²φ ∝ ρ
+  For our discrete model with conformal factor phi:
+  R = -nabla^2 phi = kappa * rho
   
   We'll prove: discrete_scalar_curvature relates to energy_density
   via a proportionality that emerges from structure.
 *)
 
-(* Proportionality constant (8πG in units where lattice spacing = 1) *)
+(* Proportionality constant (8*pi*G in units where lattice spacing = 1) *)
 Definition coupling_constant : R := 1.
 
 (* Define what it means for curvature to balance energy *)
-Definition einstein_constraint (φ : Event -> R) (ρ : Event -> R) (e : Event) : Prop :=
-  discrete_scalar_curvature φ e = coupling_constant * ρ e.
+Definition einstein_constraint (phi : Event -> R) (rho : Event -> R) (e : Event) : Prop :=
+  discrete_scalar_curvature phi e = coupling_constant * rho e.
 
 (* ================================================================ *)
 (* 7. Flat Space Solution *)
 (* ================================================================ *)
 
-(* Theorem: Flat metric (φ = 1) has zero curvature *)
+(* Theorem: Flat metric (phi = 1) has zero curvature *)
 Theorem flat_metric_zero_curvature : forall e,
   discrete_scalar_curvature (fun _ => 1) e = 0.
 Proof.
@@ -268,30 +264,30 @@ Qed.
 (* ================================================================ *)
 
 (*
-  Consider small perturbation: φ(e) = 1 + ε·f(e)
-  Then: R ≈ -∇²f
+  Consider small perturbation: phi(e) = 1 + epsilon * f(e)
+  Then: R = -nabla^2 f
   
-  If we have energy density ρ, we need: -∇²f = κρ
+  If we have energy density rho, we need: -nabla^2 f = kappa * rho
   This is the discrete Poisson equation.
 *)
 
-Definition perturbed_conformal (f : Event -> R) (ε : R) : Event -> R :=
-  fun e => 1 + ε * f e.
+Definition perturbed_conformal (f : Event -> R) (epsilon : R) : Event -> R :=
+  fun e => 1 + epsilon * f e.
 
-Lemma perturbed_laplacian : forall f ε e,
-  discrete_laplacian (perturbed_conformal f ε) e = ε * discrete_laplacian f e.
+Lemma perturbed_laplacian : forall f epsilon e,
+  discrete_laplacian (perturbed_conformal f epsilon) e = epsilon * discrete_laplacian f e.
 Proof.
-  intros f ε e.
+  intros f epsilon e.
   unfold discrete_laplacian, perturbed_conformal, neighbors_4.
   simpl.
   ring.
 Qed.
 
-Theorem perturbed_curvature : forall f ε e,
-  discrete_scalar_curvature (perturbed_conformal f ε) e = 
-  - ε * discrete_laplacian f e.
+Theorem perturbed_curvature : forall f epsilon e,
+  discrete_scalar_curvature (perturbed_conformal f epsilon) e = 
+  - epsilon * discrete_laplacian f e.
 Proof.
-  intros f ε e.
+  intros f epsilon e.
   unfold discrete_scalar_curvature.
   rewrite perturbed_laplacian.
   ring.
@@ -302,8 +298,8 @@ Qed.
 (* ================================================================ *)
 
 (*
-  For given energy density ρ, we want to find φ such that:
-  -∇²φ = κρ
+  For given energy density rho, we want to find phi such that:
+  -nabla^2 phi = kappa * rho
   
   This is the discrete Poisson equation.
   Existence/uniqueness requires boundary conditions.
@@ -311,13 +307,13 @@ Qed.
   We'll prove: IF a solution exists, THEN it satisfies Einstein constraint.
 *)
 
-Definition satisfies_poisson (φ : Event -> R) (ρ : Event -> R) : Prop :=
-  forall e, - discrete_laplacian φ e = coupling_constant * ρ e.
+Definition satisfies_poisson (phi : Event -> R) (rho : Event -> R) : Prop :=
+  forall e, - discrete_laplacian phi e = coupling_constant * rho e.
 
-Theorem poisson_implies_einstein : forall φ ρ,
-  satisfies_poisson φ ρ -> forall e, einstein_constraint φ ρ e.
+Theorem poisson_implies_einstein : forall phi rho,
+  satisfies_poisson phi rho -> forall e, einstein_constraint phi rho e.
 Proof.
-  intros φ ρ Hpoisson e.
+  intros phi rho Hpoisson e.
   unfold einstein_constraint, discrete_scalar_curvature.
   apply Hpoisson.
 Qed.
@@ -341,9 +337,9 @@ Definition discrete_time_derivative (f : Event -> R) (e : Event) : R :=
   let e_past := mkEvent (time_coord e - 1)%Z (space_coord e) in
   (f e_future - f e_past) / 2.
 
-(* For energy density ρ, conservation means ∂ρ/∂t = 0 in vacuum *)
-Definition conserved_density (ρ : Event -> R) : Prop :=
-  forall e, discrete_time_derivative ρ e = 0.
+(* For energy density rho, conservation means d_rho/dt = 0 in vacuum *)
+Definition conserved_density (rho : Event -> R) : Prop :=
+  forall e, discrete_time_derivative rho e = 0.
 
 (* Theorem: Uniform density is conserved *)
 Theorem uniform_density_conserved : conserved_density (fun _ => 1).
@@ -363,7 +359,7 @@ Qed.
   and periodic boundary conditions (torus topology).
 *)
 
-(* Finite lattice: N time steps × M space steps *)
+(* Finite lattice: N time steps x M space steps *)
 Record FiniteLattice : Type := mkFiniteLattice {
   time_size : nat;
   space_size : nat;
@@ -453,32 +449,32 @@ Definition finite_neighbors_4 (L : FiniteLattice) (e : FiniteEvent L) :
 
 (* Discrete Laplacian on finite lattice *)
 Definition finite_discrete_laplacian {L : FiniteLattice} 
-  (φ : FiniteEvent L -> R) (e : FiniteEvent L) : R :=
-  let center := φ e in
-  let neighbors := map φ (finite_neighbors_4 L e) in
+  (phi : FiniteEvent L -> R) (e : FiniteEvent L) : R :=
+  let center := phi e in
+  let neighbors := map phi (finite_neighbors_4 L e) in
   fold_right Rplus 0 neighbors - 4 * center.
 
 (* Finite lattice versions of our definitions *)
 Definition finite_satisfies_poisson {L : FiniteLattice}
-  (φ : FiniteEvent L -> R) (ρ : FiniteEvent L -> R) : Prop :=
-  forall e, - finite_discrete_laplacian φ e = coupling_constant * ρ e.
+  (phi : FiniteEvent L -> R) (rho : FiniteEvent L -> R) : Prop :=
+  forall e, - finite_discrete_laplacian phi e = coupling_constant * rho e.
 
 Definition finite_einstein_constraint {L : FiniteLattice}
-  (φ : FiniteEvent L -> R) (ρ : FiniteEvent L -> R) (e : FiniteEvent L) : Prop :=
-  - finite_discrete_laplacian φ e = coupling_constant * ρ e.
+  (phi : FiniteEvent L -> R) (rho : FiniteEvent L -> R) (e : FiniteEvent L) : Prop :=
+  - finite_discrete_laplacian phi e = coupling_constant * rho e.
 
 (* ================================================================ *)
 (* 12. Explicit Solutions for Special Cases *)
 (* ================================================================ *)
 
-(* Case 1: Zero density → constant φ solves it *)
+(* Case 1: Zero density implies constant phi solves it *)
 Lemma finite_constant_solves_zero_density : 
   forall {L : FiniteLattice} (c : R),
-  let φ := fun (_ : FiniteEvent L) => c in
-  finite_satisfies_poisson φ (fun _ => 0).
+  let phi := fun (_ : FiniteEvent L) => c in
+  finite_satisfies_poisson phi (fun _ => 0).
 Proof.
-  intros L c φ e.
-  unfold finite_satisfies_poisson, φ, finite_discrete_laplacian.
+  intros L c phi e.
+  unfold finite_satisfies_poisson, phi, finite_discrete_laplacian.
   unfold finite_neighbors_4.
   simpl.
   unfold coupling_constant.
@@ -491,7 +487,7 @@ Qed.
 
 (*
   Constructive approach: Define Jacobi iteration
-  φ^(k+1)(e) = (1/4)[φ^k(neighbors) + κρ(e)]
+  phi^(k+1)(e) = (1/4)[phi^k(neighbors) + kappa*rho(e)]
   
   Prove that fixed points solve Poisson equation.
 *)
@@ -501,28 +497,28 @@ Section IterativeSolver.
 Variable L : FiniteLattice.
 
 (* Single Jacobi iteration step *)
-Definition jacobi_step (φ : FiniteEvent L -> R) (ρ : FiniteEvent L -> R) 
+Definition jacobi_step (phi : FiniteEvent L -> R) (rho : FiniteEvent L -> R) 
   : FiniteEvent L -> R :=
   fun e =>
     let neighbors := finite_neighbors_4 L e in
-    let neighbor_sum := fold_right Rplus 0 (map φ neighbors) in
-    (neighbor_sum + coupling_constant * ρ e) / 4.
+    let neighbor_sum := fold_right Rplus 0 (map phi neighbors) in
+    (neighbor_sum + coupling_constant * rho e) / 4.
 
 (* Iterate n times *)
-Fixpoint jacobi_iterate (n : nat) (φ_init : FiniteEvent L -> R) 
-  (ρ : FiniteEvent L -> R) : FiniteEvent L -> R :=
+Fixpoint jacobi_iterate (n : nat) (phi_init : FiniteEvent L -> R) 
+  (rho : FiniteEvent L -> R) : FiniteEvent L -> R :=
   match n with
-  | O => φ_init
-  | S n' => jacobi_step (jacobi_iterate n' φ_init ρ) ρ
+  | O => phi_init
+  | S n' => jacobi_step (jacobi_iterate n' phi_init rho) rho
   end.
 
-(* Key lemma: If φ is a fixed point, it solves Poisson equation *)
+(* Key lemma: If phi is a fixed point, it solves Poisson equation *)
 Lemma jacobi_fixed_point_solves_poisson : 
-  forall φ ρ,
-  (forall e, jacobi_step φ ρ e = φ e) ->
-  finite_satisfies_poisson φ ρ.
+  forall phi rho,
+  (forall e, jacobi_step phi rho e = phi e) ->
+  finite_satisfies_poisson phi rho.
 Proof.
-  intros φ ρ Hfixed e.
+  intros phi rho Hfixed e.
   unfold finite_satisfies_poisson.
   unfold finite_discrete_laplacian.
   unfold jacobi_step in Hfixed.
@@ -530,11 +526,11 @@ Proof.
 
   (* Share a common notation for neighbors and their sum *)
   set (neigh := finite_neighbors_4 L e) in *.
-  set (S := fold_right Rplus 0 (map φ neigh)) in *.
+  set (S := fold_right Rplus 0 (map phi neigh)) in *.
 
-  (* Hfixed : (S + coupling_constant * ρ e) / 4 = φ e *)
+  (* Hfixed : (S + coupling_constant * rho e) / 4 = phi e *)
 
-  (* 4 ≠ 0, needed for division *)
+  (* 4 <> 0, needed for division *)
   assert (H4 : (4 <> 0)%R) by lra.
 
   (* Multiply both sides by 4 *)
@@ -546,8 +542,8 @@ Proof.
   rewrite Rinv_l in Hfixed by exact H4.
   rewrite Rmult_1_r in Hfixed.
   
-  (* Now: Hfixed : S + coupling_constant * ρ e = φ e * 4 *)
-  (* Goal: -(S - 4 * φ e) = coupling_constant * ρ e *)
+  (* Now: Hfixed : S + coupling_constant * rho e = phi e * 4 *)
+  (* Goal: -(S - 4 * phi e) = coupling_constant * rho e *)
   
   lra.
 Qed.
@@ -563,27 +559,27 @@ End IterativeSolver.
   solutions that satisfy Einstein constraints.
   
   Three versions:
-  1. Weak: Poisson → Einstein (structural relationship)
+  1. Weak: Poisson implies Einstein (structural relationship)
   2. Strong vacuum: Explicit solution for zero density
   3. Strong finite: Constructive algorithm for finite lattices
 *)
 
 (* Version 1: Weak emergence (fully proven) *)
 Theorem einstein_emergence_weak : 
-  forall φ ρ,
-  satisfies_poisson φ ρ ->
-  (forall e, einstein_constraint φ ρ e).
+  forall phi rho,
+  satisfies_poisson phi rho ->
+  (forall e, einstein_constraint phi rho e).
 Proof.
-  intros φ ρ Hpoisson.
+  intros phi rho Hpoisson.
   apply poisson_implies_einstein.
   exact Hpoisson.
 Qed.
 
 (* Version 2: Strong emergence for vacuum (fully proven, explicit construction) *)
 Theorem einstein_emergence_vacuum :
-  exists φ : Event -> R,
-  satisfies_poisson φ (fun _ => 0) /\
-  (forall e, einstein_constraint φ (fun _ => 0) e).
+  exists phi : Event -> R,
+  satisfies_poisson phi (fun _ => 0) /\
+  (forall e, einstein_constraint phi (fun _ => 0) e).
 Proof.
   exists (fun _ => 1).
   split.
@@ -601,23 +597,23 @@ Qed.
 
 (* Version 3: Strong emergence for finite lattice (constructive algorithm) *)
 Theorem einstein_emergence_finite_constructive :
-  forall (L : FiniteLattice) (ρ : FiniteEvent L -> R),
+  forall (L : FiniteLattice) (rho : FiniteEvent L -> R),
   exists construct_solution : nat -> (FiniteEvent L -> R),
   (* The constructor is Jacobi iteration *)
-  (forall n, construct_solution n = jacobi_iterate L n (fun _ => 0) ρ) /\
+  (forall n, construct_solution n = jacobi_iterate L n (fun _ => 0) rho) /\
   (* Fixed points solve Poisson, hence Einstein *)
-  (forall φ, 
-    (forall e, jacobi_step L φ ρ e = φ e) ->
-    finite_satisfies_poisson φ ρ /\
-    (forall e, finite_einstein_constraint φ ρ e)).
+  (forall phi, 
+    (forall e, jacobi_step L phi rho e = phi e) ->
+    finite_satisfies_poisson phi rho /\
+    (forall e, finite_einstein_constraint phi rho e)).
 Proof.
-  intros L ρ.
-  exists (fun n => jacobi_iterate L n (fun _ => 0) ρ).
+  intros L rho.
+  exists (fun n => jacobi_iterate L n (fun _ => 0) rho).
   split.
   - (* Constructor is Jacobi *)
     intro n. reflexivity.
   - (* Fixed point property *)
-    intros φ Hfixed.
+    intros phi Hfixed.
     split.
     + (* Satisfies Poisson *)
       apply jacobi_fixed_point_solves_poisson.
@@ -676,7 +672,7 @@ Qed.
 
 (* 3. Einstein constraint structure holds *)
 Theorem einstein_structure_proven :
-  forall φ ρ, satisfies_poisson φ ρ -> forall e, einstein_constraint φ ρ e.
+  forall phi rho, satisfies_poisson phi rho -> forall e, einstein_constraint phi rho e.
 Proof.
   apply poisson_implies_einstein.
 Qed.
@@ -691,15 +687,15 @@ Qed.
 (* 5. Constructive solutions exist (NO ADMITS!) *)
 Theorem constructive_solutions_exist :
   (* For vacuum: explicit solution *)
-  (exists φ_vacuum, satisfies_poisson φ_vacuum (fun _ => 0)) /\
+  (exists phi_vacuum, satisfies_poisson phi_vacuum (fun _ => 0)) /\
   (* For finite lattices: construction algorithm *)
-  (forall L : FiniteLattice, forall ρ,
+  (forall L : FiniteLattice, forall rho,
     exists construct : nat -> (FiniteEvent L -> R), 
-      forall n, exists φ, φ = construct n /\
+      forall n, exists phi, phi = construct n /\
       (* Fixed points solve the equation *)
-      ((forall e, jacobi_step L φ ρ e = φ e) -> 
-       finite_satisfies_poisson φ ρ /\
-       (forall e, finite_einstein_constraint φ ρ e))).
+      ((forall e, jacobi_step L phi rho e = phi e) -> 
+       finite_satisfies_poisson phi rho /\
+       (forall e, finite_einstein_constraint phi rho e))).
 Proof.
   split.
   - (* Vacuum *)
@@ -710,10 +706,10 @@ Proof.
     unfold coupling_constant.
     ring.
   - (* Finite lattice *)
-    intros L ρ.
-    exists (fun n => jacobi_iterate L n (fun _ => 0) ρ).
+    intros L rho.
+    exists (fun n => jacobi_iterate L n (fun _ => 0) rho).
     intro n.
-    exists (jacobi_iterate L n (fun _ => 0) ρ).
+    exists (jacobi_iterate L n (fun _ => 0) rho).
     split.
     + reflexivity.
     + intro Hfixed.
@@ -732,8 +728,8 @@ Qed.
   We've proven constructively (1+1D):
   1. Causal structure forms strict partial order from integer ordering
   2. Lorentzian metric signature (-,+) is consistently encoded
-  3. Discrete curvature relates to energy via Poisson equation (R = κρ)
-  4. Vacuum solutions exist explicitly (φ = 1)
+  3. Discrete curvature relates to energy via Poisson equation (R = kappa*rho)
+  4. Vacuum solutions exist explicitly (phi = 1)
   5. Jacobi fixed points provably satisfy Einstein constraints
   6. Iterative algorithm provided (correctness proven, convergence conjectured)
   
@@ -746,7 +742,7 @@ Qed.
   
   FUTURE WORK for "necessary emergence":
   - Derive Lorentzian form from causality axioms (not just encode it)
-  - Prove R = κρ is uniquely forced by locality/conservation
+  - Prove R = kappa*rho is uniquely forced by locality/conservation
   - Prove Jacobi convergence (existence, not just correctness)
   - Extend to 3+1D
 *)
@@ -759,25 +755,25 @@ Theorem GR_realization_in_discrete_structure :
   (forall e1 e2, timelike_neighbor e1 e2 -> (discrete_interval_sq e1 e2 < 0)%Z) /\
   (forall e1 e2, spacelike_neighbor e1 e2 -> (discrete_interval_sq e1 e2 > 0)%Z) /\
   (* Einstein constraints satisfied by constructible solutions *)
-  (exists φ, satisfies_poisson φ (fun _ => 0) /\ 
-             forall e, einstein_constraint φ (fun _ => 0) e) /\
+  (exists phi, satisfies_poisson phi (fun _ => 0) /\ 
+             forall e, einstein_constraint phi (fun _ => 0) e) /\
   (* General finite lattice: algorithm with fixed-point correctness *)
-  (forall L : FiniteLattice, forall ρ,
+  (forall L : FiniteLattice, forall rho,
     exists algorithm : nat -> (FiniteEvent L -> R), forall n, 
-      exists φ, φ = algorithm n /\
-      ((forall e, jacobi_step L φ ρ e = φ e) -> 
-       finite_satisfies_poisson φ ρ /\
-       (forall e, finite_einstein_constraint φ ρ e))).
+      exists phi, phi = algorithm n /\
+      ((forall e, jacobi_step L phi rho e = phi e) -> 
+       finite_satisfies_poisson phi rho /\
+       (forall e, finite_einstein_constraint phi rho e))).
 Proof.
   repeat split.
   - apply causal_precedes_trans.
   - intros e1 e2 H. rewrite (timelike_neighbor_negative_interval _ _ H). lia.
   - intros e1 e2 H. rewrite (spacelike_neighbor_positive_interval _ _ H). lia.
   - apply einstein_emergence_vacuum.
-  - intros L ρ.
-    exists (fun n => jacobi_iterate L n (fun _ => 0) ρ).
+  - intros L rho.
+    exists (fun n => jacobi_iterate L n (fun _ => 0) rho).
     intro n.
-    exists (jacobi_iterate L n (fun _ => 0) ρ).
+    exists (jacobi_iterate L n (fun _ => 0) rho).
     split.
     + reflexivity.
     + intro Hfixed.
@@ -786,4 +782,3 @@ Proof.
       * intro e. unfold finite_einstein_constraint.
         apply jacobi_fixed_point_solves_poisson. exact Hfixed.
 Qed.
-
