@@ -1,48 +1,52 @@
 (*
-  ╔═══════════════════════════════════════════════════════════════════════════╗
-  ║                                                                           ║
-  ║              PROPOSITION 1: SERIALITY VIA WHOLE-COMPLETION                ║
-  ║                                                                           ║
-  ║                         UCF/GUTT™ Formal Verification                     ║
-  ║                                                                           ║
-  ╠═══════════════════════════════════════════════════════════════════════════╣
-  ║                                                                           ║
-  ║  THEOREM: ∀x∈U_x, ∃y∈U_x: R'(x,y)                                        ║
-  ║                                                                           ║
-  ║  "Every entity in the extended universe has at least one outgoing edge"  ║
-  ║                                                                           ║
-  ║  This is SERIALITY (every node has a successor), not pairwise            ║
-  ║  connectivity. The construction adds a terminal sink (Whole) that        ║
-  ║  every entity relates to, guaranteeing seriality by definition.          ║
-  ║                                                                           ║
-  ╠═══════════════════════════════════════════════════════════════════════════╣
-  ║                                                                           ║
-  ║  IMPORTANT CLARIFICATION:                                                 ║
-  ║                                                                           ║
-  ║  Proposition 1 holds for ALL base relations R because R' is DEFINED      ║
-  ║  to relate every x to Whole. This is a definitional/constructive         ║
-  ║  principle, not a constraint discovered about arbitrary relations.       ║
-  ║                                                                           ║
-  ║  The philosophical claim is: by EXTENDING any universe U with the Whole, ║
-  ║  and DEFINING R' to include universal Whole-targeting, we transform      ║
-  ║  "no entity is isolated" from an assumption into a construction.         ║
-  ║                                                                           ║
-  ╠═══════════════════════════════════════════════════════════════════════════╣
-  ║                                                                           ║
-  ║  STATUS: ✓ ZERO AXIOMS                                                    ║
-  ║          ✓ ZERO ADMITS                                                    ║
-  ║          ✓ FULLY CONSTRUCTIVE                                             ║
-  ║          ✓ MACHINE VERIFIED (Coq 8.18+)                                   ║
-  ║                                                                           ║
-  ╠═══════════════════════════════════════════════════════════════════════════╣
-  ║                                                                           ║
-  ║  USAGE: Import Core and ignore build artifacts (.glob, .aux, .vo, etc.)  ║
-  ║         BackwardCompat is provided only for legacy code compatibility.   ║
-  ║                                                                           ║
-  ║  © 2023–2025 Michael Fillippini. All Rights Reserved.                     ║
-  ║  UCF/GUTT™ Research & Evaluation License v1.1                             ║
-  ║                                                                           ║
-  ╚═══════════════════════════════════════════════════════════════════════════╝
+  UCF/GUTT™ Research & Evaluation License v1.1 (Non-Commercial, No Derivatives)
+  (C) 2023-2025 Michael Fillippini. All Rights Reserved.
+*)
+(*
+  +===========================================================================+
+  |                                                                           |
+  |              PROPOSITION 1: SERIALITY VIA WHOLE-COMPLETION                |
+  |                                                                           |
+  |                         UCF/GUTT(TM) Formal Verification                     |
+  |                                                                           |
+  +===========================================================================+
+  |                                                                           |
+  |  THEOREM: forallx in U_x, existsy in U_x: R'(x,y)                                        |
+  |                                                                           |
+  |  "Every entity in the extended universe has at least one outgoing edge"  |
+  |                                                                           |
+  |  This is SERIALITY (every node has a successor), not pairwise            |
+  |  connectivity. The construction adds a terminal sink (Whole) that        |
+  |  every entity relates to, guaranteeing seriality by definition.          |
+  |                                                                           |
+  +===========================================================================+
+  |                                                                           |
+  |  IMPORTANT CLARIFICATION:                                                 |
+  |                                                                           |
+  |  Proposition 1 holds for ALL base relations R because R' is DEFINED      |
+  |  to relate every x to Whole. This is a definitional/constructive         |
+  |  principle, not a constraint discovered about arbitrary relations.       |
+  |                                                                           |
+  |  The philosophical claim is: by EXTENDING any universe U with the Whole, |
+  |  and DEFINING R' to include universal Whole-targeting, we transform      |
+  |  "no entity is isolated" from an assumption into a construction.         |
+  |                                                                           |
+  +===========================================================================+
+  |                                                                           |
+  |  STATUS: [ok] ZERO AXIOMS                                                    |
+  |          [ok] ZERO ADMITS                                                    |
+  |          [ok] FULLY CONSTRUCTIVE                                             |
+  |          [ok] MACHINE VERIFIED (Coq 8.18+)                                   |
+  |                                                                           |
+  +===========================================================================+
+  |                                                                           |
+  |  USAGE: Import Core and ignore build artifacts (.glob, .aux, .vo, etc.)  |
+  |         BackwardCompat is provided only for legacy code compatibility.   |
+  |                                                                           |
+  |  (C) 2023-2025 Michael Fillippini. All Rights Reserved.                     |
+  |  UCF/GUTT(TM) Research & Evaluation License v1.1                             |
+  |                                                                           |
+  +===========================================================================+
 *)
 
 Require Import Coq.Relations.Relation_Operators.
@@ -69,7 +73,7 @@ Module Core.
     The "serial completion" pattern:
     
     Given any universe U and relation R, we construct:
-    - An extended universe Ux = U ∪ {Whole}
+    - An extended universe Ux = U  cup  {Whole}
     - An extended relation R' that adds Whole as a terminal sink w.r.t. U
     
     This makes R' serial (every element has an outgoing edge)
@@ -82,7 +86,7 @@ Module Core.
     - This is NOT pairwise connectivity; we only guarantee seriality
   *)
 
-  (* Extended universe: U_x = U ∪ {Whole} via option type *)
+  (* Extended universe: U_x = U  cup  {Whole} via option type *)
   Definition Ux (U : Type) : Type := option U.
 
   (* Constructors with implicit type argument for ergonomics *)
@@ -147,7 +151,7 @@ Module Core.
   (*                         Key Properties of R'                             *)
   (* ------------------------------------------------------------------------ *)
 
-  (* R' is a conservative extension: it restricts to R on U × U *)
+  (* R' is a conservative extension: it restricts to R on U * U *)
   Lemma R_prime_restricts :
     forall (U : Type) (R : U -> U -> Prop) (a b : U),
       R_prime R (elem a) (elem b) <-> R a b.
@@ -517,58 +521,58 @@ Module Params := BackwardCompat.
 (* ========================================================================== *)
 
 (*
-  ╔═══════════════════════════════════════════════════════════════════════════╗
-  ║                           VERIFICATION SUMMARY                            ║
-  ╠═══════════════════════════════════════════════════════════════════════════╣
-  ║                                                                           ║
-  ║  Theorem: ∀x∈U_x, ∃y∈U_x: R'(x,y)    [SERIALITY, not connectivity]       ║
-  ║                                                                           ║
-  ║  This theorem holds BY CONSTRUCTION: R' is defined so that               ║
-  ║  R'(x, Whole) = True for all x. The Whole is a terminal sink w.r.t. U.   ║
-  ║                                                                           ║
-  ║  TERMINOLOGY:                                                             ║
-  ║    • Seriality = every node has at least one successor (outgoing edge)   ║
-  ║    • Terminal sink w.r.t. U = no outgoing edges to U (but has self-loop) ║
-  ║    • This is NOT pairwise connectivity; we guarantee only seriality      ║
-  ║    • common_successor provides: ∀x,y. ∃z. reachable x z ∧ reachable y z  ║
-  ║                                                                           ║
-  ║  CONSTRUCTION PATTERN: Serial Completion (Whole-Completion)               ║
-  ║    Given (U, R), construct (Ux, R') where:                                ║
-  ║    - Ux = U ∪ {Whole}                                                     ║
-  ║    - R' extends R with universal Whole-targeting                          ║
-  ║    - R' is serial by construction                                         ║
-  ║    - R' is a conservative extension of R                                  ║
-  ║                                                                           ║
-  ║  Three formulations provided:                                             ║
-  ║                                                                           ║
-  ║  1. Core.proposition_1 (CLOSED - CANONICAL)                               ║
-  ║     - Explicit ∀ U R quantification                                       ║
-  ║     - Print Assumptions: "Closed under the global context"                ║
-  ║                                                                           ║
-  ║  2. ConcreteExample.seriality                                             ║
-  ║     - U = nat, R = False (empty relation)                                 ║
-  ║     - Demonstrates worst-case still works                                 ║
-  ║                                                                           ║
-  ║  3. BackwardCompat.refined_proposition_1                                  ║
-  ║     - Parameter U, R for legacy imports                                   ║
-  ║     - Print Assumptions shows U, R (expected)                             ║
-  ║                                                                           ║
-  ║  Key Lemmas:                                                              ║
-  ║    • R_prime_restricts : R'(elem a, elem b) ↔ R a b                       ║
-  ║    • R_lift : R a b → R'(elem a, elem b)                                  ║
-  ║    • everything_relates_to_Whole : R'(x, Whole)                           ║
-  ║    • Whole_terminal_sink : ¬R'(Whole, elem b)                             ║
-  ║    • common_successor : ∀x,y. ∃z. reach x z ∧ reach y z                   ║
-  ║                                                                           ║
-  ║  Proof Method:                                                            ║
-  ║    • Witness: Whole (always works by definition of R')                    ║
-  ║    • Fully constructive (no classical logic)                              ║
-  ║    • Proof obligation reduces to True; solved by exact I                  ║
-  ║                                                                           ║
-  ║  Key Insight:                                                             ║
-  ║    By extending any universe with the Whole and defining R' to include    ║
-  ║    universal Whole-targeting, "no entity is isolated" becomes a           ║
-  ║    mathematical necessity rather than an empirical assumption.            ║
-  ║                                                                           ║
-  ╚═══════════════════════════════════════════════════════════════════════════╝
+  +===========================================================================+
+  |                           VERIFICATION SUMMARY                            |
+  +===========================================================================+
+  |                                                                           |
+  |  Theorem: forallx in U_x, existsy in U_x: R'(x,y)    [SERIALITY, not connectivity]       |
+  |                                                                           |
+  |  This theorem holds BY CONSTRUCTION: R' is defined so that               |
+  |  R'(x, Whole) = True for all x. The Whole is a terminal sink w.r.t. U.   |
+  |                                                                           |
+  |  TERMINOLOGY:                                                             |
+  |    * Seriality = every node has at least one successor (outgoing edge)   |
+  |    * Terminal sink w.r.t. U = no outgoing edges to U (but has self-loop) |
+  |    * This is NOT pairwise connectivity; we guarantee only seriality      |
+  |    * common_successor provides: forallx,y. existsz. reachable x z /\ reachable y z  |
+  |                                                                           |
+  |  CONSTRUCTION PATTERN: Serial Completion (Whole-Completion)               |
+  |    Given (U, R), construct (Ux, R') where:                                |
+  |    - Ux = U  cup  {Whole}                                                     |
+  |    - R' extends R with universal Whole-targeting                          |
+  |    - R' is serial by construction                                         |
+  |    - R' is a conservative extension of R                                  |
+  |                                                                           |
+  |  Three formulations provided:                                             |
+  |                                                                           |
+  |  1. Core.proposition_1 (CLOSED - CANONICAL)                               |
+  |     - Explicit forall U R quantification                                       |
+  |     - Print Assumptions: "Closed under the global context"                |
+  |                                                                           |
+  |  2. ConcreteExample.seriality                                             |
+  |     - U = nat, R = False (empty relation)                                 |
+  |     - Demonstrates worst-case still works                                 |
+  |                                                                           |
+  |  3. BackwardCompat.refined_proposition_1                                  |
+  |     - Parameter U, R for legacy imports                                   |
+  |     - Print Assumptions shows U, R (expected)                             |
+  |                                                                           |
+  |  Key Lemmas:                                                              |
+  |    * R_prime_restricts : R'(elem a, elem b) <-> R a b                       |
+  |    * R_lift : R a b -> R'(elem a, elem b)                                  |
+  |    * everything_relates_to_Whole : R'(x, Whole)                           |
+  |    * Whole_terminal_sink : ~R'(Whole, elem b)                             |
+  |    * common_successor : forallx,y. existsz. reach x z /\ reach y z                   |
+  |                                                                           |
+  |  Proof Method:                                                            |
+  |    * Witness: Whole (always works by definition of R')                    |
+  |    * Fully constructive (no classical logic)                              |
+  |    * Proof obligation reduces to True; solved by exact I                  |
+  |                                                                           |
+  |  Key Insight:                                                             |
+  |    By extending any universe with the Whole and defining R' to include    |
+  |    universal Whole-targeting, "no entity is isolated" becomes a           |
+  |    mathematical necessity rather than an empirical assumption.            |
+  |                                                                           |
+  +===========================================================================+
 *)
