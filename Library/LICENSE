@@ -1,0 +1,145 @@
+UCF/GUTT(TM) Research & Evaluation License v1.1
+(Non-Commercial, No Derivatives)
+
+Copyright (c) 2023-2025 Michael Fillippini. All Rights Reserved.
+
+================================================================================
+
+TERMS AND CONDITIONS
+
+1. DEFINITIONS
+
+   "Software" means the UCF/GUTT Extensions Library, including all source code,
+   documentation, and associated materials in this repository.
+
+   "Licensor" means Michael Fillippini.
+
+   "You" means any individual or legal entity exercising permissions granted by
+   this License.
+
+   "Research Use" means use of the Software for academic research, education,
+   personal study, or non-commercial evaluation purposes.
+
+   "Commercial Use" means any use of the Software intended for or directed
+   toward commercial advantage or monetary compensation.
+
+   "Derivative Work" means any work that is based on or derived from the
+   Software, including but not limited to modifications, translations,
+   adaptations, or any work that incorporates the Software.
+
+2. GRANT OF LICENSE
+
+   Subject to the terms and conditions of this License, the Licensor hereby
+   grants You a non-exclusive, non-transferable, revocable license to:
+
+   a) Use the Software for Research Use only;
+   
+   b) Copy and distribute verbatim copies of the Software for Research Use,
+      provided that You include this License with each copy;
+   
+   c) Study the Software to understand its operation and verify its claims.
+
+3. RESTRICTIONS
+
+   a) NO COMMERCIAL USE: You may not use the Software for Commercial Use
+      without prior written permission from the Licensor.
+
+   b) NO DERIVATIVES: You may not create, distribute, or publicly display
+      any Derivative Work without prior written permission from the Licensor.
+
+   c) NO SUBLICENSING: You may not sublicense the Software or grant rights
+      to the Software to any third party.
+
+   d) ATTRIBUTION: Any use of the Software must include appropriate
+      attribution to the Licensor and reference to this License.
+
+   e) TRADEMARK: "UCF/GUTT" is a trademark of Michael Fillippini. You may not
+      use this trademark without prior written permission, except as required
+      for reasonable attribution.
+
+4. VERIFICATION AND AUDIT
+
+   The Software includes formal verification artifacts (Coq proofs). You may:
+
+   a) Compile and verify the proofs using the Coq proof assistant;
+   
+   b) Run the provided audit scripts to verify axiom-free status;
+   
+   c) Use verification results for academic publication with proper citation.
+
+5. INTELLECTUAL PROPERTY
+
+   a) The Licensor retains all right, title, and interest in and to the
+      Software, including all intellectual property rights therein.
+
+   b) This License does not grant You any rights to patents, trademarks,
+      trade secrets, or any other intellectual property of the Licensor.
+
+   c) Any contributions You make to the Software are assigned to the Licensor.
+
+6. DISCLAIMER OF WARRANTIES
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
+   IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE LICENSOR BE LIABLE TO YOU FOR ANY INDIRECT, SPECIAL,
+   INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATED TO THIS
+   LICENSE OR THE SOFTWARE, EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGES.
+
+8. TERMINATION
+
+   a) This License is effective until terminated.
+
+   b) This License will terminate automatically if You fail to comply with
+      any term or condition of this License.
+
+   c) Upon termination, You must destroy all copies of the Software in Your
+      possession or control.
+
+   d) Sections 5, 6, 7, and 9 shall survive termination.
+
+9. GENERAL
+
+   a) This License constitutes the entire agreement between You and the
+      Licensor regarding the Software.
+
+   b) If any provision of this License is held to be unenforceable, such
+      provision shall be reformed only to the extent necessary to make it
+      enforceable.
+
+   c) This License shall be governed by and construed in accordance with
+      the laws of the jurisdiction of the Licensor's residence.
+
+   d) The Licensor reserves the right to offer the Software under different
+      license terms or to stop distributing the Software at any time.
+
+================================================================================
+
+CONTACT
+
+For licensing inquiries, commercial use permissions, or questions about this
+License, please contact:
+
+Michael Fillippini
+[Contact information redacted - available upon request]
+
+================================================================================
+
+CITATION
+
+If you use this Software in academic work, please cite:
+
+  Fillippini, M. (2025). UCF/GUTT Extensions Library: Formally Verified
+  Whole-Completion for Universal Connectivity. Version 1.0.0.
+  163 exports, zero axioms, coqchk verified.
+
+================================================================================
+
+END OF LICENSE

@@ -1,0 +1,24 @@
+# UCF/GUTT Extensions Library
+# Coq Project Configuration
+#
+# Usage:
+#   $ coq_makefile -f _CoqProject -o CoqMakefile
+#   $ make -f CoqMakefile
+#
+# Or use directly with:
+#   $ coqc -R src UCF.GUTT.Extensions src/Top__Extensions__Base.v
+
+# Logical path mapping
+-R src UCF.GUTT.Extensions
+
+# Compiler flags
+-arg -w
+-arg +all
+
+# Source files in dependency order
+src/Top__Extensions__Base.v
+src/Top__Extensions__WholeCompletion.v
+src/Top__Extensions__Composition.v
+src/Top__Extensions__Prelude.v
+src/Top__Extensions__Extras.v
+src/Top__Extensions__axiomaudit.v

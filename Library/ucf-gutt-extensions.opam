@@ -1,0 +1,69 @@
+opam-version: "2.0"
+name: "ucf-gutt-extensions"
+version: "1.0.0"
+synopsis: "Formally verified Whole-completion for universal connectivity"
+description: """
+The UCF/GUTT Extensions Library provides a formally verified construction
+for extending any partial relational system to achieve seriality (no dead ends)
+while preserving the original structure exactly.
+
+Key features:
+- 163 exports, ALL axiom-free
+- coqchk verified
+- Zero admits, zero classical logic
+- Category-theoretic composition laws
+
+The library proves that universal connectivity emerges as mathematical
+necessity rather than philosophical assumption.
+"""
+maintainer: "Michael Fillippini"
+authors: ["Michael Fillippini"]
+license: "UCF/GUTT Research & Evaluation License v1.1"
+homepage: "https://github.com/__UCF-GUTT__/Library"
+bug-reports: "https://github.com/__UCF-GUTT__/Library/issues"
+dev-repo: "git+https://github.com/__UCF-GUTT__/Library.git"
+
+depends: [
+  "coq" {>= "8.16" & < "8.20"}
+]
+
+build: [
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Base.v"]
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__WholeCompletion.v"]
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Composition.v"]
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Prelude.v"]
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Extras.v"]
+  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__axiomaudit.v"]
+]
+
+install: [
+  ["mkdir" "-p" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions"]
+  ["cp" "src/Top__Extensions__Base.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__WholeCompletion.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Composition.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Prelude.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Extras.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__axiomaudit.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Base.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__WholeCompletion.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Composition.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Prelude.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__Extras.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["cp" "src/Top__Extensions__axiomaudit.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+]
+
+tags: [
+  "category:Mathematics/Logic/Type theory"
+  "keyword:whole-completion"
+  "keyword:seriality"
+  "keyword:universal-connectivity"
+  "keyword:relational-ontology"
+  "keyword:UCF/GUTT"
+  "logpath:UCF.GUTT.Extensions"
+  "date:2025-01-10"
+]
+
+# Source checksums for verification
+extra-files: [
+  ["source-checksums.txt" "sha256=TO_BE_COMPUTED"]
+]

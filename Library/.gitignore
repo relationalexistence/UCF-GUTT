@@ -1,0 +1,65 @@
+# Coq build artifacts
+*.vo
+*.vok
+*.vos
+*.glob
+*.aux
+.*.aux
+*.v.d
+.coqdeps.d
+
+# Coq IDE files
+.coq-native/
+*.coq-native/
+
+# Generated Makefiles
+CoqMakefile
+CoqMakefile.conf
+
+# Editor files
+*~
+\#*\#
+.#*
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# Docker
+.docker/
+
+# Build outputs
+build-manifest.txt
+source-checksums.txt
+compiled-checksums.txt
