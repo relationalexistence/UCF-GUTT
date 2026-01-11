@@ -62,7 +62,7 @@ UCF-GUTT-Extensions/
 ├── Dockerfile                         # Reproducible container build
 ├── ucf-gutt-extensions.opam           # Opam package specification
 │
-├── .github/workflows/ci.yml           # GitHub Actions CI
+├── .github/workflows/library-ci.yml          # GitHub Actions CI
 │
 ├── src/                               # Coq source files
 │   ├── Top__Extensions__Base.v        # Foundation: records, properties, morphisms
