@@ -62,7 +62,6 @@ UCF-GUTT-Extensions/
 ├── Dockerfile                         # Reproducible container build
 ├── ucf-gutt-extensions.opam           # Opam package specification
 │
-
 ├── src/                               # Coq source files
 │   ├── Top__Extensions__Base.v        # Foundation: records, properties, morphisms
 │   ├── Top__Extensions__WholeCompletion.v  # Core construction
