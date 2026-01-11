@@ -4,52 +4,47 @@ version: "1.0.0"
 synopsis: "Formally verified Whole-completion for universal connectivity"
 description: """
 The UCF/GUTT Extensions Library provides a formally verified construction
-for extending any partial relational system to achieve seriality (no dead ends)
+for extending any relational structure to achieve seriality (no dead ends)
 while preserving the original structure exactly.
 
 Key features:
-- 163 exports, ALL axiom-free
-- coqchk verified
-- Zero admits, zero classical logic
-- Category-theoretic composition laws
+- 163 exports, ALL verified axiom-free via Print Assumptions
+- coqchk verified (independent proof checker)
+- Zero admits, zero classical logic, fully constructive
+- Category-theoretic composition laws (identity, associativity)
+- Iterated completion for nested/fractal relational structures
 
 The library proves that universal connectivity emerges as mathematical
-necessity rather than philosophical assumption.
+necessity rather than philosophical assumption. Given ANY relation R on
+ANY type U, the Whole-completion construction produces a pointed-serial
+extension where every element relates to a distinguished "Whole" element,
+while the original relational structure is preserved exactly.
+
+Mathematical foundation: option type as canonical serial completion,
+with lift_rel providing conservative extension of the base relation.
 """
-maintainer: "Michael Fillippini"
+
+maintainer: "Michael Fillippini <Michael_Fill@protonmail.com>"
 authors: ["Michael Fillippini"]
-license: "UCF/GUTT Research & Evaluation License v1.1"
-homepage: "https://github.com/__UCF-GUTT__/Library"
-bug-reports: "https://github.com/__UCF-GUTT__/Library/issues"
-dev-repo: "git+https://github.com/__UCF-GUTT__/Library.git"
+license: "LicenseRef-UCF-GUTT-Research-Eval-v1.1"
+homepage: "https://relationalexistence.com"
+bug-reports: "https://github.com/relationalexistence/UCF-GUTT/issues"
+dev-repo: "git+https://github.com/relationalexistence/UCF-GUTT.git"
 
 depends: [
   "coq" {>= "8.16" & < "8.20"}
 ]
 
 build: [
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Base.v"]
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__WholeCompletion.v"]
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Composition.v"]
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Prelude.v"]
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__Extras.v"]
-  ["coqc" "-w" "+all" "-R" "src" "UCF.GUTT.Extensions" "src/Top__Extensions__axiomaudit.v"]
+  ["make" "build"]
 ]
 
 install: [
-  ["mkdir" "-p" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions"]
-  ["cp" "src/Top__Extensions__Base.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__WholeCompletion.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Composition.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Prelude.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Extras.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__axiomaudit.vo" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Base.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__WholeCompletion.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Composition.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Prelude.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__Extras.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
-  ["cp" "src/Top__Extensions__axiomaudit.v" "%{lib}%/coq/user-contrib/UCF/GUTT/Extensions/"]
+  ["make" "install" "COQLIB=%{lib}%/coq"]
+]
+
+run-test: [
+  ["make" "audit"]
 ]
 
 tags: [
@@ -58,12 +53,8 @@ tags: [
   "keyword:seriality"
   "keyword:universal-connectivity"
   "keyword:relational-ontology"
-  "keyword:UCF/GUTT"
+  "keyword:zero-axioms"
+  "keyword:formal-verification"
   "logpath:UCF.GUTT.Extensions"
-  "date:2025-01-10"
-]
-
-# Source checksums for verification
-extra-files: [
-  ["source-checksums.txt" "sha256=TO_BE_COMPUTED"]
+  "date:2025-01-11"
 ]
