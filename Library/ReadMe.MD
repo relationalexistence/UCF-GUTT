@@ -1,7 +1,7 @@
 # UCF/GUTT Extensions Library
 
 [![Coq 8.18](https://img.shields.io/badge/Coq-8.18-blue.svg)](https://coq.inria.fr/)
-[![CI](https://github.com/relationalexistence/UCF-GUTT/actions/workflows/ci.yml/badge.svg)](https://github.com/relationalexistence/UCF-GUTT/actions)
+[![CI](https://github.com/relationalexistence/UCF-GUTT/actions/workflows/library-ci.yml/badge.svg)](https://github.com/relationalexistence/UCF-GUTT/actions)
 [![Zero Axioms](https://img.shields.io/badge/Axioms-0-brightgreen.svg)](#verification-status)
 [![Exports](https://img.shields.io/badge/Exports-163-blue.svg)](#verification-status)
 [![License](https://img.shields.io/badge/License-Research%20%26%20Evaluation-orange.svg)](LICENSE)
