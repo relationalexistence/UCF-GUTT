@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ucf-extensions"
+version = "1.0.0"
+description = "Zero-axiom universal connectivity: serial completion of any relation"
+readme = "README.md"
+license = {text = "UCF/GUTT Research & Evaluation License v1.1"}
+authors = [
+    {name = "Michael Fillippini", email = "michael@relationalexistence.com"}
+]
+keywords = ["relations", "category-theory", "formal-verification", "universal-connectivity"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/relationalexistence/UCF-GUTT"
+Documentation = "https://github.com/relationalexistence/UCF-GUTT/tree/main/Library"
+Repository = "https://github.com/relationalexistence/UCF-GUTT"
+
+[tool.setuptools]
+py-modules = ["ucf_extensions"]
