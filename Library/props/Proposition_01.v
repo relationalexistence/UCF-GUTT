@@ -6,7 +6,7 @@
 (*
   +==========================================================================+
   |                                                                          |
-  |              PROPOSITION 1: SERIALITY VIA WHOLE-COMPLETION               |
+  |              PROPOSITION 01: SERIALITY VIA WHOLE-COMPLETION              |
   |                                                                          |
   |                      UCF/GUTT(TM) Formal Verification                    |
   |                                                                          |
@@ -24,10 +24,10 @@
   |  COMPILATION:                                                            |
   |                                                                          |
   |    cd Library/props                                                      |
-  |    coqc -R ../src UCF.GUTT.Extensions Prop1_proven.v                     |
+  |    coqc -R ../src UCF.GUTT.Extensions Proposition_01.v                   |
   |                                                                          |
   |  Or from Library root:                                                   |
-  |    coqc -R src UCF.GUTT.Extensions props/Prop1_proven.v                  |
+  |    coqc -R src UCF.GUTT.Extensions props/Proposition_01.v                |
   |                                                                          |
   +==========================================================================+
   |                                                                          |
@@ -65,12 +65,12 @@ Definition serial_completion {U : Type} := @R_prime U.
 
 (* ========================================================================== *)
 (*                                                                            *)
-(*                    PROPOSITION 1: MAIN THEOREM                             *)
+(*                    PROPOSITION 01: MAIN THEOREM                            *)
 (*                                                                            *)
 (* ========================================================================== *)
 
 (**
-  PROPOSITION 1 (Seriality via Whole-Completion):
+  PROPOSITION 01 (Seriality via Whole-Completion):
   
   For any universe U and any relation R on U, the lifted relation R' on 
   the extended universe U_x = U + {Whole} is serial: every element has 
@@ -79,7 +79,7 @@ Definition serial_completion {U : Type} := @R_prime U.
   The proof is CONSTRUCTIVE: the witness is always the Whole element.
   By the definition of lift_rel, R'(x, Whole) = True for all x.
 *)
-Theorem proposition_1 :
+Theorem proposition_01 :
   forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
     exists y : Ux U, R_prime R x y.
 Proof.
@@ -89,13 +89,13 @@ Proof.
 Qed.
 
 (** Semantic alias. *)
-Definition seriality := proposition_1.
+Definition seriality := proposition_01.
 
 (** Constructive witness function: always returns Whole. *)
 Definition witness {U : Type} : Ux U -> Ux U := fun _ => Whole.
 
 (** The witness function actually works: R'(x, witness(x)) holds. *)
-Theorem proposition_1_constructive :
+Theorem proposition_01_constructive :
   forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
     R_prime R x (witness x).
 Proof.
@@ -112,7 +112,7 @@ Proof.
 Qed.
 
 (** Extraction-friendly constructive version with sigma type. *)
-Definition proposition_1_sigma :
+Definition proposition_01_sigma :
   forall (U : Type) (R : U -> U -> Prop) (x : Ux U),
     { y : Ux U | R_prime R x y }.
 Proof.
@@ -382,8 +382,8 @@ End AxiomAudit.
     R_prime R       = the serial completion of R
   
   Main Theorem:
-    proposition_1   : forall U R x, exists y, R_prime R x y
-    seriality       : (alias for proposition_1)
+    proposition_01  : forall U R x, exists y, R_prime R x y
+    seriality       : (alias for proposition_01)
   
   Key Properties:
     R_prime_restricts           : R_prime R (elem a) (elem b) <-> R a b
@@ -400,15 +400,15 @@ End AxiomAudit.
   ===========
   
   From Library/props:
-    coqc -R ../src UCF.GUTT.Extensions Prop1_proven.v
+    coqc -R ../src UCF.GUTT.Extensions Proposition_01.v
   
   From Library root:
-    coqc -R src UCF.GUTT.Extensions props/Prop1_proven.v
+    coqc -R src UCF.GUTT.Extensions props/Proposition_01.v
   
   AXIOM STATUS
   ============
   
   This file uses ZERO AXIOMS. All theorems are fully polymorphic in U.
-  Run `Print Assumptions proposition_1.` to verify: output should be
+  Run `Print Assumptions proposition_01.` to verify: output should be
   "Closed under the global context".
 *)
