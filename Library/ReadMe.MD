@@ -1,6 +1,7 @@
 # UCF/GUTT Extensions Library
 
 [![Coq 8.18](https://img.shields.io/badge/Coq-8.18-blue.svg)](https://coq.inria.fr/)
+[![CI](https://github.com/relationalexistence/UCF-GUTT/actions/workflows/ci.yml/badge.svg)](https://github.com/relationalexistence/UCF-GUTT/actions)
 [![Zero Axioms](https://img.shields.io/badge/Axioms-0-brightgreen.svg)](#verification-status)
 [![Exports](https://img.shields.io/badge/Exports-163-blue.svg)](#verification-status)
 [![License](https://img.shields.io/badge/License-Research%20%26%20Evaluation-orange.svg)](LICENSE)
@@ -61,6 +62,8 @@ UCF-GUTT-Extensions/
 ├── Dockerfile                         # Reproducible container build
 ├── ucf-gutt-extensions.opam           # Opam package specification
 │
+├── .github/workflows/ci.yml           # GitHub Actions CI
+│
 ├── src/                               # Coq source files
 │   ├── Top__Extensions__Base.v        # Foundation: records, properties, morphisms
 │   ├── Top__Extensions__WholeCompletion.v  # Core construction
@@ -68,6 +71,10 @@ UCF-GUTT-Extensions/
 │   ├── Top__Extensions__Prelude.v     # Public API (import this)
 │   ├── Top__Extensions__Extras.v      # Optional utilities & examples
 │   └── Top__Extensions__axiomaudit.v  # Verification artifact
+│
+├── examples/                          # Usage examples
+│   ├── BasicUsage.v                   # Getting started
+│   └── IteratedCompletion.v           # Nested/fractal structures
 │
 ├── python/                            # Python demonstration
 │   └── Whole_Completion_Demo.py       # Interactive demo across domains
@@ -84,8 +91,8 @@ UCF-GUTT-Extensions/
 
 ```bash
 # Clone the repository
-git clone https://github.com/__UCF-GUTT__/Library.git
-cd Library
+git clone https://github.com/relationalexistence/UCF-GUTT.git
+cd UCF-GUTT/Library
 
 # Build and verify
 make build      # Compile all files
@@ -314,6 +321,8 @@ The Whole-completion construction applies to:
 ## 📚 Documentation
 
 - **[LIBRARY_REFERENCE.md](docs/LIBRARY_REFERENCE.md)** — Detailed per-file documentation
+- **[BasicUsage.v](examples/BasicUsage.v)** — Getting started with Whole-completion
+- **[IteratedCompletion.v](examples/IteratedCompletion.v)** — Nested/fractal structures
 - **[Whole_Completion_Demo.py](python/Whole_Completion_Demo.py)** — Interactive Python demonstration
 - **[Top__Extensions__Prelude.v](src/Top__Extensions__Prelude.v)** — Public API with inline docs
 
@@ -347,7 +356,8 @@ If you use this library in academic work, please cite:
 
 ## 🔗 Related Work
 
-- **UCF/GUTT Framework** — The broader theoretical framework
+- **Paper**: [Universal Connectivity as Mathematical Necessity](../Papers/universal_connectivity_2025.pdf) — Full academic treatment
+- **UCF/GUTT Framework** — [relationalexistence.com](https://relationalexistence.com)
 - **Coq Proof Assistant** — https://coq.inria.fr/
 - **Relational Ontology** — Philosophical foundations
 
