@@ -3,8 +3,9 @@
 #
 # Targets:
 #   make          - Build the library
-#   make build    - Build the library
-#   make audit    - Run axiom audit (163 exports)
+#   make build    - Build the library (src only)
+#   make all      - Build everything (src + props + examples)
+#   make audit    - Run axiom audit
 #   make check    - Verify with coqchk
 #   make verify   - Full verification pipeline
 #   make install  - Install to user-contrib
@@ -14,10 +15,10 @@
 
 COQC = coqc
 COQCHK = coqchk
-COQFLAGS = -w +all -R src UCF.GUTT.Extensions
+COQFLAGS = -w +all -R src UCF.GUTT.Extensions -R props UCF.GUTT.Props
 
 # Source files in dependency order
-SOURCES = \
+SRC_FILES = \
 	src/Top__Extensions__Base.v \
 	src/Top__Extensions__WholeCompletion.v \
 	src/Top__Extensions__Composition.v \
@@ -25,31 +26,72 @@ SOURCES = \
 	src/Top__Extensions__Extras.v \
 	src/Top__Extensions__axiomaudit.v
 
-OBJECTS = $(SOURCES:.v=.vo)
+PROPS_FILES = \
+	props/Proposition_01.v
 
-.PHONY: all build audit check verify install docker docker-audit clean stats help
+EXAMPLE_FILES = \
+	examples/BasicUsage.v \
+	examples/IteratedCompletion.v
 
-# Default target
-all: build
+SRC_OBJECTS = $(SRC_FILES:.v=.vo)
+PROPS_OBJECTS = $(PROPS_FILES:.v=.vo)
+EXAMPLE_OBJECTS = $(EXAMPLE_FILES:.v=.vo)
 
-# Build the library
-build: $(OBJECTS)
+.PHONY: all build props examples audit check verify install docker docker-audit clean stats help
+
+# Default target - build everything
+all: build props examples
 	@echo ""
 	@echo "╔════════════════════════════════════════════════════════════════╗"
-	@echo "║  BUILD COMPLETE: 6/6 files compiled                            ║"
+	@echo "║  FULL BUILD COMPLETE: 9/9 files compiled                       ║"
+	@echo "║    src/       6 files                                          ║"
+	@echo "║    props/     1 file                                           ║"
+	@echo "║    examples/  2 files                                          ║"
 	@echo "╚════════════════════════════════════════════════════════════════╝"
 
-# Pattern rule for .vo files
+# Build core library only
+build: $(SRC_OBJECTS)
+	@echo ""
+	@echo "╔════════════════════════════════════════════════════════════════╗"
+	@echo "║  BUILD COMPLETE: 6/6 src files compiled                        ║"
+	@echo "╚════════════════════════════════════════════════════════════════╝"
+
+# Build propositions
+props: build $(PROPS_OBJECTS)
+	@echo "Propositions compiled."
+
+# Build examples
+examples: props $(EXAMPLE_OBJECTS)
+	@echo "Examples compiled."
+
+# Pattern rule for src/*.vo files
 src/%.vo: src/%.v
 	@echo "Compiling $<..."
 	$(COQC) $(COQFLAGS) $<
 
-# Dependencies
+# Pattern rule for props/*.vo files
+props/%.vo: props/%.v
+	@echo "Compiling $<..."
+	$(COQC) $(COQFLAGS) $<
+
+# Pattern rule for examples/*.vo files
+examples/%.vo: examples/%.v
+	@echo "Compiling $<..."
+	$(COQC) $(COQFLAGS) $<
+
+# Dependencies for src/
 src/Top__Extensions__WholeCompletion.vo: src/Top__Extensions__Base.vo
 src/Top__Extensions__Composition.vo: src/Top__Extensions__Base.vo src/Top__Extensions__WholeCompletion.vo
 src/Top__Extensions__Prelude.vo: src/Top__Extensions__Base.vo src/Top__Extensions__WholeCompletion.vo src/Top__Extensions__Composition.vo
 src/Top__Extensions__Extras.vo: src/Top__Extensions__Base.vo src/Top__Extensions__WholeCompletion.vo src/Top__Extensions__Composition.vo
 src/Top__Extensions__axiomaudit.vo: src/Top__Extensions__Prelude.vo src/Top__Extensions__Extras.vo
+
+# Dependencies for props/
+props/Proposition_01.vo: src/Top__Extensions__Prelude.vo
+
+# Dependencies for examples/
+examples/BasicUsage.vo: src/Top__Extensions__Prelude.vo src/Top__Extensions__Extras.vo props/Proposition_01.vo
+examples/IteratedCompletion.vo: src/Top__Extensions__Prelude.vo src/Top__Extensions__Composition.vo
 
 # Run axiom audit
 audit: build
@@ -119,6 +161,8 @@ docker-audit: docker
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -f src/*.vo src/*.vok src/*.vos src/*.glob src/.*.aux
+	@rm -f props/*.vo props/*.vok props/*.vos props/*.glob props/.*.aux
+	@rm -f examples/*.vo examples/*.vok examples/*.vos examples/*.glob examples/.*.aux
 	@echo "Clean complete."
 
 # Show library statistics
@@ -127,24 +171,31 @@ stats:
 	@echo "UCF/GUTT Extensions Library Statistics"
 	@echo "======================================="
 	@echo ""
+	@echo "Source (src/):"
 	@wc -l src/*.v | tail -1
 	@echo ""
-	@echo "Definitions/Fixpoints:"
-	@grep -c "Definition\|Fixpoint" src/*.v | awk -F: '{sum+=$$2} END {print "  " sum}'
-	@echo "Lemmas/Theorems:"
-	@grep -c "Lemma\|Theorem" src/*.v | awk -F: '{sum+=$$2} END {print "  " sum}'
-	@echo "Records:"
-	@grep -c "^Record" src/*.v | awk -F: '{sum+=$$2} END {print "  " sum}'
-	@echo "Examples:"
-	@grep -c "Example" src/*.v | awk -F: '{sum+=$$2} END {print "  " sum}'
+	@echo "Propositions (props/):"
+	@wc -l props/*.v | tail -1
+	@echo ""
+	@echo "Examples (examples/):"
+	@wc -l examples/*.v | tail -1
+	@echo ""
+	@echo "Total:"
+	@wc -l src/*.v props/*.v examples/*.v | tail -1
+	@echo ""
+	@echo "Proofs (Qed/Defined):"
+	@grep -c "Qed\.\|Defined\." src/*.v props/*.v examples/*.v 2>/dev/null | awk -F: '{sum+=$$2} END {print "  " sum}'
 
 # Help
 help:
 	@echo "UCF/GUTT Extensions Library"
 	@echo ""
 	@echo "Targets:"
-	@echo "  make          Build the library"
-	@echo "  make build    Build the library"
+	@echo "  make          Build everything (src + props + examples)"
+	@echo "  make all      Build everything (src + props + examples)"
+	@echo "  make build    Build core library only (src/)"
+	@echo "  make props    Build propositions (props/)"
+	@echo "  make examples Build examples (examples/)"
 	@echo "  make audit    Run axiom audit (163 exports)"
 	@echo "  make check    Verify with coqchk"
 	@echo "  make verify   Full verification (build + audit + check)"
