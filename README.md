@@ -10,7 +10,7 @@ Note: Φ (Relational Stability) is withheld.
 ## Publications
 
 **Universal Connectivity as Mathematical Necessity: A Zero-Axiom Constructive Proof in Coq** (2025)  
-[PDF](Papers/universal_connectivity.pdf) • [Coq Source](Library/)
+[PDF](Papers/universal_connectivity_paper.pdf) • [Coq Source](Library/)
 
 ...
 
