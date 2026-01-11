@@ -7,6 +7,12 @@ Note: Φ (Relational Stability) is withheld.
 **Website**: https://relationalexistence.com
 
 ---
+## Publications
+
+**Universal Connectivity as Mathematical Necessity: A Zero-Axiom Constructive Proof in Coq** (2025)  
+[PDF](Papers/universal_connectivity_2025.pdf) • [Coq Source](Library/)
+
+...
 
 ## Principle of Relational Existence (PRE)
 
