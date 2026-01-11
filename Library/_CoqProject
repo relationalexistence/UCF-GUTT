@@ -8,8 +8,9 @@
 # Or use directly with:
 #   $ coqc -R src UCF.GUTT.Extensions src/Top__Extensions__Base.v
 
-# Logical path mapping
+# Logical path mappings
 -R src UCF.GUTT.Extensions
+-R props UCF.GUTT.Props
 
 # Compiler flags
 -arg -w
@@ -22,3 +23,10 @@ src/Top__Extensions__Composition.v
 src/Top__Extensions__Prelude.v
 src/Top__Extensions__Extras.v
 src/Top__Extensions__axiomaudit.v
+
+# Propositions (depend on src/)
+props/Proposition_01.v
+
+# Examples (depend on src/ and props/)
+examples/BasicUsage.v
+examples/IteratedCompletion.v
