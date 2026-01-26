@@ -37,7 +37,7 @@ The rough sketch... as it were... is public... Currently, the refined complete r
 
 ### For Publication/Release
 
-1. ✅ **Ready for publication** - Library meets or exceeds typical Coq library standards
+1. ✅ **Ready for publication** - Private Library meets or exceeds typical Coq library standards
 
 2. **Consider adding:**
    - CHANGES.md or CHANGELOG.md for version history
