@@ -6,7 +6,7 @@ Note: Φ (Relational Stability) is withheld.
 
 **Website**: https://relationalexistence.com
 
-The rough sketch... as it were... is public... Currently,the refined complete refactored COQ library is private.
+The rough sketch... as it were... is public... Currently, the refined complete refactored COQ library is private.
 # UCF/GUTT™ Coq Library Quality Audit
 
 **Audit Date:** January 26, 2026  
