@@ -2,7 +2,7 @@
 
 A relation-first framework with machine-verified proofs (Coq). Core theorems now proven: connectivity (∀x∃y R), Complete Picture (universal connectivity, structural manifestation, dynamic preservation), DSoR (multi-dimensional tensors), relational systems/graphs (with nesting for emergence), Alena tensor containment with discrete conservation, relational boundaries (division by zero), **tensor commutativity [A⊗I, I⊗B] = 0**, and **Yang-Mills mass gap with UV finiteness**.
 
-Note: Φ (Relational Stability) is withheld.
+Note: Φ (Relational Stability) is withheld from the public.
 
 **Website**: https://relationalexistence.com
 
