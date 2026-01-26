@@ -6,6 +6,8 @@ Note: Φ (Relational Stability) is withheld.
 
 **Website**: https://relationalexistence.com
 
+Currently, it seems, that the coomplete refactored COQ library is private.
+
 ---
 ## Publications
 
@@ -256,7 +258,7 @@ Demo scripts will live under `demo/`. Proofs are independent of demos.
 
 ### Proprietary
 
-**Φ — Relational Stability** (dynamics/prediction): Governs system dynamics and predictions. Not open source; available via collaboration.
+**Φ — Relational Stability** (dynamics/prediction): Governs system dynamics and predictions. Not open source; available via collaboration. Φ (Relational Stability) & Core Refactor The foundational proofs are public to establish mathematical truth. However, the optimized execution engine and the Relational Stability (Φ) module are retained as proprietary technology. These components enable the high-velocity application of the theory and are currently restricted to internal research and select partners.
 
 **Contact**: Michael_Fill@protonmail.com for licensing and collaboration.
 
