@@ -6,7 +6,7 @@ Note: Φ (Relational Stability) is withheld.
 
 **Website**: https://relationalexistence.com
 
-Currently, it seems, that the coomplete refactored COQ library is private.
+Currently, it seems, that the complete refactored COQ library is private.
 
 ---
 ## Publications
