@@ -1,0 +1,14 @@
+# Core dependencies
+streamlit>=1.28.0
+pandas>=2.0.0
+
+# Visualization (optional but recommended)
+networkx>=3.0
+altair>=5.0.0
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Optional: For Excel export
+openpyxl>=3.0.0
