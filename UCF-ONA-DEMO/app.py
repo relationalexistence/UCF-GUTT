@@ -657,7 +657,7 @@ def render_polinode_metrics(network: OrganizationalNetwork):
 
 
 def render_heatmap_matrix(network: OrganizationalNetwork):
-    """Render adjacency matrix as a clean HTML heatmap table."""
+    """Render adjacency matrix as a clean HTML heatmap table with hover details."""
     st.header("🔲 Adjacency Heatmap")
     
     if not network.members:
@@ -675,6 +675,7 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
     <span style="color: #22c55e;">■</span> Green = Positive | 
     <span style="color: #ef4444;">■</span> Red = Negative | 
     <span style="color: #6b7280;">■</span> Gray = Zero
+    <br><em>💡 Hover over cells for channel details</em>
     </div>
     """, unsafe_allow_html=True)
     
@@ -692,6 +693,8 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
             text-align: center; 
             font-size: 13px;
             border: 1px solid #334155;
+            cursor: pointer;
+            position: relative;
         }
         .heatmap-table th { 
             background: #1e293b; 
@@ -710,6 +713,13 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
         .heatmap-table .cell-pos-strong { background: #22c55e; color: #000; font-weight: bold; }
         .heatmap-table .cell-neg-weak { background: #991b1b; color: #fff; }
         .heatmap-table .cell-neg-strong { background: #ef4444; color: #000; font-weight: bold; }
+        .heatmap-table .cell-conflict { 
+            background: linear-gradient(135deg, #22c55e 50%, #ef4444 50%); 
+            color: #000; 
+            font-weight: bold;
+        }
+        .heatmap-table td[title] { cursor: help; }
+        .heatmap-table td:hover { opacity: 0.85; transform: scale(1.05); transition: all 0.1s; }
     </style>
     <div style="overflow-x: auto;">
     <table class="heatmap-table">
@@ -732,14 +742,58 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
             if source == target:
                 html += '<td class="cell-self">—</td>'
             else:
+                # Get all channel weights for tooltip
+                channel_details = []
+                pos_channels = []
+                neg_channels = []
+                for ch in RelationshipChannel:
+                    w = float(network.relations.get_weight(ch.value, source, target))
+                    if w != 0:
+                        sign = "+" if w > 0 else ""
+                        channel_details.append(f"{ch.value.title()}: {sign}{w:.1f}")
+                        if w > 0:
+                            pos_channels.append(ch.value.title())
+                        else:
+                            neg_channels.append(ch.value.title())
+                
+                # Determine conflict status
+                has_conflict = len(pos_channels) > 0 and len(neg_channels) > 0
+                
+                # Build detailed tooltip
+                source_name = member_names[source]
+                target_name = member_names[target]
+                tooltip_lines = [f"{source_name} → {target_name}"]
+                tooltip_lines.append("─" * 20)
+                
+                if channel_details:
+                    tooltip_lines.extend(channel_details)
+                else:
+                    tooltip_lines.append("No active channels")
+                
+                tooltip_lines.append("─" * 20)
+                
+                if has_conflict:
+                    tooltip_lines.append("⚠️ R_CONFLICT DETECTED")
+                    tooltip_lines.append(f"Positive: {', '.join(pos_channels)}")
+                    tooltip_lines.append(f"Negative: {', '.join(neg_channels)}")
+                elif pos_channels:
+                    tooltip_lines.append("✓ R_harmony (all positive)")
+                elif neg_channels:
+                    tooltip_lines.append("✓ R_harmony (all negative)")
+                
+                tooltip = "&#10;".join(tooltip_lines)  # &#10; is newline in HTML title
+                
                 if view_option == "Aggregate":
                     weight = float(network.relations.aggregate_weight(source, target))
                 else:
                     channel = view_option.lower()
                     weight = float(network.relations.get_weight(channel, source, target))
                 
-                # Determine cell class based on weight
-                if weight == 0:
+                # Determine cell class based on weight and conflict
+                if has_conflict and view_option == "Aggregate":
+                    cell_class = "cell-conflict"
+                    display = f"{weight:+.1f}⚡"
+                elif weight == 0:
                     cell_class = "cell-zero"
                     display = "·"
                 elif weight > 0.5:
@@ -755,7 +809,7 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
                     cell_class = "cell-neg-weak"
                     display = f"{weight:.1f}"
                 
-                html += f'<td class="{cell_class}">{display}</td>'
+                html += f'<td class="{cell_class}" title="{tooltip}">{display}</td>'
         
         html += '</tr>'
     
@@ -765,7 +819,7 @@ def render_heatmap_matrix(network: OrganizationalNetwork):
     
     st.markdown("""
     **Legend:** 
-    🟩 Strong + (>0.5) | 🟢 Weak + (0-0.5) | ⬜ Zero | 🔴 Weak - (0 to -0.5) | 🟥 Strong - (<-0.5)
+    🟩 Strong + (>0.5) | 🟢 Weak + (0-0.5) | ⬜ Zero | 🔴 Weak - (0 to -0.5) | 🟥 Strong - (<-0.5) | ⚡ Conflict (mixed signals)
     """)
 
 
