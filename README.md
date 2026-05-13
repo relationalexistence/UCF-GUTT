@@ -19,6 +19,7 @@
   the imported standard-library modules.
 
 ---
+This library provides a fully constructive, zero-extra-axiom foundation for a relation-first mathematics. It recovers key structures from type theory, real analysis, and categorical logic entirely within the relational setting — with every major theorem machine-checked.
 
 ## Quickstart
 
