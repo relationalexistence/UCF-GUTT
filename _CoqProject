@@ -1,0 +1,112 @@
+# =============================================================================
+#   UCF/GUTT(TM) -- Coq Project File
+#   Copyright 2023-2026 Michael Fillippini.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License").
+#   You may obtain a copy of the License at:
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   SPDX-License-Identifier: Apache-2.0
+# =============================================================================
+#
+# Build instructions:
+#     coq_makefile -f _CoqProject -o Makefile.coq
+#     make
+#
+# Or simply use the top-level Makefile:
+#     make            # full library build
+#     make stats      # line / theorem counts
+#     make axiom-check  # static grep for Axiom / Admitted / Parameter
+#     make clean      # remove *.vo *.glob *.vok *.vos
+#
+# Loadpath: flat layout, files in this directory are identified by their full
+# qualified name (e.g. "Top__Extensions__Base"), matching their filename.
+#
+# Note: `Print Assumptions` calls are embedded directly in the source files
+# themselves; a clean build emits 80 "Closed under the global context" lines
+# across the library (see README.md "Verification results").
+# =============================================================================
+
+-Q . ""
+
+# -----------------------------------------------------------------------------
+# Layer 0 -- foundational, no project-internal dependencies
+# -----------------------------------------------------------------------------
+Top__Extensions__Base.v
+Top__Numbers__UCF_Lia.v
+Top__Propositions__Prop_10.v
+
+# -----------------------------------------------------------------------------
+# Layer 1 -- single-step dependencies
+# -----------------------------------------------------------------------------
+Top__Extensions__WholeCompletion.v
+Top__Numbers__UCF_Nia.v
+
+# -----------------------------------------------------------------------------
+# Layer 2 -- composition
+# -----------------------------------------------------------------------------
+Top__Extensions__Composition.v
+
+# -----------------------------------------------------------------------------
+# Layer 3 -- Prelude umbrella + Extras
+# -----------------------------------------------------------------------------
+Top__Extensions__Prelude.v
+Top__Extensions__Extras.v
+
+# -----------------------------------------------------------------------------
+# Layer 4 -- Prelude consumers (Naturals, Reals, Prop 1, Interval, UIP)
+# -----------------------------------------------------------------------------
+Top__Extensions__RelationalUIP.v
+Top__Numbers__Relational.v
+Top__Numbers__RelationalReals.v
+Top__Propositions__Prop_01.v
+Top__Cubical__Interval.v
+
+# -----------------------------------------------------------------------------
+# Layer 5 -- Division, Irrationals, Props 2/4, Adjunction, RelAlg
+# -----------------------------------------------------------------------------
+Top__Numbers__RelationalDivision.v
+Top__Numbers__RelationalIrrationals.v
+Top__Propositions__Prop_02.v
+Top__Propositions__Prop_04.v
+Top__Extensions__Adjunction.v
+Top__Relations__RelationalAlgebra.v
+
+# -----------------------------------------------------------------------------
+# Layer 6 -- Integers, Weighted, PathType
+# -----------------------------------------------------------------------------
+Top__Numbers__RelationalIntegers.v
+Top__Relations__Weighted.v
+Top__Cubical__PathType.v
+
+# -----------------------------------------------------------------------------
+# Layer 7 -- Rationals, Univalence
+# -----------------------------------------------------------------------------
+Top__Numbers__RelationalRationals.v
+Top__Cubical__Univalence.v
+
+# -----------------------------------------------------------------------------
+# Layer 8 -- ClockHierarchyCoherence
+# -----------------------------------------------------------------------------
+Top__Propositions__ClockHierarchyCoherence.v
+
+# -----------------------------------------------------------------------------
+# Layer 9 -- Proposition 05 (Tensors)
+# -----------------------------------------------------------------------------
+Top__Propositions__Prop_05.v
+
+# -----------------------------------------------------------------------------
+# Layer 10 -- n-Cube
+# -----------------------------------------------------------------------------
+Top__Cubical__NCube.v
+
+# -----------------------------------------------------------------------------
+# Layer 11 -- J-Rule, Kan canonical
+# -----------------------------------------------------------------------------
+Top__Cubical__JRule.v
+Top__Cubical__KanCanonical.v
+
+# -----------------------------------------------------------------------------
+# Layer 12 -- RCTT umbrella (Require Export of all cubical files)
+# -----------------------------------------------------------------------------
+Top__Cubical__RCTT.v
