@@ -1,6 +1,6 @@
 # UCF/GUTT Math Demos — Numbers & Irrationals
 
-`ucf_math_demos.py` — three hands-on Python demonstrations that mirror
+`Ucf_math_demos.py` — three hands-on Python demonstrations that mirror
 verified Coq theorems from the UCF/GUTT public core. Exact-rational
 arithmetic, Python standard library only, runs as a CLI or imports
 cleanly into a notebook or larger pipeline.
