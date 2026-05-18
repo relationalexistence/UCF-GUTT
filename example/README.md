@@ -1,9 +1,9 @@
 # UCF/GUTT Math Demos — Numbers & Irrationals
 
-`Ucf_math_demos.py` — three hands-on Python demonstrations that mirror
-verified Coq theorems from the UCF/GUTT public core. Exact-rational
-arithmetic, Python standard library only, runs as a CLI or imports
-cleanly into a notebook or larger pipeline.
+**`Ucf_math_demos.py` v1.0.0** — three hands-on Python demonstrations that
+mirror verified Coq theorems from the UCF/GUTT public core. Exact-rational
+arithmetic, Python standard library only, runs as a CLI or imports cleanly
+into a notebook or larger pipeline.
 
 For a demo-first tour with output included, see [Public Math Core](https://relationalexistence.com/public-math-core). For the API and the Q-vs-R reasoning, read on.
 
@@ -12,6 +12,30 @@ The proofs live in Coq. The Python lets a reader see what the formal
 theorems are asserting, on concrete inputs, with the same constructive
 arithmetic semantics the Coq files commit to (`Q` via `Coq.QArith`,
 mirrored here by `fractions.Fraction`).
+
+---
+
+## Related executable companions
+
+This file is one member of a small family of executable UCF/GUTT
+companions.
+
+- **`Ucf_math_demos.py`** demonstrates selected constructive number-theoretic
+  and division theorems from the public Coq core using exact rational
+  arithmetic.
+- **`RE_in_a_teacup_v3.py`** demonstrates proposition firing over finite
+  relational systems: Whole-completion, adjacency tensors, NRT modular
+  composition, hyper-arity, binary-content-sensitive propositions, and
+  guarded derived propositions. It also includes a smoke test and an
+  export mode that writes Coq cross-check examples, a LaTeX table, and
+  a `CITATION.cff`.
+
+The two modules have different scopes. The math demos show concrete
+arithmetic behaviour corresponding to specific Coq theorems. The Reality
+Engine miniature shows how structural propositions activate only when
+the required relational tensor content is present.
+
+See also: [`COMPANIONS.md`](./COMPANIONS.md) at the repo root for the full index.
 
 ---
 
@@ -145,6 +169,13 @@ are separate theorems:
 | `Q_contextual_time_zero`   | `RC_Time`  | `FiniteQ 0`             |
 | `Q_contextual_info_nan`    | `RC_Info`  | `ExtNaNQ`               |
 
+Each theorem quantifies universally over the numerator
+(`forall num denom, denom == 0 -> ...`), so every numerator — positive,
+negative, or zero — routes to the same output in a given context. The
+Coq does not split RC_Space by sign of the numerator; `MinftyQ` is
+present in the `ExtQ` datatype for symmetry under negation but is not
+the target of any contextual-division theorem.
+
 For b ≠ 0, all three contexts agree on `FiniteQ (a/b)` (the
 `Q_contextual_div_conservative` theorem). Boundary detection
 (`Q_boundary_detect`) lives at a layer below routing — it depends only
@@ -183,6 +214,23 @@ python3 Ucf_math_demos.py --help
 Python 3.8+. Standard library only — `fractions`, `dataclasses`,
 `enum`, `math`, `sys`, `typing`. No installation, no third-party
 dependencies, nothing to pin.
+
+---
+
+## Version and reproducibility
+
+This README describes **`Ucf_math_demos.py` v1.0.0**. The module is
+intentionally standard-library only and does not require a build step.
+Reproducibility comes from exact integer and rational arithmetic, not
+from floating-point numerical tolerance: every numeric assertion is a
+bit-exact equality between `fractions.Fraction` or `int` values, which
+will reproduce on any Python 3.8+ interpreter regardless of platform or
+math library.
+
+Unlike `RE_in_a_teacup_v3.py`, this module does not perform proposition
+firing, does not build relational tensors, and does not generate Coq
+cross-check tables or `CITATION.cff` files. Its purpose is narrower:
+arithmetic demonstration of selected number and division theorems.
 
 ---
 
@@ -254,21 +302,48 @@ readability at the call site:
   b = 0. `MinftyQ` exists in the Coq for symmetry under negation but
   is not the target of any contextual-division theorem, so the Python
   is faithful to the routings as actually proven.
+- `RelationalState` is identical on both sides (same name, same three
+  constructors).
 
 ---
 
 ## Interpretation of scope
 
 This module demonstrates the *behaviour* of specific Coq theorems on
-specific inputs. It does not extend, generalize, reinterpret, or
-prove anything about those theorems. Claims about UCF/GUTT as a
-framework — relational ontology, Whole-completion, seriality,
-tensor invariants, the wider proposition catalogue — are not made or
-supported by this file.
+specific arithmetic inputs. It does not extend, generalize, reinterpret,
+or prove anything beyond those theorem correspondences.
 
-For the formal substrate, see the public Coq core
-(`https://github.com/relationalexistence/UCF-GUTT`). For framework
-background, see <https://relationalexistence.com>.
+Framework-level claims about UCF/GUTT — relational ontology,
+Whole-completion, seriality, tensor invariants, proposition firing, and
+the wider proposition catalogue — are *formalized* in the Coq core and
+*demonstrated* by separate executable companions such as
+`RE_in_a_teacup_v3.py`. They are not made or supported by this file.
+
+In short:
+
+- this file is the arithmetic/numbers companion;
+- the Reality Engine miniature is the relational-proposition companion;
+- the Coq library remains the formal proof substrate.
+
+---
+
+## Citation
+
+If you reference this module in academic or technical work, please cite
+both the module and the underlying Coq library.
+
+**This module (when Zenodo-deposited):**
+
+> Fillippini, M. (2026). *UCF/GUTT Math Demos — Numbers & Irrationals,
+> v1.0.0.* Python executable companion to the UCF/GUTT Coq math core.
+> Zenodo. DOI: 10.XXXX/zenodo.XXXXXXX  *(deposit pending; replace with
+> assigned DOI when available)*
+
+**Upstream Coq library:**
+
+> Fillippini, M. (2026). *UCF/GUTT Coq Library — Public Core.*
+> Zero-axiom Coq formalization of relational ontology.
+> https://github.com/relationalexistence/UCF-GUTT
 
 ---
 
@@ -280,8 +355,6 @@ The names **UCF/GUTT**, **GUTT-L**, **LANTOSE**, **NRTML**, **RCTT**, and
 **Relational Existence** are trademarks of Michael Fillippini; the
 Apache 2.0 license grants no rights in these trademarks.
 
-If you reference this companion module in academic work, please cite
-the underlying Coq library:
-
-> Fillippini, M. (2026). *UCF/GUTT Coq Library — Public Core, v2.0.0.*
-> Zero-axiom Coq formalization of relational ontology.
+For the formal substrate, see the public Coq core
+(<https://github.com/relationalexistence/UCF-GUTT>). For framework
+background, see <https://relationalexistence.com>.
