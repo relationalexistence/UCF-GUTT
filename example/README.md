@@ -173,11 +173,11 @@ No partiality: every cell is a fully-defined `ExtendedQ`.
 ## Running
 
 ```
-python3 ucf_math_demos.py                  # all three demos
-python3 ucf_math_demos.py sqrt2 12         # 12 Newton steps
-python3 ucf_math_demos.py primes 10        # 10 Euclid steps
-python3 ucf_math_demos.py div              # totalized-division truth table
-python3 ucf_math_demos.py --help
+python3 Ucf_math_demos.py                  # all three demos
+python3 Ucf_math_demos.py sqrt2 12         # 12 Newton steps
+python3 Ucf_math_demos.py primes 10        # 10 Euclid steps
+python3 Ucf_math_demos.py div              # totalized-division truth table
+python3 Ucf_math_demos.py --help
 ```
 
 Python 3.8+. Standard library only — `fractions`, `dataclasses`,
@@ -193,7 +193,7 @@ the module can drive a notebook, a Streamlit page, or a downstream
 certifier without modification.
 
 ```python
-import ucf_math_demos as m
+import Ucf_math_demos as m
 from fractions import Fraction
 
 # Demo 1: Newton trace as a list of NewtonStep records
