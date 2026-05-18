@@ -5,6 +5,8 @@ verified Coq theorems from the UCF/GUTT public core. Exact-rational
 arithmetic, Python standard library only, runs as a CLI or imports
 cleanly into a notebook or larger pipeline.
 
+For a demo-first tour with output included, see [Public Math Core](https://relationalexistence.com/public-math-core). For the API and the Q-vs-R reasoning, read on.
+
 This module is a *companion* to the Coq library, not a substitute for it.
 The proofs live in Coq. The Python lets a reader see what the formal
 theorems are asserting, on concrete inputs, with the same constructive
