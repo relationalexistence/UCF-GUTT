@@ -18,7 +18,8 @@ one-to-one to named theorems in the public Coq core.
 | Module                   | Version | Scope                                                                  | README                                     |
 |--------------------------|---------|------------------------------------------------------------------------|--------------------------------------------|
 | `Ucf_math_demos.py`      | v1.0.0  | Numbers & irrationals: √2 ∉ ℚ, Euclid in N_rel, totalized division     | [README](./Ucf_math_demos_README.md)       |
-| `RE_in_a_teacup_v3.py`   | v3.0.0  | Reality Engine miniature: proposition firing, DERIVED guards, exports  | [README](./RE_in_a_teacup_v3_README.md)    |
+| `RE_in_a_teacup.py`   | v3.0.0  | Reality Engine miniature: proposition firing, DERIVED guards, exports  | [README](./RE_in_a_teacup_v3_README.md)    |
+| `GameTheory/` (directory) | v1.0.x  | Strategic certification: white paper + decision-surface demonstrator; kernel-witnessed frozen examples |
 
 ---
 
@@ -39,7 +40,7 @@ Three demos that mirror specific theorems from the Coq numbers core:
 
 All arithmetic exact via `fractions.Fraction`. No external dependencies.
 
-### `RE_in_a_teacup_v3.py` — the relational-proposition companion
+### `RE_in_a_teacup.py` — the relational-proposition companion
 
 A miniature of the v2.0 Reality Engine architecture. Builds a
 `RelationalTensor` from a finite relational system (binary edges plus
@@ -103,3 +104,18 @@ Apache 2.0 license grants no rights in these trademarks.
 For the Coq substrate, see the public core at
 <https://github.com/relationalexistence/UCF-GUTT>. For framework
 background, see <https://relationalexistence.com>.
+
+
+### `GameTheory/` — the strategic-certification release
+
+Unlike the two Python companions above, `GameTheory/` is a
+complete public application release: a white paper
+(`WHITEPAPER_GAMETHEORY.pdf`), an interactive demonstrator
+(`ucfgutt_gametheory_demo.py`) of the certification decision
+surface, its own README, and a SHA-256 manifest. Acceptance in
+the demonstrator mirrors the formally verified checker; the
+`KERNEL WITNESS: VERIFIED` status is bound to a registry of
+configurations whose generated Coq certificates compile and
+pass `coqchk` (`Axioms: <none>`). The theorem library and
+certifying compiler behind it are private. See
+`GameTheory/README.md`.
