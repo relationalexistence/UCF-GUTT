@@ -76,11 +76,14 @@ then the **certificate clauses** at your (T, q), then the
 result. An acceptance printed by this program means the input
 lies on the acceptance side of the decision surface mirrored
 from the formally verified checker — **it is not itself a
-kernel certificate**. The frozen examples marked
-`KERNEL WITNESS: VERIFIED` correspond to actual generated Coq
-certificates that compile and pass `coqchk` with
-`Axioms: <none>`. Visitor-supplied specifications acquire that
-status through formal certification:
+kernel certificate**. The `KERNEL WITNESS: VERIFIED` status is
+bound inside the program to a registry of certified
+configuration fingerprints and certificate IDs — it can never
+be asserted by an input specification. A specification earns
+the label only by being value-identical to a configuration
+whose generated Coq certificate compiles and passes `coqchk`
+with `Axioms: <none>`; any other input acquires that status
+through formal certification:
 
     TRY THE DECISION SURFACE  →  REQUEST KERNEL CERTIFICATION
 
