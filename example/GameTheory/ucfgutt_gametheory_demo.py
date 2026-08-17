@@ -88,6 +88,38 @@ def certificate_check(T, W, P, q):
     rows.append(("bystander clauses (k = 0..%d)" % T, bys))
     return rows, all(ok for _, ok in rows)
 
+# ── kernel-witness registry ─────────────────────────────────
+# The KERNEL WITNESS label is bound HERE, to canonical
+# configuration fingerprints of the four frozen examples for
+# which generated Coq certificates exist (compiled and passed
+# coqchk, Axioms: <none>).  It is NEVER read from user input:
+# a specification earns the label only by being value-identical
+# to a certified configuration.  Certificate IDs are the
+# SHA-256 (16-hex prefix) of the generated certificate module.
+def _fingerprint(T, q, W, P):
+    import hashlib
+    parts = [str(T), str(q)]
+    parts += ["%s=%s" % (k, W[k]) for k in sorted(W)]
+    parts += ["%d.%s=%s" % (i, c, P[i][c])
+              for i in (0, 1) for c in sorted(P[i])]
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:16]
+
+_KERNEL_WITNESSES = {}   # fingerprint -> certificate id
+def _register(T, q, W, P, cert_id):
+    _KERNEL_WITNESSES[_fingerprint(T, F(q),
+        {k: F(v) for k, v in W.items()},
+        {i: {c: F(v) for c, v in P[i].items()} for i in (0, 1)}
+    )] = cert_id
+
+_DG = {0: dict(coop="7/2", dev="2", sucker="1", safe="2"),
+       1: dict(coop="7/2", dev="2", sucker="1", safe="2")}
+_ALT = dict(uF_own="7/2", uF_partner="5", v="3/2", Lf="5", M0="6")
+_register(4, "1/2", dict(uF_own="14/5", uF_partner="7/2", v="1",
+    Lf="4", M0="4"), _DG, "19fe92ccac0bcf1a")   # MV04MechCert
+_register(2, "1/2", _ALT, _DG, "a2ec2f9d8c52f24f")  # MT2MechCert
+_register(3, "1/2", _ALT, _DG, "c8a8da3b4b0879ab")  # MT3MechCert
+_register(6, "1/2", _ALT, _DG, "85579f2417bfe94b")  # MT6MechCert
+
 THEOREM = """
   FORMAL CERTIFICATION OF THIS ACCEPTED POINT ESTABLISHES
   (kernel theorem: tg_checked_causal_deviation_secure_eps —
@@ -108,16 +140,16 @@ THEOREM = """
 """
 
 EXAMPLES = {
-  "v04-baseline": dict(T=4, q="1/2", kernel_witness=True,
+  "v04-baseline": dict(T=4, q="1/2",
     W=dict(uF_own="14/5", uF_partner="7/2", v="1", Lf="4", M0="4"),
     note="The original sealed configuration."),
-  "alt-T2": dict(T=2, q="1/2", kernel_witness=True,
+  "alt-T2": dict(T=2, q="1/2",
     W=dict(uF_own="7/2", uF_partner="5", v="3/2", Lf="5", M0="6"),
     note="Alternative mechanism, short punishment window."),
-  "alt-T3": dict(T=3, q="1/2", kernel_witness=True,
+  "alt-T3": dict(T=3, q="1/2",
     W=dict(uF_own="7/2", uF_partner="5", v="3/2", Lf="5", M0="6"),
     note="Same mechanism, window T = 3."),
-  "alt-T6": dict(T=6, q="1/2", kernel_witness=True,
+  "alt-T6": dict(T=6, q="1/2",
     W=dict(uF_own="7/2", uF_partner="5", v="3/2", Lf="5", M0="6"),
     note="Same mechanism, long window: T is data, not a limit."),
   "invalid-mechanism": dict(T=3, q="1/2",
@@ -172,11 +204,19 @@ def run(name, spec):
         print(" itself a kernel certificate; formal certification")
         print(" requires the private certifying compiler and Coq")
         print(" verification.")
-        if spec.get("kernel_witness"):
+        wid = _KERNEL_WITNESSES.get(_fingerprint(T, q, W, P))
+        if wid:
             print()
             print(" KERNEL WITNESS: VERIFIED — a generated Coq")
             print(" certificate for this exact configuration compiles")
             print(" and passes coqchk (Axioms: <none>).")
+            print(" Certificate ID (module sha256): %s" % wid)
+        if spec.get("kernel_witness") and not wid:
+            print()
+            print(" NOTE: a 'kernel_witness' field in the input was")
+            print(" IGNORED — that status is bound to a registry of")
+            print(" certified configurations inside this program and")
+            print(" can never be asserted by a specification.")
         print(THEOREM.format(T=T, q=q))
     else:
         print(" RESULT: admissible specification, certificate REFUSED")
