@@ -13,6 +13,12 @@ theorems are asserting, on concrete inputs, with the same constructive
 arithmetic semantics the Coq files commit to (`Q` via `Coq.QArith`,
 mirrored here by `fractions.Fraction`).
 
+
+> **Looking for the GameTheory release?** The strategic-
+> certification white paper and interactive demonstrator live in
+> [`GameTheory/`](GameTheory/) — see its README. This file
+> documents the math-demos companion.
+
 ---
 
 ## Related executable companions
